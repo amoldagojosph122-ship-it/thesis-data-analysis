@@ -1,2 +1,2 @@
 # thesis-data-analysis
-Research thesis analysis code and reproducible workflows
+Hybrid machine learning and indicator geostatistical modelling for 3D prediction and uncertainty characterisation of graphitic domains at the Kambale Graphite Deposit, Ghana.
