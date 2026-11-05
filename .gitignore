@@ -235,3 +235,10 @@ data/
 # Temporary files
 ~$*
 *.tmp
+
+# Specification, planning and prompt documents: kept locally, not in the repository
+specs/
+.specify/
+Architecture/
+Objective_*/
+Kambale_*.md
