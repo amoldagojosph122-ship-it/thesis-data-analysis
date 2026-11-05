@@ -1,0 +1,89 @@
+# Objective 2 analysis configuration. Predeclared before any variogram of this version is computed.
+# A change of value requires a new config_version. Earlier configurations are kept in config/objective_2/superseded/.
+config_version: O2-CFG-2026.11.05-2
+supersedes: O2-CFG-2026.11.05-1
+correction_reason: >
+  Configuration 1 measured every between-hole lag in three dimensions. Vertical separation between intervals at
+  different depths then dominated the lag, and the directional classes used three-dimensional distances. Configuration 2
+  assesses lateral continuity with horizontal lag distances between intervals at similar depth (absolute relative-Z
+  difference at most 3 m). The three-dimensional family is kept and reported, but it is not the handoff basis.
+  Configuration 1 gave a flat omnidirectional curve at the marginal variance and a fitted range at the 10 m lower bound.
+  That result is recorded in RUN_REPORT.md as superseded and is not used.
+
+label_rule:
+  id: DESIGN_8_2_v1                 # APPROVED on 2026-11-05 (decisions D18 and D20)
+  graphitic_state: POSITIVE         # indicator = 1
+  non_graphitic_state: NEGATIVE     # indicator = 0
+  excluded_states: [AMBIGUOUS, UNRESOLVED]   # excluded from the binary target; counts reported by hole and line
+  strict_label_authorised: false    # STRICT_SGS_v1 is PROPOSED; it is not used as a comparator (SKIP recorded)
+
+support:
+  required_interval_length_m: 1.0
+
+geometry:
+  horizontal: [easting_m, northing_m]   # UTM 30N, EPSG:32630; datum WGS 84 VERIFIED; coordinate pair APPROVED
+  vertical: z_relative_m                # metres relative to collar; negative below collar; z_absolute_m is NOT used
+  required_status: PROVISIONAL_RELATIVE
+  declared_dip_deg: -60.0               # checked against v_survey; uniform orientation is a WARN, not a fit input
+  declared_azimuth_deg: 90.0
+
+pairs:
+  exclude_self_pairs: true
+  exclude_zero_distance: true
+  zero_distance_tolerance_m: 0.000001
+  within_hole: same hole_id
+  between_hole: different hole_id
+
+lateral_between_hole:               # BASE family and handoff basis: horizontal lag, similar depth only
+  lag_width_m: 20.0
+  lag_max_m: 500.0
+  max_abs_dz_m: 3.0
+  min_pairs_per_bin: 100
+  min_independent_hole_pairs_per_bin: 10
+  min_supported_bins_for_fit: 5
+
+omnidirectional_3d_between_hole:    # reported only: geometric three-dimensional lag, not the handoff basis
+  lag_width_m: 20.0
+  lag_max_m: 500.0
+  min_pairs_per_bin: 100
+  min_independent_hole_pairs_per_bin: 10
+  min_supported_bins_for_fit: 5
+
+downhole_within_hole:               # reported separately; never used to set the between-hole range
+  lag_width_m: 1.0
+  lag_max_m: 30.0
+  min_pairs_per_bin: 50
+  min_independent_hole_pairs_per_bin: 5
+  min_supported_bins_for_fit: 5
+
+horizontal_azimuth_directions:      # exploratory; geology does not fix the direction in this dataset
+  azimuths_deg: [0.0, 45.0, 90.0, 135.0]   # axis directions, clockwise from grid north
+  angular_tolerance_deg: 22.5
+  max_abs_dz_m: 3.0
+  lag_width_m: 20.0
+  lag_max_m: 500.0
+  min_pairs_per_bin: 100
+  min_independent_hole_pairs_per_bin: 10
+  min_supported_bins: 5
+  min_lines_with_holes: 3           # fewer lines carrying three or more holes gives a WARN
+
+model_fitting:
+  models: [spherical, exponential]
+  weighting: CRESSIE_N_OVER_GAMMA2
+  nugget_bounds: [0.0, p_one_minus_p]          # p(1-p) from the binary prevalence of the analysed family
+  structured_sill_bounds: [0.0, 1.5_p_one_minus_p]
+  range_bounds_m: [first_supported_lag_centre, lag_max_m]
+  min_structured_sill_fraction: 0.05           # below 5 per cent of p(1-p): no structure beyond the nugget
+  identifiability: [range_at_smallest_lag, range_at_upper_bound, sill_at_upper_bound, structure_below_minimum]
+  stability_check: LEAVE_ONE_LINE_OUT          # applied to the lateral base family
+  stable_if_range_ratio_between: [0.5, 2.0]
+  fit_failure_status: NOT_IDENTIFIABLE
+
+sensitivity:                        # each row changes one factor of the named family; nothing else changes
+  - {name: LAG_WIDTH_10M, applies_to: LATERAL_BETWEEN, factor: lag_width_m, value: 10.0}
+  - {name: TOLERANCE_30DEG, applies_to: HORIZONTAL_AZIMUTH, factor: angular_tolerance_deg, value: 30.0}
+  - {name: WITHIN_HOLE_INCLUDED, applies_to: OMNI_3D_BETWEEN, factor: within_hole_pairs, value: INCLUDED}
+  - {name: EQUAL_HOLE_WEIGHTING, applies_to: LATERAL_BETWEEN, factor: pair_weighting, value: EQUAL_HOLE}
+  - {name: STRICT_SUPPORT_200_PAIRS, applies_to: LATERAL_BETWEEN, factor: min_pairs_per_bin, value: 200}
+  - {name: STRICT_LABEL_COMPARATOR, applies_to: LATERAL_BETWEEN, factor: label_rule, value: STRICT_SGS_v1, status_if_run: SKIP_NOT_AUTHORISED}
+  - {name: ABSOLUTE_ELEVATION_GEOMETRY, applies_to: LATERAL_BETWEEN, factor: vertical, value: z_absolute_m, status_if_run: SKIP_NO_VALIDATED_RL}

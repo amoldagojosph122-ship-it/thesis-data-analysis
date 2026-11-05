@@ -36,8 +36,13 @@ def test_manifest_hashes_match_files():
         assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, (figure_id, rel)
 
 
-def test_rerender_is_byte_identical(built_db):
+def test_rerender_is_byte_identical(built_db, tmp_path, monkeypatch):
+    from kambale import registry
     from kambale.registry import render_figures
+
+    # Render into a temporary folder, so the test never rewrites tracked figures in the project tree.
+    monkeypatch.setattr(registry, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(registry, "FIGURES_DIR", tmp_path / "figures")
 
     def manifest_hashes():
         conn = sqlite3.connect(built_db)

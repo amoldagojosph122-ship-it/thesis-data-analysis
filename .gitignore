@@ -242,3 +242,13 @@ specs/
 Architecture/
 Objective_*/
 Kambale_*.md
+
+# Objective 2 code, configuration, SQL, tests, reports, figures and tables are tracked.
+# specs/ and the database stay ignored.
+!src/kambale/objective_2/
+!sql/objective_2/
+!config/objective_2/
+!tests/objective_2/
+!reports/objective_2/
+!figures/objective_2/
+!tables/objective_2/

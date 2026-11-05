@@ -1,0 +1,25 @@
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{O2-T04. Handoff contract and open items. The handoff is for Objective 3 only. Full-data parameters are never supplied for test folds, and every open item is listed with its status. Receipt 1.}
+\label{tab:O2-T04}
+\begin{tabular}{lllp{0.42\linewidth}}
+\toprule
+item\_type & item\_id & status & detail \\
+\midrule
+DIRECTION & LAT\_AZ\_000 & SKIPPED & 3 supported bins; 5 required \\
+DIRECTION & LAT\_AZ\_045 & SKIPPED & 0 supported bins; 5 required \\
+DIRECTION & LAT\_AZ\_135 & SKIPPED & 0 supported bins; 5 required \\
+GATE & G09 & WARN & Declared orientation: survey orientations [(-60.0, 90.0)]; declared (-60.0, 90.0); uniform across holes = True \\
+GATE & G10 & WARN & Class imbalance: lines below 10 per cent positive: NOM\_N1113000 0.041 \\
+GATE & G12 & WARN & Directional support: skipped directions: LAT\_AZ\_000, LAT\_AZ\_045, LAT\_AZ\_135 \\
+GATE & G21 & WARN & Relative depth only: 5 of 5 sections labelled RELATIVE\_DEPTH; no collar elevation is available, so the relative-depth limitation is always reported \\
+HANDOFF & O3-HANDOFF-1 & NOT\_IDENTIFIABLE & candidate\_family=NONE; full\_data\_parameters\_for\_test\_folds=0; No lateral model is both FITTED and stable under leave-one-line-out: spherical NOT\_IDENTIFIABLE (structured sill below 5\% of p(1-p): no structure beyond the nugget); exponential NOT\_IDENTIFIABLE (range at the smallest supported lag: no spatial dependence beyond the nugget; structured sill below 5\% of p(1-p): no structure beyond the nugget). Lateral continuity is not identified at this support. Objective 3 must not use a between-hole continuity model whose parameters come from these fits; models without a geostatistical continuity term may proceed without a continuity claim. \\
+QUESTION & COLLAR\_RL & OPEN & no collar elevation (RL) is available; depth is relative to collar and absolute elevation is not used \\
+QUESTION & LAG\_WINDOW & OPEN & collar pairs have a median separation of 921.0 m, while the lateral lag window ends at 500.0 m; longer-range structure is not assessed \\
+QUESTION & LINE\_PREVALENCE & OPEN & binary prevalence by line ranges from 0.041 to 0.506 across 5 lines; whether this reflects zones, sampling or geology is not resolved \\
+SENSITIVITY & ABSOLUTE\_ELEVATION\_GEOMETRY & SKIPPED & SKIP\_NO\_VALIDATED\_RL: not run \\
+SENSITIVITY & STRICT\_LABEL\_COMPARATOR & SKIPPED & SKIP\_NOT\_AUTHORISED: not run \\
+\bottomrule
+\end{tabular}
+\end{table}
