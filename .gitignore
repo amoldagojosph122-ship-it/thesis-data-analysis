@@ -218,3 +218,20 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Kambale Stage A: workbook, database and row-level thesis data (kept out of the repository)
+*.xlsx
+*.xlsm
+*.sqlite
+*.sqlite-journal
+data/
+
+# Word documents: source material and generated forms, not repository content
+*.docx
+
+# Local Claude Code settings
+.claude/
+
+# Temporary files
+~$*
+*.tmp

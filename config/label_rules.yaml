@@ -1,0 +1,60 @@
+# Candidate graphitic label rules for obj1_master (Stage A).
+# Every rule is PROPOSED. None is a geological truth. Approval requires a label_reviews row
+# (decision APPROVE_RULE) and is enforced by a database trigger.
+#
+# Evidence fields (all from the logging sheet):
+#   is_sgs                : rock_type1 == 'Sgs'            (valid only when the code is in the legend)
+#   has_gr_mineral        : alt_min1 == 'gr' or alt_min2 == 'gr'  (RTMineral domain; blank = not logged)
+#   comment_graphitic     : Comment matches 'graphit' (case-insensitive; 'graphitic' and 'graphite')
+#   comment_trace_qualified: 'trace' qualifies graphite in the same phrase, e.g. 'traces of graphite'
+#                           (not 'traces of epidot'); used by the trace-excluded sensitivity rule
+#
+# Rule logic (applied in this order):
+#   1. If rock_code_status != VALID -> UNRESOLVED for every rule (missing or unsupported codes are kept separate).
+#   2. STRICT_CODE: label = is_sgs.
+#   3. MIN_POSITIVE(k): label 1 if positive_indicators >= k;
+#      label 0 if positive_indicators == 0 AND the comment is present; otherwise UNRESOLVED.
+label_rule_set_version: LABELRULES-S1-2026.11.05
+rules:
+  - rule_id: STRICT_SGS_v1
+    rule_version: "1.0.0"
+    family: STRICT
+    logic: STRICT_CODE
+    description: >-
+      Target A (strict). Label 1 when rock_type1 is Sgs (meta-sediment graphite schist);
+      label 0 when rock_type1 is another valid legend code; unresolved for missing or unsupported codes.
+  - rule_id: RECON_2OF3_v1
+    rule_version: "1.0.0"
+    family: RECONCILED
+    logic: MIN_POSITIVE
+    min_positive: 2
+    description: >-
+      Target B candidate (reconciled). Label 1 when at least two of the three logging indicators are
+      positive; label 0 when none is positive and a comment is present; one positive indicator is
+      left UNRESOLVED for geological review (ThesisDesign section 8.2 "Ambiguous").
+  - rule_id: ALL3_v1
+    rule_version: "1.0.0"
+    family: SENSITIVITY
+    logic: MIN_POSITIVE
+    min_positive: 3
+    description: >-
+      Conservative sensitivity definition. Label 1 only when all three indicators are positive;
+      label 0 when none is positive; otherwise UNRESOLVED.
+  - rule_id: RECON_2OF3_NOTRACE_v1
+    rule_version: "1.0.0"
+    family: SENSITIVITY
+    logic: MIN_POSITIVE
+    min_positive: 2
+    exclude_trace_comments: true
+    description: >-
+      Sensitivity to Target B. As RECON_2OF3_v1, except that a comment in which graphite is qualified
+      by a trace ("traces of graphite") is not counted as positive evidence. Such an interval is
+      negative when no other indicator is positive and a comment is present.
+  - rule_id: ANY_v1
+    rule_version: "1.0.0"
+    family: SENSITIVITY
+    logic: MIN_POSITIVE
+    min_positive: 1
+    description: >-
+      Liberal sensitivity definition. Label 1 when any indicator is positive; label 0 when none is
+      positive and a comment is present. Included to show how far the label depends on the rule.

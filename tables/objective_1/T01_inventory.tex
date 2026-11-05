@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\caption{T01: Workbook inventory, reconciliation and integrity checks [T01\_inventory] (obj1\_master c45b6dfe0519; PROVISIONAL where labels or coordinates are used)}
+\begin{tabular}{llllll}
+\toprule
+sheet\_name & sheet\_state & n\_rows & n\_cols & header\_json & blank\_columns\_json \\
+\midrule
+Collars & visible & 72 & 14 & ["HoleID", "Grid", "HoleType", "Northing", "Easting", "RL", "UTMNorthing", "UTMEasting", "max\_depth", "Project", "Prospect", "Contractor", "LoggedBy", "DateDrilled"] & ["RL", "Contractor"] \\
+Logging & visible & 1911 & 19 & ["HOLEID", "DEPTH\_FROM", "DEPTH\_TO", "rock\_type1", "colour1", "colour2", "weathering", "grainsize", "structure", "alt\_min1", "alt\_min1int", "alt\_min2", "alt\_min2int", "sul\_min1", "sul\_min1pc", "vn\_type", "vn\_pc", "Comment", "sample\_quality"] & ["structure", "sul\_min1", "sul\_min1pc", "vn\_type", "vn\_pc", "sample\_quality"] \\
+Logging Legend & visible & 205 & 4 & ["", "Legend Reference", "Legend Value", "Description"] & [] \\
+Surveys & visible & 72 & 6 & ["HoleID", "depth", "dip", "azimuth", "SurveyedBy", "Instrument"] & ["SurveyedBy", "Instrument"] \\
+\_\_\_CollarReferences & hidden & 54 & 5 & ["Collars\_Grid", "Collars\_HoleType", "Collars\_ProjectCode", "Collars\_ProspectCode", "Collars\_DrillContractorID"] & [] \\
+\_\_\_LoggingReferences & hidden & 74 & 8 & ["RockType", "Colour", "Weathering", "Structure", "RTMineral", "SulMineral", "Veining", "SampleQual"] & [] \\
+\_\_\_SheetInfo & hidden & 3 & 2 & ["LoggerTemplate:", "CDT\_Logging"] & [] \\
+\_\_\_SurveyReferences & hidden & 14 & 2 & ["Surveys\_DHSurveyorID", "Surveys\_SurveyInstrumentID"] & [] \\
+\bottomrule
+\end{tabular}
+\end{table}
