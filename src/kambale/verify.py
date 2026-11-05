@@ -80,6 +80,12 @@ def run_verification(db_path: Path, with_pytest: bool = True) -> dict:
         z_bad = conn.execute("SELECT COUNT(*) FROM interval_coordinates WHERE z_absolute_m IS NOT NULL").fetchone()[0]
         _record(conn, run, dv, "SQL_INTEGRITY", "z_absolute_m non-null rows", 0, z_bad, "PASS" if z_bad == 0 else "FAIL")
         failures += 0 if z_bad == 0 else 1
+        lith_intervals = conn.execute("SELECT COUNT(*) FROM v_intervals").fetchone()[0]
+        lith_rows = conn.execute("SELECT COUNT(*) FROM v_lithology_refinement").fetchone()[0]
+        lith_ok = lith_rows == lith_intervals
+        _record(conn, run, dv, "SQL_INTEGRITY", "one lithology refinement row per active interval", lith_intervals, lith_rows,
+                "PASS" if lith_ok else "FAIL")
+        failures += 0 if lith_ok else 1
         conn.execute("COMMIT")
     except Exception:
         if conn.in_transaction:

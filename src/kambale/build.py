@@ -22,7 +22,7 @@ from pathlib import Path
 import yaml
 from pyproj import Transformer
 
-from kambale import geometry, labels, qaqc, regional
+from kambale import geometry, labels, lithology, qaqc, regional
 from kambale.config import CONFIG_DIR, DB_PATH, ETL_VERSION, PROJECT_ROOT, RAW_COPY_PATH, SOURCE_PATH
 from kambale.curate import curate
 from kambale.db import connect, fk_violations, integrity, migrate, sha256_text, utc_now
@@ -49,6 +49,7 @@ def dataset_version_key(source_sha256: str, config: dict) -> str:
         "rules": [asdict(r) for r in config["rules"]],
         "coordinate": config["coordinate"],
         "thresholds": config["thresholds"],
+        "lithology_convention": lithology.convention_sha256(),
     }
     return sha256_text(json.dumps(material, sort_keys=True, ensure_ascii=False))
 
@@ -137,7 +138,8 @@ def _full_build(conn, source_file_id, source_path, raw_copy, source_hash, key, c
             "INSERT INTO dataset_versions (dataset_version_key, dataset_label, source_file_id, etl_version, "
             "rule_versions_json, coordinate_decision_json, status, created_utc) VALUES (?, ?, ?, ?, ?, ?, 'BUILDING', ?)",
             (key, f"obj1_master ETL {ETL_VERSION} key {key[:12]}", source_file_id, ETL_VERSION,
-             json.dumps({"label_set_version": config["label_set_version"], "rules": rule_versions}, sort_keys=True),
+             json.dumps({"label_set_version": config["label_set_version"], "rules": rule_versions,
+                         "lithology_convention": lithology.LITHOLOGY_CONVENTION_VERSION}, sort_keys=True),
              json.dumps(coordinate, sort_keys=True, ensure_ascii=False), created))
         dv = cur.lastrowid
 
@@ -159,6 +161,7 @@ def _full_build(conn, source_file_id, source_path, raw_copy, source_hash, key, c
         legend_rock = {c["code"] for c in data.codes if c["code_domain"] == "RockType"}
         interval_status = _interval_status(data, legend_rock)
         evidence_rows = _insert_labels(conn, dv, data, interval_ids, rules, legend_rock)
+        lithology_counts = _insert_lithology(conn, dv, data, interval_ids)
 
         # ---- geometry -----------------------------------------------------------------------------
         build_id, geometry_count = _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stats,
@@ -198,6 +201,8 @@ def _full_build(conn, source_file_id, source_path, raw_copy, source_hash, key, c
         "holes": len(data.collars), "survey_stations": len(data.surveys), "logging_intervals": len(data.intervals),
         "geological_codes": len(data.codes), "drill_lines": len(set(v["line_code"] for v in lines.values())),
         "geometry_intervals": geometry_count, "qaqc_findings": len(findings), "receipts": receipts,
+        "lithology_refinements": lithology_counts["refinements"],
+        "lithology_dictionary": lithology_counts["dictionary"],
         "quarantined": len(data.quarantine),
     }
     return {"status": "VERIFIED_NEW_VERSION", "dataset_version_id": dv, "dataset_version_key": key,
@@ -392,6 +397,38 @@ def _insert_labels(conn, dv, data, interval_ids, rules, legend_rock) -> list[dic
                 (dv, interval_id, rule.rule_id, label, state))
         evidence_out.append({**ev, "interval_key": i["interval_key"], "source_row": i["source_row"]})
     return evidence_out
+
+
+def _insert_lithology(conn, dv, data, interval_ids) -> dict:
+    """Descriptive refinement from the logged comments. No label rule reads these rows."""
+    legend = {c["code"]: c["description"] for c in data.codes if c["code_domain"] == "RockType"}
+    intervals = [
+        {"interval_key": i["interval_key"], "hole_id": i["hole_id"], "depth_from": i["depth_from_m"],
+         "depth_to": i["depth_to_m"], "rock_code": i["rock_code_raw"],
+         "comment": (i["comment_raw"] or "").strip()}
+        for i in data.intervals
+    ]
+    result = lithology.compute(legend, intervals)
+    if result["problems"]:
+        raise BuildStop(f"lithology refinement failed its checks: {result['problems'][:5]}")
+    sha = lithology.convention_sha256()
+    for r in result["interval_rows"]:
+        conn.execute(
+            "INSERT INTO lithology_refinements (dataset_version_id, interval_id, interval_key, label_code, "
+            "refinement_status, refined_code, base_code, comment_as_logged, comment_normalised, comment_lithology, "
+            "matrix_minerals, reason, notes, convention_version, convention_sha256) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (dv, interval_ids[r["interval_key"]], r["interval_key"], r["label_code"] or None,
+             r["refinement_status"], r["refined_code"] or None, r["base_code"] or None,
+             r["comment_as_logged"], r["comment_normalised"], r["comment_lithology"], r["matrix_minerals"],
+             r["reason"], r["notes"], lithology.LITHOLOGY_CONVENTION_VERSION, sha))
+    for d in result["dictionary"]:
+        conn.execute(
+            "INSERT INTO lithology_dictionary (dataset_version_id, refined_code, base_codes, refined_description, "
+            "base_description, matrix_minerals_named, basis, intervals) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (dv, d["refined_code"], d["base_code"], d["refined_description"], d["base_description"],
+             d["matrix_minerals_named"], d["basis"], d["intervals"]))
+    return {"refinements": len(result["interval_rows"]), "dictionary": len(result["dictionary"])}
 
 
 def _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stats, coordinate):

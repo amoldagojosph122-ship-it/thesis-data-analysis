@@ -24,7 +24,7 @@ REGIONAL_SHP = (
          r"GEOLOGY OF GHANA shapefile/GE0_KOA/GEOMAP1000_shp/Shapefiles/Geology/geology_polygon.shp")
 )
 
-ETL_VERSION = "1.0.0"
+ETL_VERSION = "1.1.0"
 CODE_VERSION = ETL_VERSION
 
 STAGE_STATUS = ("VERIFIED", "PROVISIONAL", "BLOCKED", "DEFERRED", "FAILED")

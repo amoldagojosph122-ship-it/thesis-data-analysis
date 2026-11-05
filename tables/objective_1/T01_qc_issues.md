@@ -1,4 +1,4 @@
-**T01: Workbook inventory, reconciliation and integrity checks [T01_qc_issues] (obj1_master c45b6dfe0519; PROVISIONAL where labels or coordinates are used)**
+**T01: Workbook inventory, reconciliation and integrity checks [T01_qc_issues] (obj1_master 9ebb983eec9f; PROVISIONAL where labels or coordinates are used)**
 
 | check_id | category | severity | status | result | n_records | description |
 |---|---|---|---|---|---|---|
@@ -16,6 +16,7 @@
 | QC-SURVEY-RANGE | Survey | ERROR | APPROVED | PASS | 0 | Dip outside [-90, 0] or azimuth outside [0, 360) |
 | QC-CODE-ROCK-MISSING | Codes | WARNING | PROVISIONAL | FAIL | 2 | rock_type1 blank |
 | QC-CODE-WEATHER-MISSING | Codes | WARNING | PROVISIONAL | FAIL | 21 | weathering blank |
+| QC-COMMENT-MISSING | Codes | WARNING | PROVISIONAL | FAIL | 12 | Comment blank |
 | QC-COMMENT-TRACE | Labels | WARNING | PROVISIONAL | FAIL | 56 | Graphite comment qualified by 'trace' (false-positive review) |
 | QC-COORD-PAIR | Coordinates | WARNING | PROVISIONAL | FAIL | 34 | Discrepancy between UTM and Easting/Northing pairs |
 | QC-CRS | Coordinates | WARNING | PROVISIONAL | FAIL | 0 | CRS declared and datum verified |
@@ -30,5 +31,4 @@
 | QC-SURVEY-STATIONS | Survey | WARNING | PROVISIONAL | FAIL | 71 | Number and type of survey stations per hole |
 | QC-SURVEY-UNIFORM | Survey | WARNING | PROVISIONAL | FAIL | 71 | Dip and azimuth identical across all holes |
 | QC-CODE-COLOUR-MISSING | Codes | INFO | PROVISIONAL | FAIL | 6 | colour1 blank |
-| QC-COMMENT-MISSING | Codes | INFO | PROVISIONAL | FAIL | 6 | Comment blank |
 | QC-CONTRACTOR | Metadata | INFO | PROVISIONAL | FAIL | 71 | Contractor blank in source |

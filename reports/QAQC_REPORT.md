@@ -1,12 +1,12 @@
 # Kambale Objective 1 database: QA/QC report (Stage A)
 
-Generated 2026-11-05T02:22:38Z from `database/kambale_thesis.sqlite`.
+Generated 2026-11-05T07:18:47Z from `database/kambale_thesis.sqlite`.
 
 **Overall stage status: PROVISIONAL.** The ETL, integrity checks and reconciliation are verified. Coordinates,
 vertical positions, graphitic label rules and drill-line groups are provisional. No collar RL exists, so no
 absolute 3-D product is produced. No graphite assay exists, so no grade, tonnage or resource statement is made.
 
-- Dataset version: `c45b6dfe05190380d592fdd9f24ae8998f92796e1d6fb2c1ee14dda33f009d10` (label: obj1_master ETL 1.0.0 key c45b6dfe0519), ACTIVE, activated 2026-11-05T02:21:40Z.
+- Dataset version: `9ebb983eec9fc2c6de45b34b33692e05b69432a53c78a87fe9ad1bbbbfdaa22e` (label: obj1_master ETL 1.1.0 key 9ebb983eec9f), ACTIVE, activated 2026-11-05T07:18:19Z.
 - Source workbook: `Kambale RAB_Collar_Sampling_Geology_2012a.xlsx`, SHA-256 `a449097f669b9a449d06acfdb31c62ccbc688936c90254a829ecade2b95dbfb6`, 107,376 bytes; raw copy `data/raw/Kambale RAB_Collar_Sampling_Geology_2012a.xlsx` (read-only, hash-checked).
 
 ## 1. Source inventory and record counts
@@ -51,6 +51,7 @@ Reconciliation against the preliminary values in ThesisDesign.docx (comparison o
 | QC-SURVEY-RANGE | ERROR | APPROVED | PASS | 0 | Dip outside [-90, 0] or azimuth outside [0, 360) |
 | QC-CODE-ROCK-MISSING | WARNING | PROVISIONAL | FAIL | 2 | rock_type1 blank |
 | QC-CODE-WEATHER-MISSING | WARNING | PROVISIONAL | FAIL | 21 | weathering blank |
+| QC-COMMENT-MISSING | WARNING | PROVISIONAL | FAIL | 12 | Comment blank |
 | QC-COMMENT-TRACE | WARNING | PROVISIONAL | FAIL | 56 | Graphite comment qualified by 'trace' (false-positive review) |
 | QC-COORD-PAIR | WARNING | PROVISIONAL | FAIL | 34 | Discrepancy between UTM and Easting/Northing pairs |
 | QC-CRS | WARNING | PROVISIONAL | FAIL | 0 | CRS declared and datum verified |
@@ -73,7 +74,6 @@ Reconciliation against the preliminary values in ThesisDesign.docx (comparison o
 | QC-BLANK-COLUMNS | INFO | APPROVED | PASS | 0 | Columns with no data in source |
 | QC-BLANK-ROWS | INFO | APPROVED | PASS | 0 | Fully blank rows skipped during ingestion |
 | QC-CODE-COLOUR-MISSING | INFO | PROVISIONAL | FAIL | 6 | colour1 blank |
-| QC-COMMENT-MISSING | INFO | PROVISIONAL | FAIL | 6 | Comment blank |
 | QC-CONTRACTOR | INFO | PROVISIONAL | FAIL | 71 | Contractor blank in source |
 | QC-COORD-NODES | INFO | APPROVED | PASS | 0 | Values on 5 m grid nodes by pair |
 | QC-CRS-PLAUSIBILITY | INFO | APPROVED | PASS | 0 | Transformed collar location lies in the expected region |
@@ -183,17 +183,17 @@ Regional polygons are 1:1,000,000 context only and do not verify local contacts:
 
 | Group | Test | Expected | Observed | Outcome | Run (UTC) |
 |---|---|---|---|---|---|
-| PYTEST | pytest suite (tests/) | 0 failed | 39 passed in 7.92s | PASS | 2026-11-05T02:22:21Z |
-| RECONCILIATION | Holes | 71 | 71 | PASS | 2026-11-05T02:22:10Z |
-| RECONCILIATION | Holes intersecting Sgs | 42 | 42 | PASS | 2026-11-05T02:22:10Z |
-| RECONCILIATION | Logging intervals | 1910 | 1910 | PASS | 2026-11-05T02:22:10Z |
-| RECONCILIATION | Sgs intervals | 529 | 529 | PASS | 2026-11-05T02:22:10Z |
-| RECONCILIATION | Survey stations | 71 | 71 | PASS | 2026-11-05T02:22:10Z |
-| SQL_INTEGRITY | PRAGMA foreign_key_check | 0 rows | 0 rows | PASS | 2026-11-05T02:22:10Z |
-| SQL_INTEGRITY | PRAGMA integrity_check | ok | ok | PASS | 2026-11-05T02:22:10Z |
-| SQL_INTEGRITY | Stage B contract tables: blocking triggers present and empty | 9 triggers; 0 rows | 9 triggers; 0 rows | PASS | 2026-11-05T02:22:10Z |
-| SQL_INTEGRITY | raw_* UPDATE rejected by trigger | rejected | rejected | PASS | 2026-11-05T02:22:10Z |
-| SQL_INTEGRITY | z_absolute_m non-null rows | 0 | 0 | PASS | 2026-11-05T02:22:10Z |
+| PYTEST | pytest suite (tests/) | 0 failed | 39 passed in 7.69s | PASS | 2026-11-05T02:22:51Z |
+| RECONCILIATION | Holes | 71 | 71 | PASS | 2026-11-05T02:22:40Z |
+| RECONCILIATION | Holes intersecting Sgs | 42 | 42 | PASS | 2026-11-05T02:22:40Z |
+| RECONCILIATION | Logging intervals | 1910 | 1910 | PASS | 2026-11-05T02:22:40Z |
+| RECONCILIATION | Sgs intervals | 529 | 529 | PASS | 2026-11-05T02:22:40Z |
+| RECONCILIATION | Survey stations | 71 | 71 | PASS | 2026-11-05T02:22:40Z |
+| SQL_INTEGRITY | PRAGMA foreign_key_check | 0 rows | 0 rows | PASS | 2026-11-05T02:22:40Z |
+| SQL_INTEGRITY | PRAGMA integrity_check | ok | ok | PASS | 2026-11-05T02:22:40Z |
+| SQL_INTEGRITY | Stage B contract tables: blocking triggers present and empty | 9 triggers; 0 rows | 9 triggers; 0 rows | PASS | 2026-11-05T02:22:40Z |
+| SQL_INTEGRITY | raw_* UPDATE rejected by trigger | rejected | rejected | PASS | 2026-11-05T02:22:40Z |
+| SQL_INTEGRITY | z_absolute_m non-null rows | 0 | 0 | PASS | 2026-11-05T02:22:40Z |
 
 ## 7. Data problems and decisions still pending
 

@@ -93,7 +93,7 @@ CHECKS = [
      "Weathering class MISSING in summaries", "blank-cell test"),
     ("QC-CODE-COLOUR-MISSING", "Codes", "colour1 blank", "INFO",
      "Recorded as missing", "blank-cell test"),
-    ("QC-COMMENT-MISSING", "Codes", "Comment blank", "INFO",
+    ("QC-COMMENT-MISSING", "Codes", "Comment blank", "WARNING",
      "Comment term evidence absent; label 0 not assigned", "blank-cell test"),
     ("QC-LEGEND-AGREE", "Codes", "Legend and hidden reference lists agree", "WARNING",
      "Discrepancies listed; legend is the working reference", "set comparison"),
@@ -336,7 +336,12 @@ def run_checks(data: CuratedData, evidence: list[dict], context: dict) -> list[F
     add(_f("QC-CODE-COLOUR-MISSING", "INFO", "PROVISIONAL" if cmiss else "APPROVED", "FAIL" if cmiss else "PASS",
            n=len(cmiss), detail=f"blank colour1={len(cmiss)}"))
     comment_missing = [i for i in context["interval_status"] if i["comment_raw"] is None]
-    add(_f("QC-COMMENT-MISSING", "INFO", "PROVISIONAL" if comment_missing else "APPROVED",
+    for i in comment_missing:
+        add(_f("QC-COMMENT-MISSING", "WARNING", "PROVISIONAL", "FAIL", entity_type="INTERVAL",
+               entity_key=i["interval_key"], sheet="Logging", row=i["source_row"], n=1,
+               detail="comment cell is empty in the workbook", action="REVIEW_REQUIRED",
+               rationale="Enter the logged comment from the original log. The rock code and neighbouring comments are not used to infer it."))
+    add(_f("QC-COMMENT-MISSING", "WARNING", _status_for("WARNING", "FAIL" if comment_missing else "PASS"),
            "FAIL" if comment_missing else "PASS", n=len(comment_missing), detail=f"blank comments={len(comment_missing)}"))
     legend = context["legend"]
     agree = not legend["legend_only"] and not legend["reference_only"]

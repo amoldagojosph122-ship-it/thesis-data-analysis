@@ -5,6 +5,7 @@ import sqlite3
 
 import pytest
 
+from kambale import lithology
 from kambale.build import build
 from kambale.config import RAW_COPY_PATH, SOURCE_PATH
 
@@ -65,7 +66,7 @@ def test_identical_rebuild_is_a_noop(built_db):
     conn = _conn(built_db)
     before = {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in tables}
     conn.close()
-    summary = build(db_path=built_db, source_path=SOURCE_PATH, raw_copy=RAW_COPY_PATH)
+    summary = build(db_path=built_db, source_path=RAW_COPY_PATH, raw_copy=RAW_COPY_PATH)
     assert summary["status"] == "NOOP_IDENTICAL"
     conn = _conn(built_db)
     try:
@@ -102,5 +103,78 @@ def test_no_collar_rl_and_all_label_rules_proposed(built_db):
         assert conn.execute("SELECT COUNT(*) FROM holes WHERE rl_status = 'PRESENT'").fetchone()[0] == 0
         statuses = {r[0] for r in conn.execute("SELECT status FROM graphite_label_rules")}
         assert statuses == {"PROPOSED"}
+    finally:
+        conn.close()
+
+
+def _active_intervals(conn):
+    return conn.execute(
+        "SELECT interval_key, hole_id, depth_from_m, depth_to_m, rock_code_raw, comment_raw FROM logging_intervals "
+        "WHERE dataset_version_id = (SELECT dataset_version_id FROM v_active_version)").fetchall()
+
+
+def test_lithology_rows_round_trip_the_module(built_db):
+    conn = _conn(built_db)
+    try:
+        legend = dict(conn.execute(
+            "SELECT code, description FROM geological_code_dictionary WHERE code_domain = 'RockType' "
+            "AND dataset_version_id = (SELECT dataset_version_id FROM v_active_version)").fetchall())
+        intervals = [{"interval_key": k, "hole_id": h, "depth_from": f, "depth_to": t, "rock_code": c,
+                      "comment": (cm or "").strip()} for k, h, f, t, c, cm in _active_intervals(conn)]
+        expected = {r["interval_key"]: r for r in lithology.compute(legend, intervals)["interval_rows"]}
+        stored = conn.execute("SELECT interval_key, refinement_status, refined_code, base_code, comment_normalised "
+                              "FROM v_lithology_refinement").fetchall()
+        assert len(stored) == len(expected) == 1910
+        for key, status, refined, base, norm in stored:
+            e = expected[key]
+            assert status == e["refinement_status"], key
+            assert (refined or "") == e["refined_code"], key
+            assert (base or "") == e["base_code"], key
+            assert norm == e["comment_normalised"], key
+    finally:
+        conn.close()
+
+
+def test_lithology_counts_and_label_targets_are_unchanged(built_db):
+    conn = _conn(built_db)
+    try:
+        counts = dict(conn.execute(
+            "SELECT refinement_status, COUNT(*) FROM v_lithology_refinement GROUP BY refinement_status").fetchall())
+        assert sum(counts.values()) == 1910
+        assert counts["REFINED"] == 230
+        assert counts["REFINED_GENERAL"] == 284
+        assert counts["CONFLICT_REVIEW"] == 17
+        assert conn.execute("SELECT COUNT(*) FROM v_label_evidence WHERE is_sgs = 1").fetchone()[0] == 529
+    finally:
+        conn.close()
+
+
+def test_blank_comments_are_warning_findings_that_need_review(built_db):
+    conn = _conn(built_db)
+    try:
+        active = "(SELECT dataset_version_id FROM v_active_version)"
+        rows = conn.execute(
+            "SELECT f.severity, r.action FROM qaqc_findings f "
+            "JOIN qaqc_resolutions r ON r.finding_id = f.finding_id "
+            "WHERE f.check_id = 'QC-COMMENT-MISSING' AND f.entity_type = 'INTERVAL' "
+            f"AND f.dataset_version_id = {active}").fetchall()
+        assert len(rows) == 6
+        assert {r[0] for r in rows} == {"WARNING"}
+        assert {r[1] for r in rows} == {"REVIEW_REQUIRED"}
+        aggregate = conn.execute(
+            "SELECT severity FROM qaqc_findings WHERE check_id = 'QC-COMMENT-MISSING' "
+            f"AND entity_type = 'DATASET' AND dataset_version_id = {active}").fetchone()
+        assert aggregate[0] == "WARNING"
+    finally:
+        conn.close()
+
+
+def test_lithology_rows_carry_the_convention_digest(built_db):
+    conn = _conn(built_db)
+    try:
+        digests = {r[0] for r in conn.execute(
+            "SELECT convention_sha256 FROM lithology_refinements "
+            "WHERE dataset_version_id = (SELECT dataset_version_id FROM v_active_version)")}
+        assert digests == {lithology.convention_sha256()}
     finally:
         conn.close()

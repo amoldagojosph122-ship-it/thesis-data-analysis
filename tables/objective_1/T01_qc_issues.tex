@@ -1,6 +1,6 @@
 \begin{table}[htbp]
 \centering
-\caption{T01: Workbook inventory, reconciliation and integrity checks [T01\_qc\_issues] (obj1\_master c45b6dfe0519; PROVISIONAL where labels or coordinates are used)}
+\caption{T01: Workbook inventory, reconciliation and integrity checks [T01\_qc\_issues] (obj1\_master 9ebb983eec9f; PROVISIONAL where labels or coordinates are used)}
 \begin{tabular}{lllllll}
 \toprule
 check\_id & category & severity & status & result & n\_records & description \\
@@ -19,6 +19,7 @@ QC-SRC-HASH & Provenance & ERROR & APPROVED & PASS & 0 & Workbook SHA-256 equals
 QC-SURVEY-RANGE & Survey & ERROR & APPROVED & PASS & 0 & Dip outside [-90, 0] or azimuth outside [0, 360) \\
 QC-CODE-ROCK-MISSING & Codes & WARNING & PROVISIONAL & FAIL & 2 & rock\_type1 blank \\
 QC-CODE-WEATHER-MISSING & Codes & WARNING & PROVISIONAL & FAIL & 21 & weathering blank \\
+QC-COMMENT-MISSING & Codes & WARNING & PROVISIONAL & FAIL & 12 & Comment blank \\
 QC-COMMENT-TRACE & Labels & WARNING & PROVISIONAL & FAIL & 56 & Graphite comment qualified by 'trace' (false-positive review) \\
 QC-COORD-PAIR & Coordinates & WARNING & PROVISIONAL & FAIL & 34 & Discrepancy between UTM and Easting/Northing pairs \\
 QC-CRS & Coordinates & WARNING & PROVISIONAL & FAIL & 0 & CRS declared and datum verified \\
@@ -33,7 +34,6 @@ QC-SURVEY-META & Survey & WARNING & PROVISIONAL & FAIL & 71 & SurveyedBy and Ins
 QC-SURVEY-STATIONS & Survey & WARNING & PROVISIONAL & FAIL & 71 & Number and type of survey stations per hole \\
 QC-SURVEY-UNIFORM & Survey & WARNING & PROVISIONAL & FAIL & 71 & Dip and azimuth identical across all holes \\
 QC-CODE-COLOUR-MISSING & Codes & INFO & PROVISIONAL & FAIL & 6 & colour1 blank \\
-QC-COMMENT-MISSING & Codes & INFO & PROVISIONAL & FAIL & 6 & Comment blank \\
 QC-CONTRACTOR & Metadata & INFO & PROVISIONAL & FAIL & 71 & Contractor blank in source \\
 \bottomrule
 \end{tabular}
