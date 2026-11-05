@@ -1,13 +1,12 @@
 # Kambale Objective 1 database: QA/QC report (Stage A)
 
-Generated 2026-11-05T09:58:32Z from `database/kambale_thesis.sqlite`.
+Generated 2026-11-05T12:25:25Z from `database/kambale_thesis.sqlite`.
 
-**Overall stage status: PROVISIONAL.** The ETL, integrity checks and reconciliation are verified. Coordinates,
-vertical positions, graphitic label rules and drill-line groups are provisional. No collar RL exists. A provisional
-DEM elevation is stored apart from the RL field, and no absolute 3-D product is made until an approved vertical
-source exists. No graphite assay exists, so no grade, tonnage or resource statement is made.
+**Overall stage status: PROVISIONAL.** The ETL, integrity checks and reconciliation are verified. The UTM coordinates and the WGS 84 datum are approved (2026-11-05). Vertical positions are provisional. The drill-line groups are approved (2026-11-05). Graphitic label rules other than DESIGN_8_2_v1 are provisional. No collar RL exists. The Copernicus
+DEM elevations were approved on 2026-11-05 as the provisional vertical source (Dickson Abdul-Wahab, 10:46:46 UTC) and
+are stored apart from the RL field. No graphite assay exists, so no grade, tonnage or resource statement is made.
 
-- Dataset version: `eefc5858c1ef559fba8cd6188b33583b14c614921e27e785230cbe80f5cae3b3` (label: obj1_master ETL 1.2.0 key eefc5858c1ef), ACTIVE, activated 2026-11-05T09:56:42Z.
+- Dataset version: `55dead7da64cac14b0d79569e460739f8b9a217b17425a3e3ff2610649940248` (label: obj1_master ETL 1.5.0 key 55dead7da64c), ACTIVE, activated 2026-11-05T12:25:03Z.
 - Source workbook: `Kambale RAB_Collar_Sampling_Geology_2012a.xlsx`, SHA-256 `4840a9917a11dac22b190609c71f4eb0e0491fe7ab306ca09b02521cf9bf5e5a`, 107,538 bytes; raw copy `data/raw/Kambale RAB_Collar_Sampling_Geology_2012a_corrected_2026-11-05_rock_codes.xlsx` (read-only, hash-checked).
 
 ## 1. Source inventory and record counts
@@ -54,15 +53,15 @@ Reconciliation against the preliminary values in ThesisDesign.docx (comparison o
 | QC-CODE-WEATHER-MISSING | WARNING | PROVISIONAL | FAIL | 21 | weathering blank |
 | QC-COMMENT-MISSING | WARNING | APPROVED | PASS | 0 | Comment blank |
 | QC-COMMENT-TRACE | WARNING | PROVISIONAL | FAIL | 56 | Graphite comment qualified by 'trace' (false-positive review) |
-| QC-COORD-PAIR | WARNING | PROVISIONAL | FAIL | 17 | Discrepancy between UTM and Easting/Northing pairs |
-| QC-CRS | WARNING | PROVISIONAL | FAIL | 0 | CRS declared and datum verified |
+| QC-COORD-PAIR | WARNING | APPROVED | FAIL | 17 | Discrepancy between UTM and Easting/Northing pairs |
+| QC-CRS | WARNING | APPROVED | PASS | 0 | CRS declared and datum verified |
 | QC-GAP | WARNING | APPROVED | PASS | 0 | Gaps between consecutive logging intervals or first interval not at 0 m |
 | QC-GRAINSIZE | WARNING | PROVISIONAL | FAIL | 513 | grainsize values present without documented unit |
 | QC-INTENSITY | WARNING | PROVISIONAL | FAIL | 16 | alt_min1int present without alt_min1 code |
 | QC-INTENSITY-UNITS | WARNING | PROVISIONAL | FAIL | 0 | alt_min1int unit undocumented |
 | QC-LABEL-CONFLICT | WARNING | PROVISIONAL | FAIL | 126 | Intervals with mixed graphite evidence |
 | QC-LEGEND-AGREE | WARNING | APPROVED | PASS | 0 | Legend and hidden reference lists agree |
-| QC-LINES | WARNING | PROVISIONAL | FAIL | 5 | Nominal Northing groups and provisional drill lines |
+| QC-LINES | WARNING | APPROVED | PASS | 5 | Nominal Northing groups and drill lines |
 | QC-LOG-END | WARNING | APPROVED | PASS | 0 | Logged end depth versus collar max_depth |
 | QC-NO-LOG | WARNING | APPROVED | PASS | 0 | Collar with no logging intervals |
 | QC-NO-SURVEY | WARNING | APPROVED | PASS | 0 | Collar with no survey record |
@@ -95,7 +94,7 @@ Detail text for each dataset-level finding is stored in `qaqc_findings.detail`.
 
 | Adopted pair | CRS | Datum | Status | Median pair separation (m) | Max pair separation (m) | Holes |
 |---|---|---|---|---|---|---|
-| UTM_EASTING_NORTHING | EPSG:32630 | UNVERIFIED | PROVISIONAL | 3.1623 | 13.3417 | 71 |
+| UTM_EASTING_NORTHING | EPSG:32630 | UNVERIFIED | APPROVED | 3.1623 | 13.3417 | 71 |
 
 | Rule | Version | Family | Status | Definition |
 |---|---|---|---|---|
@@ -155,19 +154,19 @@ Detail text for each dataset-level finding is stored in `qaqc_findings.detail`.
 - Offsets: delta_E = m cos(d) sin(a), delta_N = m cos(d) cos(a), delta_Z = m sin(d); m = interval midpoint.
 - `z_relative_m` is stored relative to the collar. `z_absolute_m` is NULL for every interval (verified by `kambale verify`).
 - Surveyed elevation status: BLOCKED (no collar RL in the workbook; no DGPS supplied).
-- Provisional DEM elevation: Copernicus GLO-30 sampled at each collar (`holes.dem_elevation_m`, status PROVISIONAL);
+- Approved as the provisional vertical source on 2026-11-05 (Dickson Abdul-Wahab): Copernicus GLO-30 sampled at each collar (`holes.dem_elevation_m`, status PROVISIONAL);
   the interval values are `interval_coordinates.z_dem_absolute_m`. The DEM is a surface model that includes vegetation
   and buildings, so it is not a surveyed collar RL.
 
-## 5. Provisional drill lines and regional context
+## 5. Drill lines (approved nominal-Northing groups) and regional context
 
 | Line | Nominal Northing (m) | Holes | Intervals | Status |
 |---|---|---|---|---|
-| NOM_N1111930 | 1111930.0 | 3 | 84 | PROVISIONAL |
-| NOM_N1112140 | 1112140.0 | 13 | 440 | PROVISIONAL |
-| NOM_N1112500 | 1112500.0 | 21 | 542 | PROVISIONAL |
-| NOM_N1112600 | 1112600.0 | 15 | 423 | PROVISIONAL |
-| NOM_N1113000 | 1113000.0 | 19 | 421 | PROVISIONAL |
+| NOM_N1111930 | 1111930.0 | 3 | 84 | APPROVED |
+| NOM_N1112140 | 1112140.0 | 13 | 440 | APPROVED |
+| NOM_N1112500 | 1112500.0 | 21 | 542 | APPROVED |
+| NOM_N1112600 | 1112600.0 | 15 | 423 | APPROVED |
+| NOM_N1113000 | 1113000.0 | 19 | 421 | APPROVED |
 
 Regional polygons are 1:1,000,000 context only and do not verify local contacts:
 
@@ -188,8 +187,8 @@ Regional polygons are 1:1,000,000 context only and do not verify local contacts:
 
 ## 7. Data problems and decisions still pending
 
-1. Coordinate datum and pair choice: confirm the UTM pair (adopted, provisional) or the Easting/Northing pair. 17 holes differ by more than 5 m.
-2. Collar RL: obtain the DGPS collar elevations, or approve the provisional DEM elevations as a vertical source. Until then, no absolute 3-D product is made.
+1. Coordinate pair: the UTM pair was approved on 2026-11-05. 17 holes differ by more than 5 m from the Easting/Northing pair; the difference is recorded, not corrected. The datum is confirmed as WGS 84 (2026-11-05).
+2. Collar RL: obtain the DGPS collar elevations. The DEM elevations are approved as the provisional vertical source (2026-11-05); a surveyed RL would replace them.
 3. Graphitic label rules: DESIGN_8_2_v1 (Target B) was approved on 2026-11-05 by Dickson Abdul-Wahab. STRICT_SGS_v1 (Target A) and the other candidate rules remain PROPOSED. The conflicts are listed in `ambiguity_review_intervals.csv`.
 4. Corrected from the original log on 2026-11-05: 12 intervals logged `fsc` (not in the legend, quartz mica schist comments) are now `Fsc` (felsic schist).
 5. Corrected from the original log on 2026-11-05: the blank rock code on 12KBRB 005 (8-9 m) is now `Sgs`, matching its comment.

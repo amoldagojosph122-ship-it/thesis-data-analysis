@@ -1,4 +1,4 @@
-**T01: Workbook inventory, reconciliation and integrity checks [T01_qc_issues] (obj1_master eefc5858c1ef; PROVISIONAL where labels or coordinates are used)**
+**T01: Workbook inventory, reconciliation and integrity checks [T01_qc_issues] (obj1_master 55dead7da64c; PROVISIONAL where labels or coordinates are used)**
 
 | check_id | category | severity | status | result | n_records | description |
 |---|---|---|---|---|---|---|
@@ -16,13 +16,11 @@
 | QC-SURVEY-RANGE | Survey | ERROR | APPROVED | PASS | 0 | Dip outside [-90, 0] or azimuth outside [0, 360) |
 | QC-CODE-WEATHER-MISSING | Codes | WARNING | PROVISIONAL | FAIL | 21 | weathering blank |
 | QC-COMMENT-TRACE | Labels | WARNING | PROVISIONAL | FAIL | 56 | Graphite comment qualified by 'trace' (false-positive review) |
-| QC-COORD-PAIR | Coordinates | WARNING | PROVISIONAL | FAIL | 17 | Discrepancy between UTM and Easting/Northing pairs |
-| QC-CRS | Coordinates | WARNING | PROVISIONAL | FAIL | 0 | CRS declared and datum verified |
+| QC-COORD-PAIR | Coordinates | WARNING | APPROVED | FAIL | 17 | Discrepancy between UTM and Easting/Northing pairs |
 | QC-GRAINSIZE | Codes | WARNING | PROVISIONAL | FAIL | 513 | grainsize values present without documented unit |
 | QC-INTENSITY | Codes | WARNING | PROVISIONAL | FAIL | 16 | alt_min1int present without alt_min1 code |
 | QC-INTENSITY-UNITS | Codes | WARNING | PROVISIONAL | FAIL | 0 | alt_min1int unit undocumented |
 | QC-LABEL-CONFLICT | Labels | WARNING | PROVISIONAL | FAIL | 126 | Intervals with mixed graphite evidence |
-| QC-LINES | Geometry | WARNING | PROVISIONAL | FAIL | 5 | Nominal Northing groups and provisional drill lines |
 | QC-PROJECT | Metadata | WARNING | PROVISIONAL | FAIL | 5 | Project code inconsistent with prospect |
 | QC-RL | Vertical | WARNING | BLOCKED | FAIL | 71 | Collar RL present |
 | QC-SURVEY-META | Survey | WARNING | PROVISIONAL | FAIL | 71 | SurveyedBy and Instrument blank in source |

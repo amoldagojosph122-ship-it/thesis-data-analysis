@@ -32,13 +32,13 @@ class Spec:
 
 FIGURE_SPECS = {
     "F01": Spec("F01", "O1", "FIGURE", "Collar location map",
-                "Collar plan with provisional drill-line groups on UTM zone 30N coordinates (adopted UTM pair; "
+                "Collar plan with approved drill-line groups on UTM zone 30N coordinates (adopted UTM pair; "
                 "alternate Easting/Northing pair differs by median 3.2 m, max 13.3 m). Background: regional "
-                "1:1,000,000 polygons (context only). Scale bar 500 m. Datum unverified.",
+                "1:1,000,000 polygons (context only). Scale bar 500 m. Datum WGS 84 confirmed (2026-11-05).",
                 "PROVISIONAL", "plan coordinates PROVISIONAL; no RL", "not used", "71 collars (holes)",
                 ("F01_collar_plan.sql", "F01_regional.sql")),
     "F02": Spec("F02", "O1", "FIGURE", "Drill-hole length distribution",
-                "Distribution of drilled lengths (max_depth) for 71 holes and per provisional drill line. "
+                "Distribution of drilled lengths (max_depth) for 71 holes and per approved drill line. "
                 "Total 1,910 m logged at 1-m support (interval count equals metres).",
                 "VERIFIED", "not used", "not used", "71 holes; 1,910 m", ("F02_hole_lengths.sql",)),
     "F03": Spec("F03", "O1", "FIGURE", "Completeness and QA/QC summary",
@@ -48,7 +48,7 @@ FIGURE_SPECS = {
                 ("F03_completeness.sql", "F03_qc_summary.sql")),
     "F04": Spec("F04", "O1", "FIGURE", "Three-dimensional drill traces and interval strips",
                 "A: interval midpoints in 3-D with RELATIVE Z (metres below collar), coloured by strict candidate "
-                "state. B: 1-m strips per hole by provisional line. Vertical positions are not elevations; "
+                "state. B: 1-m strips per hole by approved drill line. Vertical positions are not elevations; "
                 "no collar RL exists in the workbook.",
                 "PROVISIONAL", "relative Z only; surveyed elevation BLOCKED; DEM not drawn", "STRICT_SGS_v1 (PROPOSED)",
                 "1,910 intervals; 71 holes", ("F04_3d_intervals.sql", "F04_strip_logs.sql")),
@@ -70,11 +70,11 @@ FIGURE_SPECS = {
                 "all intervals per depth bin", ("F07_depth_weathering.sql",)),
     "F08": Spec("F08", "O2", "FIGURE", "Plan map of graphitic fraction",
                 "Collar plan coloured by strict graphitic fraction of logged metres; marker size shows logged "
-                "metres. Hollow markers: no Sgs logged. Drill-line labels are provisional (nominal Northing).",
+                "metres. Hollow markers: no Sgs logged. Drill-line labels are the approved nominal-Northing groups.",
                 "PROVISIONAL", "plan coordinates PROVISIONAL", "STRICT_SGS_v1 PROPOSED",
                 "logged metres per hole", ("F08_plan_graphite.sql", "F01_regional.sql", "F08_lines.sql")),
     "F09": Spec("F09", "O2", "FIGURE", "Relative-Z sections by drill line",
-                "Holes projected onto their provisional E-W drill line (all end-of-hole azimuths are 090). Points "
+                "Holes projected onto their approved E-W drill line (all end-of-hole azimuths are 090). Points "
                 "are logged 1-m midpoints with relative Z (metres from each collar). No geology is interpolated "
                 "between holes. The provisional DEM collar elevations are not drawn.",
                 "PROVISIONAL", "relative Z; DEM elevation not drawn", "STRICT_SGS_v1 PROPOSED",
@@ -94,7 +94,7 @@ TABLE_SPECS = {
                 ("T02_code_dictionary.sql", "T02_label_disagreement.sql")),
     "T03": Spec("T03", "O2", "TABLE", "Graphitic-domain evidence and ambiguity by hole and drill line",
                 "Part A: per hole metres for each indicator, Target B (DESIGN_8_2_v1) graphitic and ambiguous metres, unresolved metres, "
-                "conflicts and unresolved codes. Part B: the same by provisional drill line.",
+                "conflicts and unresolved codes. Part B: the same by approved drill line.",
                 "PROVISIONAL", "not used", "PROPOSED", "logged metres per hole and line",
                 ("T03_hole_evidence.sql", "T03_line_evidence.sql")),
     "T04": Spec("T04", "O1", "TABLE", "Trace-excluded sensitivity of the earlier candidate RECON_2OF3_v1",

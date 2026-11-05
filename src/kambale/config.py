@@ -26,8 +26,8 @@ REGIONAL_SHP = (
          r"GEOLOGY OF GHANA shapefile/GE0_KOA/GEOMAP1000_shp/Shapefiles/Geology/geology_polygon.shp")
 )
 
-# 1.2.0: provisional DEM collar elevations (migration 0014) and the QA wording that reports them.
-ETL_VERSION = "1.2.0"
+# 1.5.0: the approved UTM pair (migration 0016) is read by the build and the QC-COORD-PAIR check.
+ETL_VERSION = "1.5.0"
 CODE_VERSION = ETL_VERSION
 
 STAGE_STATUS = ("VERIFIED", "PROVISIONAL", "BLOCKED", "DEFERRED", "FAILED")

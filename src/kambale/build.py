@@ -175,6 +175,9 @@ def _full_build(conn, source_file_id, source_path, raw_copy, source_hash, key, c
         # ---- QA/QC ------------------------------------------------------------------------------------
         context = _qaqc_context(data, sheets, source_hash, pairs, pair_stats, nn, lines, regional_summary,
                                 interval_status, legend_rock)
+        context["approved_lines"] = _approved_lines(conn)
+        context["datum_verified"], context["datum_evidence"] = _datum_status(conn)
+        context["pair_approval"] = _pair_approval(conn)
         findings = qaqc.run_checks(data, evidence_rows, context)
         _insert_findings(conn, dv, findings)
 
@@ -273,6 +276,18 @@ def _insert_raw(conn, source_file_id, data) -> dict:
     return ids
 
 
+def _approved_lines(conn) -> dict[str, str]:
+    """Approved drill-line codes, with the approval time. Read from drill_line_approvals for every version."""
+    return {r[0]: r[1] for r in conn.execute("SELECT line_code, approved_utc FROM drill_line_approvals")}
+
+
+def _datum_status(conn) -> tuple[bool, str]:
+    """Whether the coordinate datum is verified, and the registry evidence. The registry is reference data, not versioned."""
+    status, evidence = conn.execute(
+        "SELECT datum_status, evidence FROM coordinate_system_registry WHERE crs_key = 'EPSG:32630'").fetchone()
+    return status == "VERIFIED", evidence
+
+
 def _insert_drill_lines(conn, dv, lines, data):
     counts = {}
     for interval in data.intervals:
@@ -282,11 +297,13 @@ def _insert_drill_lines(conn, dv, lines, data):
     for hole_id, info in lines.items():
         entry = by_line.setdefault(info["line_code"], {"nominal": info["nominal_northing_m"], "holes": 0})
         entry["holes"] += 1
+    approved = _approved_lines(conn)
     for code, entry in sorted(by_line.items()):
         conn.execute("INSERT INTO drill_lines (dataset_version_id, line_code, nominal_northing_m, n_holes, n_intervals, "
-                     "grouping_method, status) VALUES (?, ?, ?, ?, ?, ?, 'PROVISIONAL')",
+                     "grouping_method, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
                      (dv, code, entry["nominal"], entry["holes"], counts.get(code, 0),
-                      "Exact nominal Northing (Collars.Northing) cluster; not an approved spatial split"))
+                      "Exact nominal Northing (Collars.Northing) cluster",
+                      "APPROVED" if code in approved else "PROVISIONAL"))
 
 
 def _insert_holes(conn, dv, data, lines, raw_ids, dem_values):
@@ -436,6 +453,13 @@ def _insert_lithology(conn, dv, data, interval_ids) -> dict:
     return {"refinements": len(result["interval_rows"]), "dictionary": len(result["dictionary"])}
 
 
+def _pair_approval(conn):
+    """(approved_by, approved_utc) for the adopted UTM pair, or None. Read from coordinate_pair_approvals."""
+    return conn.execute(
+        "SELECT approved_by, approved_utc FROM coordinate_pair_approvals WHERE adopted_pair = 'UTM_EASTING_NORTHING'"
+    ).fetchone()
+
+
 def _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stats, coordinate, dem_values):
     crs_key = coordinate["crs_key"]
     conn.execute(
@@ -443,12 +467,14 @@ def _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stat
         "datum_name, datum_status, horizontal_units, evidence, status) VALUES "
         "('EPSG:32630', '32630', 'WGS 84 / UTM zone 30N (declared)', 'Transverse Mercator', '30N', 'UNVERIFIED', "
         "'UNVERIFIED', 'm', 'Collars.Grid = UTM_30N; regional geology_polygon.prj = WGS_1984_UTM_Zone_30N', 'PROVISIONAL')")
+    pair = _pair_approval(conn)
     cur = conn.execute(
         "INSERT INTO coordinate_decisions (dataset_version_id, adopted_pair, crs_key, units, transform_chain, rationale, "
-        "n_holes, median_pair_discrepancy_m, max_pair_discrepancy_m, status) VALUES (?, 'UTM_EASTING_NORTHING', ?, 'm', "
-        "?, ?, ?, ?, ?, 'PROVISIONAL')",
+        "n_holes, median_pair_discrepancy_m, max_pair_discrepancy_m, status, approved_by, approved_utc) "
+        "VALUES (?, 'UTM_EASTING_NORTHING', ?, 'm', ?, ?, ?, ?, ?, ?, ?, ?)",
         (dv, crs_key, coordinate["transform_chain"], " ".join(coordinate["rationale"].split()),
-         pair_stats["n"], pair_stats["median_m"], pair_stats["max_m"]))
+         pair_stats["n"], pair_stats["median_m"], pair_stats["max_m"],
+         "APPROVED" if pair else "PROVISIONAL", pair[0] if pair else None, pair[1] if pair else None))
     decision_id = cur.lastrowid
     cur = conn.execute(
         "INSERT INTO geometry_builds (dataset_version_id, coordinate_decision_id, elevation_source_id, method, "

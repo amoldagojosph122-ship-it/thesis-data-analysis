@@ -41,10 +41,9 @@ def write_reports(db_path: Path) -> dict:
 
 Generated {utc_now()} from `{db_path.relative_to(PROJECT_ROOT).as_posix() if db_path.is_relative_to(PROJECT_ROOT) else db_path}`.
 
-**Overall stage status: PROVISIONAL.** The ETL, integrity checks and reconciliation are verified. Coordinates,
-vertical positions, graphitic label rules and drill-line groups are provisional. No collar RL exists. A provisional
-DEM elevation is stored apart from the RL field, and no absolute 3-D product is made until an approved vertical
-source exists. No graphite assay exists, so no grade, tonnage or resource statement is made.
+**Overall stage status: PROVISIONAL.** The ETL, integrity checks and reconciliation are verified. The UTM coordinates and the WGS 84 datum are approved (2026-11-05). Vertical positions are provisional. The drill-line groups are approved (2026-11-05). Graphitic label rules other than DESIGN_8_2_v1 are provisional. No collar RL exists. The Copernicus
+DEM elevations were approved on 2026-11-05 as the provisional vertical source (Dickson Abdul-Wahab, 10:46:46 UTC) and
+are stored apart from the RL field. No graphite assay exists, so no grade, tonnage or resource statement is made.
 
 - Dataset version: `{key}` (label: {dv[2]}), ACTIVE, activated {dv[4]}.
 - Source workbook: `{source[0]}`, SHA-256 `{source[1]}`, {source[2]:,} bytes; raw copy `{source[3]}` (read-only, hash-checked).
@@ -100,11 +99,11 @@ source exists. No graphite assay exists, so no grade, tonnage or resource statem
 - Offsets: delta_E = m cos(d) sin(a), delta_N = m cos(d) cos(a), delta_Z = m sin(d); m = interval midpoint.
 - `z_relative_m` is stored relative to the collar. `z_absolute_m` is NULL for every interval (verified by `kambale verify`).
 - Surveyed elevation status: BLOCKED (no collar RL in the workbook; no DGPS supplied).
-- Provisional DEM elevation: Copernicus GLO-30 sampled at each collar (`holes.dem_elevation_m`, status PROVISIONAL);
+- Approved as the provisional vertical source on 2026-11-05 (Dickson Abdul-Wahab): Copernicus GLO-30 sampled at each collar (`holes.dem_elevation_m`, status PROVISIONAL);
   the interval values are `interval_coordinates.z_dem_absolute_m`. The DEM is a surface model that includes vegetation
   and buildings, so it is not a surveyed collar RL.
 
-## 5. Provisional drill lines and regional context
+## 5. Drill lines (approved nominal-Northing groups) and regional context
 
 """)
         sections.append(_md_table(["Line", "Nominal Northing (m)", "Holes", "Intervals", "Status"],
@@ -124,8 +123,8 @@ source exists. No graphite assay exists, so no grade, tonnage or resource statem
 
         sections.append("""## 7. Data problems and decisions still pending
 
-1. Coordinate datum and pair choice: confirm the UTM pair (adopted, provisional) or the Easting/Northing pair. 17 holes differ by more than 5 m.
-2. Collar RL: obtain the DGPS collar elevations, or approve the provisional DEM elevations as a vertical source. Until then, no absolute 3-D product is made.
+1. Coordinate pair: the UTM pair was approved on 2026-11-05. 17 holes differ by more than 5 m from the Easting/Northing pair; the difference is recorded, not corrected. The datum is confirmed as WGS 84 (2026-11-05).
+2. Collar RL: obtain the DGPS collar elevations. The DEM elevations are approved as the provisional vertical source (2026-11-05); a surveyed RL would replace them.
 3. Graphitic label rules: DESIGN_8_2_v1 (Target B) was approved on 2026-11-05 by Dickson Abdul-Wahab. STRICT_SGS_v1 (Target A) and the other candidate rules remain PROPOSED. The conflicts are listed in `ambiguity_review_intervals.csv`.
 4. Corrected from the original log on 2026-11-05: 12 intervals logged `fsc` (not in the legend, quartz mica schist comments) are now `Fsc` (felsic schist).
 5. Corrected from the original log on 2026-11-05: the blank rock code on 12KBRB 005 (8-9 m) is now `Sgs`, matching its comment.
@@ -224,10 +223,13 @@ def _deferred_markdown(key: str) -> str:
     for code, (objective, title, prerequisite) in DEFERRED_IDS.items():
         lines.append(f"| {code} | {objective} | {title} | {prerequisite} |")
     lines += ["", "## Gates that must pass before Stage B starts", "",
-              "1. A supervising geologist approves one graphitic label rule (`label_reviews`, decision APPROVE_RULE).",
-              "2. Collar coordinates and datum are confirmed, and the drill-line grouping is approved or replaced.",
-              "3. Collar RL is supplied with a vertical datum, or the DEM elevations are approved. Until then, all "
-              "vertical outputs remain relative and no georeferenced volume is claimed.",
+              "1. A supervising geologist approves one graphitic label rule (`label_reviews`, decision APPROVE_RULE). Done: "
+              "DESIGN_8_2_v1 (Target B), approved by Dickson Abdul-Wahab.",
+              "2. Collar coordinates and datum are confirmed, and the drill-line grouping is approved or replaced. Done: "
+              "the UTM pair was approved on 2026-11-05 (Dickson Abdul-Wahab). The datum was confirmed as WGS 84 on 2026-11-05 (Dickson Abdul-Wahab). The drill-line grouping was approved on 2026-11-05 (Dickson Abdul-Wahab).",
+              "3. Collar RL is supplied with a vertical datum, or the DEM elevations are approved. Done: the DEM elevations "
+              "were approved on 2026-11-05. No surveyed RL exists, so vertical outputs stay relative and no georeferenced "
+              "volume is claimed until gate 2 is closed.",
               "4. Stage B tables are populated only in their objective databases (`kambale_obj2_spatial.sqlite` "
               "and later). The blocking triggers in obj1_master must stay in place.",
               "5. Variograms and models are fitted only on training data inside each spatial fold. A variogram fitted "

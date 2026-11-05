@@ -81,7 +81,7 @@ CHECKS = [
      "Plausibility only; not datum verification", "pyproj UTM 30N to WGS 84 lat/lon"),
     ("QC-NN-SPACING", "Coordinates", "Median nearest-neighbour collar spacing", "INFO",
      "Recorded for grid support", "nearest neighbour on UTM pair"),
-    ("QC-LINES", "Geometry", "Nominal Northing groups and provisional drill lines", "WARNING",
+    ("QC-LINES", "Geometry", "Nominal Northing groups and drill lines", "WARNING",
      "Plan map shows lines as provisional", "distinct Northing values"),
     ("QC-REGIONAL", "Context", "Collars inside regional 1:1,000,000 polygons", "INFO",
      "Context only; not local geology", "shapely intersection"),
@@ -281,30 +281,42 @@ def run_checks(data: CuratedData, evidence: list[dict], context: dict) -> list[F
 
     # ---- coordinates -----------------------------------------------------------------------------------
     stats = context["pair_stats"]
-    add(_f("QC-COORD-PAIR", "WARNING", "PROVISIONAL", "FAIL" if stats["n_over_5m"] else "PASS",
+    pair_approved = context.get("pair_approval") is not None
+    pair_status = "APPROVED" if pair_approved else "PROVISIONAL"
+    add(_f("QC-COORD-PAIR", "WARNING", pair_status, "FAIL" if stats["n_over_5m"] else "PASS",
            n=stats["n_over_5m"],
            detail=(f"holes={stats['n']}; median separation={stats['median_m']} m; max={stats['max_m']} m; "
                    f"holes >5 m={stats['n_over_5m']}; mean dE={stats['mean_d_e_m']} m, dN={stats['mean_d_n_m']} m; "
                    f"sd dE={stats['sd_d_e_m']} m, dN={stats['sd_d_n_m']} m (no systematic shift)")))
     for row in context["pair_rows"]:
         if row["horizontal_m"] > 5.0:
-            add(_f("QC-COORD-PAIR", "WARNING", "PROVISIONAL", "FAIL", entity_type="HOLE", entity_key=row["hole_id"],
+            add(_f("QC-COORD-PAIR", "WARNING", pair_status, "FAIL", entity_type="HOLE", entity_key=row["hole_id"],
                    sheet="Collars", n=1, detail=f"pair separation {row['horizontal_m']:.2f} m",
-                   action="REVIEW_REQUIRED",
-                   rationale="Adopted UTM pair retained; alternate pair kept in holes; supervisor confirmation required"))
+                   action="NO_ACTION_REQUIRED" if pair_approved else "REVIEW_REQUIRED",
+                   rationale=("Adopted UTM pair approved; alternate pair kept in holes" if pair_approved else
+                              "Adopted UTM pair retained; alternate pair kept in holes; supervisor confirmation required")))
     grid = context["grid_nodes"]
     add(_f("QC-COORD-NODES", "INFO", "APPROVED", "PASS",
            detail=(f"Easting/Northing pair on 5 m nodes: {grid['alt_both']} of {grid['n']} holes; "
                    f"UTM pair on 5 m nodes: {grid['utm_both']} of {grid['n']} holes")))
     crs = context["crs_status"]
-    add(_f("QC-CRS", "WARNING", "PROVISIONAL", "FAIL", detail=crs))
+    datum_verified = context.get("datum_verified", False)
+    if datum_verified:
+        crs += "; datum confirmed: " + context["datum_evidence"].split(" | ")[-1]
+    add(_f("QC-CRS", "WARNING", "APPROVED" if datum_verified else "PROVISIONAL", "PASS" if datum_verified else "FAIL",
+           detail=crs))
     plaus = context["plausibility"]
     add(_f("QC-CRS-PLAUSIBILITY", "INFO", "APPROVED" if plaus["inside"] else "PROVISIONAL",
            "PASS" if plaus["inside"] else "FAIL", detail=plaus["text"]))
     add(_f("QC-NN-SPACING", "INFO", "APPROVED", "PASS", detail=f"median nearest-neighbour spacing={context['nn_median_m']:.2f} m"))
     lines = context["line_summary"]
-    add(_f("QC-LINES", "WARNING", "PROVISIONAL", "FAIL", n=len(lines),
-           detail="; ".join(f"{l['line_code']}: {l['n_holes']} holes" for l in lines)))
+    approved = context.get("approved_lines", {})
+    lines_approved = all(line["line_code"] in approved for line in lines)
+    detail = "; ".join(f"{l['line_code']}: {l['n_holes']} holes" for l in lines)
+    if lines_approved:
+        detail += "; approved as the drill-line grouping (drill_line_approvals)"
+    add(_f("QC-LINES", "WARNING", "APPROVED" if lines_approved else "PROVISIONAL", "PASS" if lines_approved else "FAIL",
+           n=len(lines), detail=detail))
     reg = context["regional"]
     add(_f("QC-REGIONAL", "INFO", "APPROVED", "PASS", n=reg["n_polygons"],
            detail=(f"regional polygons intersecting collar buffer={reg['n_polygons']}; "

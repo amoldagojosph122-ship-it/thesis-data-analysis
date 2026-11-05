@@ -30,8 +30,8 @@ LINE_COLOURS = [OI["blue"], OI["green"], OI["purple"], OI["orange"], OI["sky"]]
 STATE_COLOUR = {"POSITIVE": OI["vermillion"], "NEGATIVE": OI["sky"], "UNRESOLVED": "#BDBDBD"}
 WEATHER_COLOUR = {"cw": OI["purple"], "hw": OI["orange"], "mw": OI["green"], "sw": OI["blue"],
                   "MISSING": OI["grey"], "fr": OI["yellow"]}
-FOOTER_TEMPLATE = ("obj1_master {key} | DESIGN_8_2_v1 APPROVED; other label rules PROPOSED | coordinates PROVISIONAL "
-                   "(UTM 30N, datum unverified) | vertical = metres relative to collar (no collar RL)")
+FOOTER_TEMPLATE = ("obj1_master {key} | DESIGN_8_2_v1 APPROVED; other label rules PROPOSED | coordinates APPROVED "
+                   "(UTM 30N, datum WGS 84 confirmed) | vertical = metres relative to collar (no collar RL)")
 
 
 def footer(fig, key: str, extra: str = "") -> None:
@@ -100,7 +100,7 @@ def f01(rows: dict, key: str) -> list:
                for i, line in enumerate(lines)]
     handles.append(Polygon([(0, 0)], facecolor="#F3E3B5", edgecolor="#AAAAAA", label="bmbt biotite schist (regional)"))
     ax.legend(handles=handles, loc="upper left", frameon=False, fontsize=6)
-    ax.set_title("Collar locations by provisional drill line (alternate Easting/Northing pair differs by "
+    ax.set_title("Collar locations by approved drill line (alternate Easting/Northing pair differs by "
                  "median 3.2 m, max 13.3 m)", fontsize=7)
     header(fig, "F01", "Collar location map")
     fig.subplots_adjust(top=0.90, bottom=0.10, left=0.10, right=0.98)
@@ -122,7 +122,7 @@ def f02(rows: dict, key: str) -> list:
     b.boxplot(data, tick_labels=[ln.replace("NOM_N", "N") for ln in lines], patch_artist=True,
               boxprops=dict(facecolor="#D6EAF8"), medianprops=dict(color=OI["vermillion"]))
     b.set_ylabel("Drilled length (m)")
-    b.set_title("By provisional drill line")
+    b.set_title("By approved drill line")
     b.tick_params(axis="x", labelsize=6)
     total = sum(depths)
     summary = (f"n = {len(depths)} holes; total drilled = {total:.0f} m; mean = {total / len(depths):.1f} m; "
@@ -227,7 +227,7 @@ def _strip_figure(rows, key):
                               ("UNRESOLVED", "unresolved")) ]
     handles.append(Rectangle((0, 0), 1, 1, facecolor="white", edgecolor="black", hatch="//", label="code not in legend / blank"))
     axes[-1].legend(handles=handles, loc="lower right", frameon=False, fontsize=6)
-    header(fig, "F04", "B. Interval strips by provisional drill line (measured depth)")
+    header(fig, "F04", "B. Interval strips by approved drill line (measured depth)")
     fig.subplots_adjust(top=0.88, bottom=0.12, left=0.08, right=0.98, wspace=0.12)
     footer(fig, key, "columns = holes within each line; no interpolation between holes")
     return fig
@@ -352,9 +352,9 @@ def f08(rows: dict, key: str) -> list:
     handles.append(Polygon([(0, 0)], facecolor="#F3E3B5", edgecolor="#AAAAAA", label="bmbt biotite schist (regional)"))
     handles.append(Polygon([(0, 0)], facecolor="#EEEEEE", edgecolor="#AAAAAA", label="other regional units"))
     ax.legend(handles=handles, loc="upper right", frameon=False, fontsize=6)
-    header(fig, "F08", "Plan map of graphitic fraction by collar and provisional drill line")
+    header(fig, "F08", "Plan map of graphitic fraction by collar and approved drill line")
     fig.subplots_adjust(top=0.92, bottom=0.10, left=0.10, right=0.90)
-    footer(fig, key, "marker size proportional to logged metres; line labels provisional")
+    footer(fig, key, "marker size proportional to logged metres; drill-line groups approved")
     return [("F08_plan_graphitic_fraction", fig)]
 
 
@@ -387,7 +387,7 @@ def f09(rows: dict, key: str) -> list:
                for s, lbl in (("POSITIVE", "Sgs (strict)"), ("NEGATIVE", "other valid code"),
                               ("UNRESOLVED", "unresolved"))]
     axes[0].legend(handles=handles, loc="lower left", frameon=False, fontsize=6, ncol=3)
-    header(fig, "F09", "Relative-Z sections by provisional drill line (no interpolation)")
+    header(fig, "F09", "Relative-Z sections by approved drill line (no interpolation)")
     fig.subplots_adjust(top=0.94, bottom=0.09, left=0.10, right=0.98, hspace=0.55)
     footer(fig, key, "collar elevation assumed common; vertical axis is depth below collar")
     return [("F09_relative_sections", fig)]
