@@ -1,0 +1,9 @@
+**T03: Graphitic-domain evidence and ambiguity by hole and drill line [T03_line_evidence] (obj1_master c45b6dfe0519; PROVISIONAL where labels or coordinates are used)**
+
+| line_code | nominal_northing_m | n_holes | n_intervals | logged_m | sgs_m | recon_pos_m | recon_unresolved_m | conflict_n | unresolved_code_n |
+|---|---|---|---|---|---|---|---|---|---|
+| NOM_N1111930 | 1111930.0 | 3 | 84 | 84.0 | 29.0 | 29.0 | 0.0 | 0 | 0 |
+| NOM_N1112140 | 1112140.0 | 13 | 440 | 440.0 | 221.0 | 221.0 | 7.0 | 20 | 1 |
+| NOM_N1112500 | 1112500.0 | 21 | 542 | 542.0 | 130.0 | 138.0 | 9.0 | 38 | 0 |
+| NOM_N1112600 | 1112600.0 | 15 | 423 | 423.0 | 133.0 | 145.0 | 22.0 | 34 | 12 |
+| NOM_N1113000 | 1113000.0 | 19 | 421 | 421.0 | 16.0 | 29.0 | 21.0 | 34 | 0 |

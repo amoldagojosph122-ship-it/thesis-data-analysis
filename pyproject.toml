@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kambale-thesis"
+version = "1.0.0"
+description = "Objective 1 database-first pipeline and Stage A preliminary geology for the Kambale graphite thesis"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary (thesis work)" }
+dependencies = [
+    "pandas==2.3.3",
+    "numpy==2.4.6",
+    "openpyxl==3.1.5",
+    "matplotlib==3.11.1",
+    "scipy==1.18.0",
+    "pyproj==3.7.2",
+    "pyyaml==6.0.3",
+    "geopandas==1.1.4",
+    "shapely==2.1.2",
+    "pyogrio==0.13.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1"]
+interactive = ["plotly"]
+
+[project.scripts]
+kambale = "kambale.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,23 @@
+# Workbook, its copies and the database built from it (row-level thesis data).
+# Keep these out of the repository until the repository owner decides otherwise.
+*.xlsx
+*.xlsm
+*.sqlite
+*.sqlite-journal
+data/
+
+# Word documents: source material and generated forms, not repository content.
+*.docx
+
+# Local settings and environment
+.claude/
+.venv/
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+
+# Temporary files
+~$*
+*.tmp

@@ -1,0 +1,8 @@
+# Thresholds used by qaqc.py. Each value is recorded in qaqc_checks.method when a check runs.
+coordinate_pair_warning_m: 5.0          # WARNING when any hole differs by more than this between the two pairs
+coordinate_pair_info_m: 1.0             # INFO summary statistic threshold (count of holes above this)
+depth_tolerance_m: 0.000001
+dip_range_deg: [-90.0, 0.0]             # adopted convention: negative downward
+azimuth_range_deg: [0.0, 360.0]         # half-open interval [0, 360)
+bin_width_m: 5.0                        # depth bin width for F07 and the depth summaries
+regional_buffer_m: 10000.0              # buffer around collars for regional geology context
