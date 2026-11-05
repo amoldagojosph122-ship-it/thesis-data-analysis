@@ -1,0 +1,36 @@
+# Coordinate and geometry decisions for obj1_master (Stage A).
+# A decision is PROVISIONAL until a supervisor or survey source approves it. Changing a field here
+# changes the dataset_version_key, so a new dataset version is built and the previous one is archived.
+decision_id: COORD-S1-001
+status: PROVISIONAL
+adopted_pair: UTM_EASTING_NORTHING          # UTMEasting / UTMNorthing columns
+alternate_pair: EASTING_NORTHING            # Easting / Northing columns (retained, not used for geometry)
+crs_key: EPSG:32630
+crs_name: WGS 84 / UTM zone 30N (declared; datum unverified)
+declared_by:
+  - "Collars.Grid = UTM_30N for all 71 holes (workbook)"
+  - "geology_polygon.prj = WGS_1984_UTM_Zone_30N (regional shapefile)"
+datum_status: UNVERIFIED
+units: m
+transform_chain: "none; adopted columns used exactly as recorded"
+rationale: >-
+  The UTM-named pair is adopted as the provisional planimetric pair. The alternate pair takes
+  values on 5 m and 10 m nodes (consistent with planned collar positions), whereas the UTM pair
+  does not. This is an inference recorded as evidence, not proof. Horizontal discrepancy between
+  the pairs is reported with median and maximum statistics in coordinate_decisions.
+approved_by: null
+approved_utc: null
+geometry:
+  method: STRAIGHT_HOLE_EOH_ORIENTATION
+  dip_convention: "signed dip from horizontal; negative downward (Surveys.dip = -60 means 60 degrees below horizontal)"
+  azimuth_convention: "azimuth clockwise from north in degrees, 0 <= a < 360 (Surveys.azimuth = 90 means east)"
+  orientation_source: "Surveys sheet, single end-of-hole station per hole (depth = max_depth)"
+  orientation_status: PROVISIONAL
+  applied_to: "whole hole, from collar to end of hole (straight-hole assumption)"
+  vertical_reference: "relative to collar; collar RL absent (blocked for absolute elevation)"
+  formulas:
+    midpoint: "m = (DEPTH_FROM + DEPTH_TO) / 2"
+    delta_E: "m * cos(d) * sin(a)"
+    delta_N: "m * cos(d) * cos(a)"
+    delta_Z: "m * sin(d)"
+  rounding_m: 0.0001
