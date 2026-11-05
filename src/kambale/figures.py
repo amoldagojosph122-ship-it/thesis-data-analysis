@@ -30,7 +30,7 @@ LINE_COLOURS = [OI["blue"], OI["green"], OI["purple"], OI["orange"], OI["sky"]]
 STATE_COLOUR = {"POSITIVE": OI["vermillion"], "NEGATIVE": OI["sky"], "UNRESOLVED": "#BDBDBD"}
 WEATHER_COLOUR = {"cw": OI["purple"], "hw": OI["orange"], "mw": OI["green"], "sw": OI["blue"],
                   "MISSING": OI["grey"], "fr": OI["yellow"]}
-FOOTER_TEMPLATE = ("obj1_master {key} | label rules PROPOSED, not approved | coordinates PROVISIONAL "
+FOOTER_TEMPLATE = ("obj1_master {key} | DESIGN_8_2_v1 APPROVED; other label rules PROPOSED | coordinates PROVISIONAL "
                    "(UTM 30N, datum unverified) | vertical = metres relative to collar (no collar RL)")
 
 
@@ -246,6 +246,12 @@ def f05(rows: dict, key: str) -> list:
     y = list(range(len(labels)))
     a.barh(y, counts, color=colours)
     b.barh(y, metres, color=colours)
+    for yi, n in zip(y, counts):
+        a.text(n, yi, f" {n:,}", va="center", fontsize=5.5)
+    for yi, m in zip(y, metres):
+        b.text(m, yi, f" {m:,.0f}", va="center", fontsize=5.5)
+    a.set_xlim(0, max(counts) * 1.15)
+    b.set_xlim(0, max(metres) * 1.15)
     a.set_yticks(y)
     a.set_yticklabels(labels, fontsize=5.5)
     a.invert_yaxis()
@@ -267,7 +273,7 @@ def f06(rows: dict, key: str) -> list:
     fig, (a, b) = plt.subplots(1, 2, figsize=(7.4, 7.2), sharey=True, gridspec_kw={"width_ratios": [1.3, 1]})
     a.barh(y, [r["sgs_m"] for r in order], color=OI["vermillion"], label="Sgs, strict candidate (Target A)")
     a.barh(y, [r["design_pos_m"] for r in order], color="none", edgecolor=OI["blue"], linewidth=0.6,
-           hatch="..", label="DESIGN_8_2_v1 graphitic metres (Target B; proposed, not approved)")
+           hatch="..", label="DESIGN_8_2_v1 graphitic metres (Target B; approved 2026-11-05)")
     a.set_yticks(y)
     a.set_yticklabels(names, fontsize=4.6)
     a.invert_yaxis()
@@ -342,7 +348,10 @@ def f08(rows: dict, key: str) -> list:
     ax.tick_params(labelsize=6)
     ax.set_xlabel("Easting (m, UTM 30N; provisional)")
     ax.set_ylabel("Northing (m, UTM 30N; provisional)")
-    ax.legend(loc="upper right", frameon=False, fontsize=6)
+    handles, _ = ax.get_legend_handles_labels()
+    handles.append(Polygon([(0, 0)], facecolor="#F3E3B5", edgecolor="#AAAAAA", label="bmbt biotite schist (regional)"))
+    handles.append(Polygon([(0, 0)], facecolor="#EEEEEE", edgecolor="#AAAAAA", label="other regional units"))
+    ax.legend(handles=handles, loc="upper right", frameon=False, fontsize=6)
     header(fig, "F08", "Plan map of graphitic fraction by collar and provisional drill line")
     fig.subplots_adjust(top=0.92, bottom=0.10, left=0.10, right=0.90)
     footer(fig, key, "marker size proportional to logged metres; line labels provisional")

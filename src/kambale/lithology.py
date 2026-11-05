@@ -28,11 +28,11 @@ from pathlib import Path
 from openpyxl import load_workbook
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-# The read-only copy in data/raw is the verified source the database was built from.
-# The root workbook can be re-saved by hand, which changes its bytes but not its cells.
-DEFAULT_WORKBOOK = PROJECT_ROOT / "data" / "raw" / "Kambale RAB_Collar_Sampling_Geology_2012a.xlsx"
-WORKBOOK_SHA256 = "a449097f669b9a449d06acfdb31c62ccbc688936c90254a829ecade2b95dbfb6"
-LITHOLOGY_CONVENTION_VERSION = "LITHO-2026.11.05"
+# The read-only copy of the corrected workbook in data/raw is the verified source (six comments and the rock codes
+# of 13 intervals corrected 2026-11-05).
+DEFAULT_WORKBOOK = PROJECT_ROOT / "data" / "raw" / "Kambale RAB_Collar_Sampling_Geology_2012a_corrected_2026-11-05_rock_codes.xlsx"
+WORKBOOK_SHA256 = "4840a9917a11dac22b190609c71f4eb0e0491fe7ab306ca09b02521cf9bf5e5a"
+LITHOLOGY_CONVENTION_VERSION = "LITHO-2026.11.06"
 
 # Spelling corrections applied before matching. Each correction is noted.
 TYPO_FIXES = {
@@ -52,7 +52,7 @@ LITHOLOGY_PATTERNS = [
     (re.compile(r"saprolitic clay"), "Lcs"),
     (re.compile(r"transported gravels"), "Rgv"),
     (re.compile(r"sedimentary rock undifferentiated"), "Ssu"),
-    (re.compile(r"quartz mica schist"), "fsc"),
+    (re.compile(r"quartz mica schist"), "Fsc"),
 ]
 
 # Minerals already in a base code's name, so naming them again adds nothing.

@@ -1,4 +1,4 @@
-**T01: Workbook inventory, reconciliation and integrity checks [T01_reconciliation] (obj1_master 741da971d12c; PROVISIONAL where labels or coordinates are used)**
+**T01: Workbook inventory, reconciliation and integrity checks [T01_reconciliation] (obj1_master eefc5858c1ef; PROVISIONAL where labels or coordinates are used)**
 
 | item | observed | curated | reference |
 |---|---|---|---|
@@ -6,5 +6,5 @@
 | Surveys rows (raw) | 71 | 71 | 71 |
 | Logging rows (raw) | 1910 | 1910 | 1910 |
 | Logged metres (sum of 1-m intervals) | 1910 | 1910.0 | 1910 |
-| Intervals with rock_type1 = Sgs | 529 | 529 | 529 |
+| Intervals with rock_type1 = Sgs | 529 | 530 | 529 |
 | Holes intersecting Sgs | 42 | 42 | 42 |

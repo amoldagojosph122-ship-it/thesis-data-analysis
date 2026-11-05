@@ -22,7 +22,7 @@ from pathlib import Path
 import yaml
 from pyproj import Transformer
 
-from kambale import geometry, labels, lithology, qaqc, regional
+from kambale import dem, geometry, labels, lithology, qaqc, regional
 from kambale.config import CONFIG_DIR, DB_PATH, ETL_VERSION, PROJECT_ROOT, RAW_COPY_PATH, SOURCE_PATH
 from kambale.curate import curate
 from kambale.db import connect, fk_violations, integrity, migrate, sha256_text, utc_now
@@ -38,7 +38,7 @@ def _load_config() -> dict:
     thresholds = yaml.safe_load((CONFIG_DIR / "qaqc_thresholds.yaml").read_text(encoding="utf-8"))
     label_set_version, rules = labels.load_rules(CONFIG_DIR / "label_rules.yaml")
     return {"coordinate": coordinate, "thresholds": thresholds, "label_set_version": label_set_version,
-            "rules": rules}
+            "rules": rules, "dem": dem.load_config()}
 
 
 def dataset_version_key(source_sha256: str, config: dict) -> str:
@@ -50,6 +50,7 @@ def dataset_version_key(source_sha256: str, config: dict) -> str:
         "coordinate": config["coordinate"],
         "thresholds": config["thresholds"],
         "lithology_convention": lithology.convention_sha256(),
+        "dem": config["dem"],
     }
     return sha256_text(json.dumps(material, sort_keys=True, ensure_ascii=False))
 
@@ -152,7 +153,8 @@ def _full_build(conn, source_file_id, source_path, raw_copy, source_hash, key, c
 
         # ---- curated core ---------------------------------------------------------------------------------
         _insert_drill_lines(conn, dv, lines, data)
-        _insert_holes(conn, dv, data, lines, raw_ids)
+        dem_values = dem.collar_elevations(data.collars, config["dem"])
+        _insert_holes(conn, dv, data, lines, raw_ids, dem_values)
         survey_kind = _insert_surveys(conn, dv, data, raw_ids)
         _insert_codes(conn, dv, data)
         interval_ids = _insert_intervals(conn, dv, data, raw_ids)
@@ -165,7 +167,7 @@ def _full_build(conn, source_file_id, source_path, raw_copy, source_hash, key, c
 
         # ---- geometry -----------------------------------------------------------------------------
         build_id, geometry_count = _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stats,
-                                                    coordinate)
+                                                    coordinate, dem_values)
 
         # ---- regional context -----------------------------------------------------------------------
         regional_summary = _insert_regional(conn, data, config)
@@ -203,6 +205,7 @@ def _full_build(conn, source_file_id, source_path, raw_copy, source_hash, key, c
         "geometry_intervals": geometry_count, "qaqc_findings": len(findings), "receipts": receipts,
         "lithology_refinements": lithology_counts["refinements"],
         "lithology_dictionary": lithology_counts["dictionary"],
+        "dem_holes": len(dem_values),
         "quarantined": len(data.quarantine),
     }
     return {"status": "VERIFIED_NEW_VERSION", "dataset_version_id": dv, "dataset_version_key": key,
@@ -286,18 +289,19 @@ def _insert_drill_lines(conn, dv, lines, data):
                       "Exact nominal Northing (Collars.Northing) cluster; not an approved spatial split"))
 
 
-def _insert_holes(conn, dv, data, lines, raw_ids):
+def _insert_holes(conn, dv, data, lines, raw_ids, dem_values):
     for c in data.collars:
         info = lines[c["hole_id"]]
         conn.execute(
             "INSERT INTO holes (dataset_version_id, hole_id, raw_hole_id, raw_collars_id, hole_type, grid_label, "
             "easting_alt_m, northing_alt_m, utm_easting_m, utm_northing_m, line_code, rl_status, rl_m, max_depth_m, "
-            "project_code, prospect, contractor, logged_by, date_drilled, date_drilled_raw) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "project_code, prospect, contractor, logged_by, date_drilled, date_drilled_raw, dem_elevation_m, dem_status) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (dv, c["hole_id"], c["raw_hole_id"], raw_ids[("Collars", c["source_row"])], c["hole_type"],
              c["grid_label"], c["easting_alt_m"], c["northing_alt_m"], c["utm_easting_m"], c["utm_northing_m"],
              info["line_code"], c["rl_status"], c["rl_m"], c["max_depth_m"], c["project_code"], c["prospect"],
-             c["contractor"], c["logged_by"], c["date_drilled"], c["date_drilled_raw"]))
+             c["contractor"], c["logged_by"], c["date_drilled"], c["date_drilled_raw"],
+             dem_values.get(c["hole_id"]), "PROVISIONAL" if c["hole_id"] in dem_values else None))
 
 
 def _insert_surveys(conn, dv, data, raw_ids) -> dict[str, str]:
@@ -376,6 +380,7 @@ def _insert_labels(conn, dv, data, interval_ids, rules, legend_rock) -> list[dic
             "definition_sha256, status, created_utc) VALUES (?, ?, ?, ?, ?, 'PROPOSED', ?)",
             (rule.rule_id, rule.rule_version, rule.family, rule.description, rule.definition_sha256, utc_now()))
     evidence_out = []
+    rule_status = dict(conn.execute("SELECT rule_id, status FROM graphite_label_rules").fetchall())
     for i in data.intervals:
         status = labels.rock_status(i["rock_code_raw"], legend_rock)
         ev = labels.evidence(i, status)
@@ -393,8 +398,8 @@ def _insert_labels(conn, dv, data, interval_ids, rules, legend_rock) -> list[dic
             label, state = labels.rule_label(rule, ev)
             conn.execute(
                 "INSERT INTO interval_labels (dataset_version_id, interval_id, rule_id, label, label_state, "
-                "rule_status_at_derivation) VALUES (?, ?, ?, ?, ?, 'PROPOSED')",
-                (dv, interval_id, rule.rule_id, label, state))
+                "rule_status_at_derivation) VALUES (?, ?, ?, ?, ?, ?)",
+                (dv, interval_id, rule.rule_id, label, state, rule_status[rule.rule_id]))
         evidence_out.append({**ev, "interval_key": i["interval_key"], "source_row": i["source_row"]})
     return evidence_out
 
@@ -431,7 +436,7 @@ def _insert_lithology(conn, dv, data, interval_ids) -> dict:
     return {"refinements": len(result["interval_rows"]), "dictionary": len(result["dictionary"])}
 
 
-def _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stats, coordinate):
+def _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stats, coordinate, dem_values):
     crs_key = coordinate["crs_key"]
     conn.execute(
         "INSERT OR IGNORE INTO coordinate_system_registry (crs_key, authority_code, crs_name, projection, zone, "
@@ -469,9 +474,10 @@ def _insert_geometry(conn, dv, data, interval_ids, survey_kind, pairs, pair_stat
         conn.execute(
             "INSERT INTO interval_coordinates (geometry_build_id, interval_id, midpoint_m, dip_deg, azimuth_deg, "
             "delta_e_m, delta_n_m, delta_z_m, easting_m, northing_m, z_relative_m, z_reference, z_absolute_m, "
-            "elevation_source_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'RELATIVE_TO_COLLAR', NULL, 1)",
+            "elevation_source_id, z_dem_absolute_m) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'RELATIVE_TO_COLLAR', NULL, 1, ?)",
             (build_id, interval_ids[i["interval_key"]], i["midpoint_m"], s["dip_deg"], s["azimuth_deg"],
-             off.delta_e, off.delta_n, off.delta_z, round(e, 4), round(n, 4), off.delta_z))
+             off.delta_e, off.delta_n, off.delta_z, round(e, 4), round(n, 4), off.delta_z,
+             round(dem_values[i["hole_id"]] + off.delta_z, 4) if i["hole_id"] in dem_values else None))
         written += 1
     return build_id, written
 
@@ -542,8 +548,11 @@ def _qaqc_context(data, sheets, source_hash, pairs, pair_stats, nn, lines, regio
 
 def _insert_findings(conn, dv, findings):
     for check in qaqc.check_catalogue_rows():
-        conn.execute("INSERT OR IGNORE INTO qaqc_checks (check_id, category, description, default_severity, "
-                     "scope_if_failed, method) VALUES (?, ?, ?, ?, ?, ?)",
+        conn.execute("INSERT INTO qaqc_checks (check_id, category, description, default_severity, "
+                     "scope_if_failed, method) VALUES (?, ?, ?, ?, ?, ?) "
+                     "ON CONFLICT (check_id) DO UPDATE SET category = excluded.category, "
+                     "description = excluded.description, default_severity = excluded.default_severity, "
+                     "scope_if_failed = excluded.scope_if_failed, method = excluded.method",
                      (check["check_id"], check["category"], check["description"], check["default_severity"],
                       check["scope_if_failed"], check["method"]))
     now = utc_now()

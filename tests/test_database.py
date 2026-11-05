@@ -107,6 +107,40 @@ def test_no_collar_rl_and_all_label_rules_proposed(built_db):
         conn.close()
 
 
+def test_collar_dem_elevations_are_provisional_and_stored_apart_from_the_surveyed_rl(built_db):
+    conn = _conn(built_db)
+    try:
+        active = "(SELECT dataset_version_id FROM v_active_version)"
+        n, provisional, low, high = conn.execute(
+            "SELECT COUNT(*), SUM(dem_status = 'PROVISIONAL'), MIN(dem_elevation_m), MAX(dem_elevation_m) "
+            f"FROM holes WHERE dataset_version_id = {active} AND dem_elevation_m IS NOT NULL").fetchone()
+        assert (n, provisional) == (71, 71)
+        assert 260 < low < high < 330  # the collars lie between about 283 m and 312 m
+        assert conn.execute("SELECT COUNT(*) FROM interval_coordinates WHERE z_absolute_m IS NOT NULL").fetchone()[0] == 0
+        mismatched = conn.execute(
+            "SELECT COUNT(*) FROM interval_coordinates ic "
+            "JOIN geometry_builds gb ON gb.geometry_build_id = ic.geometry_build_id "
+            "JOIN logging_intervals li ON li.interval_id = ic.interval_id "
+            "JOIN holes h ON h.dataset_version_id = li.dataset_version_id AND h.hole_id = li.hole_id "
+            f"WHERE gb.dataset_version_id = {active} "
+            "AND ABS(ic.z_dem_absolute_m - (h.dem_elevation_m + ic.z_relative_m)) > 0.0001").fetchone()[0]
+        assert mismatched == 0
+    finally:
+        conn.close()
+
+
+def test_rock_codes_corrected_from_the_original_log_are_in_the_active_version(built_db):
+    conn = _conn(built_db)
+    try:
+        assert conn.execute("SELECT rock_code_raw FROM v_intervals WHERE hole_id = '12KBRB 005' "
+                            "AND depth_from_m = 8").fetchone() == ("Sgs",)
+        assert conn.execute("SELECT COUNT(*) FROM v_intervals WHERE rock_code_raw = 'fsc'").fetchone()[0] == 0
+        assert conn.execute("SELECT COUNT(*) FROM v_intervals WHERE hole_id = '12KBRB 061' AND rock_code_raw = 'Fsc' "
+                            "AND depth_from_m BETWEEN 1 AND 12").fetchone()[0] == 12
+    finally:
+        conn.close()
+
+
 def _active_intervals(conn):
     return conn.execute(
         "SELECT interval_key, hole_id, depth_from_m, depth_to_m, rock_code_raw, comment_raw FROM logging_intervals "
@@ -135,7 +169,7 @@ def test_lithology_rows_round_trip_the_module(built_db):
         conn.close()
 
 
-def test_lithology_counts_and_label_targets_are_unchanged(built_db):
+def test_lithology_counts_and_label_targets_on_the_current_workbook(built_db):
     conn = _conn(built_db)
     try:
         counts = dict(conn.execute(
@@ -144,27 +178,30 @@ def test_lithology_counts_and_label_targets_are_unchanged(built_db):
         assert counts["REFINED"] == 230
         assert counts["REFINED_GENERAL"] == 284
         assert counts["CONFLICT_REVIEW"] == 17
-        assert conn.execute("SELECT COUNT(*) FROM v_label_evidence WHERE is_sgs = 1").fetchone()[0] == 529
+        # 529 Sgs intervals in the earlier source, plus the blank code on 12KBRB 005 corrected to Sgs (decision D19).
+        assert conn.execute("SELECT COUNT(*) FROM v_label_evidence WHERE is_sgs = 1").fetchone()[0] == 530
     finally:
         conn.close()
 
 
-def test_blank_comments_are_warning_findings_that_need_review(built_db):
+def test_no_interval_comment_is_blank_in_the_corrected_workbook(built_db):
+    # The six blank comments were entered from the original log on 2026-11-05 (decision D15). A blank comment
+    # would give one WARNING per interval with REVIEW_REQUIRED, and a DATASET summary that is not a PASS.
     conn = _conn(built_db)
     try:
         active = "(SELECT dataset_version_id FROM v_active_version)"
-        rows = conn.execute(
-            "SELECT f.severity, r.action FROM qaqc_findings f "
-            "JOIN qaqc_resolutions r ON r.finding_id = f.finding_id "
-            "WHERE f.check_id = 'QC-COMMENT-MISSING' AND f.entity_type = 'INTERVAL' "
-            f"AND f.dataset_version_id = {active}").fetchall()
-        assert len(rows) == 6
-        assert {r[0] for r in rows} == {"WARNING"}
-        assert {r[1] for r in rows} == {"REVIEW_REQUIRED"}
+        blank = conn.execute(
+            f"SELECT COUNT(*) FROM logging_intervals WHERE dataset_version_id = {active} "
+            "AND (comment_raw IS NULL OR TRIM(comment_raw) = '')").fetchone()[0]
+        assert blank == 0
+        per_interval = conn.execute(
+            "SELECT COUNT(*) FROM qaqc_findings WHERE check_id = 'QC-COMMENT-MISSING' "
+            f"AND entity_type = 'INTERVAL' AND dataset_version_id = {active}").fetchone()[0]
+        assert per_interval == 0
         aggregate = conn.execute(
-            "SELECT severity FROM qaqc_findings WHERE check_id = 'QC-COMMENT-MISSING' "
+            "SELECT severity, status, result FROM qaqc_findings WHERE check_id = 'QC-COMMENT-MISSING' "
             f"AND entity_type = 'DATASET' AND dataset_version_id = {active}").fetchone()
-        assert aggregate[0] == "WARNING"
+        assert aggregate == ("WARNING", "APPROVED", "PASS")
     finally:
         conn.close()
 
@@ -180,16 +217,18 @@ def test_lithology_rows_carry_the_convention_digest(built_db):
         conn.close()
 
 
-def test_design_rule_counts_match_the_review_form_and_earlier_rules_are_unchanged(built_db):
+def test_design_rule_counts_on_the_current_workbook(built_db):
     conn = _conn(built_db)
     try:
         def counts(rule_id):
             return dict(conn.execute(
                 "SELECT label_state, COUNT(*) FROM v_label_candidates WHERE rule_id = ? GROUP BY label_state",
                 (rule_id,)).fetchall())
-        assert counts("DESIGN_8_2_v1") == {"POSITIVE": 524, "NEGATIVE": 1289, "AMBIGUOUS": 81, "UNRESOLVED": 16}
-        assert counts("STRICT_SGS_v1") == {"POSITIVE": 529, "NEGATIVE": 1368, "UNRESOLVED": 13}
-        assert counts("RECON_2OF3_v1") == {"POSITIVE": 562, "NEGATIVE": 1289, "UNRESOLVED": 59}
+        # Rock codes corrected from the original log (decision D19): the 12 "fsc" intervals are Fsc, and the blank
+        # code on 12KBRB 005 (8-9 m) is Sgs with a graphitic comment. Target A and Target B leave none unresolved.
+        assert counts("DESIGN_8_2_v1") == {"POSITIVE": 525, "NEGATIVE": 1304, "AMBIGUOUS": 81}
+        assert counts("STRICT_SGS_v1") == {"POSITIVE": 530, "NEGATIVE": 1380}
+        assert counts("RECON_2OF3_v1") == {"POSITIVE": 563, "NEGATIVE": 1304, "UNRESOLVED": 43}
         ambiguous_rules = {r[0] for r in conn.execute(
             "SELECT DISTINCT rule_id FROM v_label_candidates WHERE label_state = 'AMBIGUOUS'")}
         assert ambiguous_rules == {"DESIGN_8_2_v1"}
@@ -204,8 +243,8 @@ def test_target_b_outputs_use_the_design_rule(built_db):
     try:
         totals = ("SELECT ROUND(SUM(design_pos_m), 3), ROUND(SUM(design_ambiguous_m), 3), "
                   "ROUND(SUM(design_unresolved_m), 3) FROM ")
-        assert conn.execute(totals + "v_hole_design").fetchone() == (524.0, 81.0, 16.0)
-        assert conn.execute(totals + "v_line_design").fetchone() == (524.0, 81.0, 16.0)
-        assert conn.execute("SELECT ROUND(SUM(recon_pos_m), 3) FROM v_hole_graphite").fetchone()[0] == 562.0
+        assert conn.execute(totals + "v_hole_design").fetchone() == (525.0, 81.0, 0.0)
+        assert conn.execute(totals + "v_line_design").fetchone() == (525.0, 81.0, 0.0)
+        assert conn.execute("SELECT ROUND(SUM(recon_pos_m), 3) FROM v_hole_graphite").fetchone()[0] == 563.0
     finally:
         conn.close()

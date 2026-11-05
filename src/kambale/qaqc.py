@@ -64,7 +64,7 @@ CHECKS = [
     ("QC-SURVEY-UNIFORM", "Survey", "Dip and azimuth identical across all holes", "WARNING",
      "Nominal orientation assumed; geometry PROVISIONAL", "distinct value count"),
     ("QC-RL", "Vertical", "Collar RL present", "WARNING",
-     "Absolute elevation BLOCKED; relative Z only", "blank RL test"),
+     "Absolute elevation BLOCKED; DEM elevation PROVISIONAL; relative Z only", "blank RL test"),
     ("QC-CONTRACTOR", "Metadata", "Contractor blank in source", "INFO",
      "None (not used)", "blank-cell test"),
     ("QC-PROJECT", "Metadata", "Project code inconsistent with prospect", "WARNING",
@@ -261,7 +261,7 @@ def run_checks(data: CuratedData, evidence: list[dict], context: dict) -> list[F
     rl_blank = [c["hole_id"] for c in data.collars if c["rl_status"] == "MISSING"]
     add(_f("QC-RL", "WARNING", "BLOCKED" if rl_blank else "APPROVED", "FAIL" if rl_blank else "PASS",
            n=len(rl_blank), detail=f"collar RL missing for {len(rl_blank)} of {len(data.collars)} holes; "
-                                   f"absolute elevation BLOCKED; relative Z only"))
+                                   f"absolute elevation BLOCKED; DEM elevation PROVISIONAL; relative Z only"))
     contractor_blank = sum(1 for c in data.collars if c["contractor"] is None)
     add(_f("QC-CONTRACTOR", "INFO", "PROVISIONAL" if contractor_blank else "APPROVED",
            "FAIL" if contractor_blank else "PASS", n=contractor_blank,
@@ -381,11 +381,13 @@ def run_checks(data: CuratedData, evidence: list[dict], context: dict) -> list[F
     expected = {3: THESIS_EXPECTED["evidence_3"], 2: THESIS_EXPECTED["evidence_2"],
                 1: THESIS_EXPECTED["evidence_1"], 0: THESIS_EXPECTED["evidence_0"]}
     same_recon = all(patterns.get(k, 0) == v for k, v in expected.items())
+    difference = ", ".join(f"{k}={patterns.get(k, 0) - v:+d}" for k, v in expected.items())
     add(_f("QC-LABEL-RECON", "INFO", "APPROVED" if same_recon else "PROVISIONAL", "PASS" if same_recon else "FAIL",
            n=len(evidence), detail=("evidence distribution by positive indicators: "
                                     + ", ".join(f"{k}={patterns.get(k, 0)}" for k in (3, 2, 1, 0))
                                     + f"; ThesisDesign.docx expectation 476/87/43/1304 "
-                                    + ("reproduced" if same_recon else "NOT reproduced; difference must be explained"))))
+                                    + ("reproduced" if same_recon
+                                       else f"NOT reproduced (difference {difference}); difference must be explained"))))
     sgs_n = sum(1 for e in evidence if e["is_sgs"] == 1)
     add(_f("QC-SGS-COUNT", "INFO", "APPROVED" if sgs_n == THESIS_EXPECTED["sgs_intervals"] else "PROVISIONAL",
            "PASS" if sgs_n == THESIS_EXPECTED["sgs_intervals"] else "FAIL", n=sgs_n,

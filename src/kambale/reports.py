@@ -42,8 +42,9 @@ def write_reports(db_path: Path) -> dict:
 Generated {utc_now()} from `{db_path.relative_to(PROJECT_ROOT).as_posix() if db_path.is_relative_to(PROJECT_ROOT) else db_path}`.
 
 **Overall stage status: PROVISIONAL.** The ETL, integrity checks and reconciliation are verified. Coordinates,
-vertical positions, graphitic label rules and drill-line groups are provisional. No collar RL exists, so no
-absolute 3-D product is produced. No graphite assay exists, so no grade, tonnage or resource statement is made.
+vertical positions, graphitic label rules and drill-line groups are provisional. No collar RL exists. A provisional
+DEM elevation is stored apart from the RL field, and no absolute 3-D product is made until an approved vertical
+source exists. No graphite assay exists, so no grade, tonnage or resource statement is made.
 
 - Dataset version: `{key}` (label: {dv[2]}), ACTIVE, activated {dv[4]}.
 - Source workbook: `{source[0]}`, SHA-256 `{source[1]}`, {source[2]:,} bytes; raw copy `{source[3]}` (read-only, hash-checked).
@@ -98,7 +99,10 @@ absolute 3-D product is produced. No graphite assay exists, so no grade, tonnage
 - Method: straight-hole, single end-of-hole orientation (dip -60, azimuth 090 at all holes). PROVISIONAL.
 - Offsets: delta_E = m cos(d) sin(a), delta_N = m cos(d) cos(a), delta_Z = m sin(d); m = interval midpoint.
 - `z_relative_m` is stored relative to the collar. `z_absolute_m` is NULL for every interval (verified by `kambale verify`).
-- Elevation status: BLOCKED (no collar RL in the workbook; no DGPS or DEM supplied).
+- Surveyed elevation status: BLOCKED (no collar RL in the workbook; no DGPS supplied).
+- Provisional DEM elevation: Copernicus GLO-30 sampled at each collar (`holes.dem_elevation_m`, status PROVISIONAL);
+  the interval values are `interval_coordinates.z_dem_absolute_m`. The DEM is a surface model that includes vegetation
+  and buildings, so it is not a surveyed collar RL.
 
 ## 5. Provisional drill lines and regional context
 
@@ -121,10 +125,10 @@ absolute 3-D product is produced. No graphite assay exists, so no grade, tonnage
         sections.append("""## 7. Data problems and decisions still pending
 
 1. Coordinate datum and pair choice: confirm the UTM pair (adopted, provisional) or the Easting/Northing pair. 17 holes differ by more than 5 m.
-2. Collar RL: obtain the DGPS collar elevations or approve a DEM method. Until then, no absolute elevation exists.
-3. Graphitic label rule: a supervising geologist must review the six candidate rules and the 126 conflicts (`ambiguity_review_intervals.csv`).
-4. Unsupported rock code `fsc` (12 intervals, quartz mica schist comments) is not mapped. It is not assumed to equal `Fsc`.
-5. One interval has a blank rock code (12KBRB 005, 8-9 m) with graphite mineral and comment evidence.
+2. Collar RL: obtain the DGPS collar elevations, or approve the provisional DEM elevations as a vertical source. Until then, no absolute 3-D product is made.
+3. Graphitic label rules: DESIGN_8_2_v1 (Target B) was approved on 2026-11-05 by Dickson Abdul-Wahab. STRICT_SGS_v1 (Target A) and the other candidate rules remain PROPOSED. The conflicts are listed in `ambiguity_review_intervals.csv`.
+4. Corrected from the original log on 2026-11-05: 12 intervals logged `fsc` (not in the legend, quartz mica schist comments) are now `Fsc` (felsic schist).
+5. Corrected from the original log on 2026-11-05: the blank rock code on 12KBRB 005 (8-9 m) is now `Sgs`, matching its comment.
 6. Dip and azimuth are a single end-of-hole nominal orientation; SurveyedBy and Instrument are blank.
 7. The project label `Akoko` appears on five holes within the KAMBALE prospect.
 8. Intensity (`alt_min1int`) and grain-size (`grainsize`) values have no documented units; they are not used in any derivation.
@@ -222,7 +226,7 @@ def _deferred_markdown(key: str) -> str:
     lines += ["", "## Gates that must pass before Stage B starts", "",
               "1. A supervising geologist approves one graphitic label rule (`label_reviews`, decision APPROVE_RULE).",
               "2. Collar coordinates and datum are confirmed, and the drill-line grouping is approved or replaced.",
-              "3. Collar RL is supplied with a vertical datum, or a DEM method is approved. Until then, all "
+              "3. Collar RL is supplied with a vertical datum, or the DEM elevations are approved. Until then, all "
               "vertical outputs remain relative and no georeferenced volume is claimed.",
               "4. Stage B tables are populated only in their objective databases (`kambale_obj2_spatial.sqlite` "
               "and later). The blocking triggers in obj1_master must stay in place.",

@@ -50,7 +50,7 @@ FIGURE_SPECS = {
                 "A: interval midpoints in 3-D with RELATIVE Z (metres below collar), coloured by strict candidate "
                 "state. B: 1-m strips per hole by provisional line. Vertical positions are not elevations; "
                 "no collar RL exists in the workbook.",
-                "PROVISIONAL", "relative Z only; absolute elevation BLOCKED", "STRICT_SGS_v1 (PROPOSED)",
+                "PROVISIONAL", "relative Z only; surveyed elevation BLOCKED; DEM not drawn", "STRICT_SGS_v1 (PROPOSED)",
                 "1,910 intervals; 71 holes", ("F04_3d_intervals.sql", "F04_strip_logs.sql")),
     "F05": Spec("F05", "O2", "FIGURE", "Lithology frequency and logged metres",
                 "Frequency of each rock_type1 code as logged (count and metres). Grey bars are codes not in the "
@@ -58,10 +58,10 @@ FIGURE_SPECS = {
                 "VERIFIED", "not used", "codes as logged", "1,910 intervals; 1,910 m",
                 ("F05_rock_usage.sql", "F05_missing_codes.sql")),
     "F06": Spec("F06", "O2", "FIGURE", "Graphitic apparent thickness and proportion by hole",
-                "Strict graphitic (rock_type1 = Sgs) apparent along-hole metres by hole, with the proposed "
+                "Strict graphitic (rock_type1 = Sgs) apparent along-hole metres by hole, with the approved "
                 "Target B (DESIGN_8_2_v1) graphitic metres outlined. Denominator: logged metres per hole. Thickness is apparent, "
                 "not true stratigraphic thickness. Logged indicators are not graphite assays.",
-                "PROVISIONAL", "not used", "STRICT_SGS_v1 PROPOSED; DESIGN_8_2_v1 PROPOSED",
+                "PROVISIONAL", "not used", "STRICT_SGS_v1 PROPOSED; DESIGN_8_2_v1 APPROVED",
                 "logged metres per hole (sum 1,910 m)", ("F06_hole_graphite.sql",)),
     "F07": Spec("F07", "O2", "FIGURE", "Graphitic intervals by depth and weathering",
                 "Strict graphitic intervals per 5-m measured-depth bin, stacked by weathering class. The black "
@@ -75,9 +75,9 @@ FIGURE_SPECS = {
                 "logged metres per hole", ("F08_plan_graphite.sql", "F01_regional.sql", "F08_lines.sql")),
     "F09": Spec("F09", "O2", "FIGURE", "Relative-Z sections by drill line",
                 "Holes projected onto their provisional E-W drill line (all end-of-hole azimuths are 090). Points "
-                "are logged 1-m midpoints with relative Z. No geology is interpolated between holes; a common "
-                "collar elevation is assumed because collar RL is absent.",
-                "PROVISIONAL", "relative Z; common collar datum assumed", "STRICT_SGS_v1 PROPOSED",
+                "are logged 1-m midpoints with relative Z (metres from each collar). No geology is interpolated "
+                "between holes. The provisional DEM collar elevations are not drawn.",
+                "PROVISIONAL", "relative Z; DEM elevation not drawn", "STRICT_SGS_v1 PROPOSED",
                 "1,910 intervals across 5 lines", ("F09_sections.sql",)),
 }
 
@@ -116,7 +116,8 @@ DEFERRED_IDS = {
     "D09": ("O5", "Predictive probability volumes and 3-D graphitic probability", "Stage B; needs final model and approved geometry"),
     "D10": ("O5", "Entropy maps and uncertainty volumes", "Stage B; needs probability volumes"),
     "D11": ("O5", "Sequential indicator simulation realizations", "Stage B; needs SIS validation gates"),
-    "D12": ("O1", "Absolute 3-D elevation model and georeferenced volume", "Needs approved collar RL or DEM with vertical datum"),
+    "D12": ("O1", "Absolute 3-D elevation model and georeferenced volume",
+            "Needs an approved collar RL, or an approved DEM method with a verified vertical datum"),
     "D13": ("O1", "Grade, tonnage or resource estimates", "Not in scope: no graphite assays or TGC in workbook"),
 }
 

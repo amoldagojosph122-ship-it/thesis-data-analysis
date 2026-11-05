@@ -1,15 +1,11 @@
-**T02: Lithological code dictionary and graphitic-evidence disagreement [T02_label_disagreement] (obj1_master 741da971d12c; PROVISIONAL where labels or coordinates are used)**
+**T02: Lithological code dictionary and graphitic-evidence disagreement [T02_label_disagreement] (obj1_master eefc5858c1ef; PROVISIONAL where labels or coordinates are used)**
 
 | evidence_pattern | label_review_status | n_intervals | logged_m |
 |---|---|---|---|
-| NONE | CONSISTENT_NEGATIVE | 1289 | 1289.0 |
-| SGS+GR+CMT | CONSISTENT_POSITIVE | 476 | 476.0 |
+| NONE | CONSISTENT_NEGATIVE | 1304 | 1304.0 |
+| SGS+GR+CMT | CONSISTENT_POSITIVE | 480 | 480.0 |
 | SGS+CMT | CONFLICT_REVIEW_REQUIRED | 45 | 45.0 |
 | CMT | CONFLICT_REVIEW_REQUIRED | 37 | 37.0 |
 | GR+CMT | CONFLICT_REVIEW_REQUIRED | 33 | 33.0 |
-| NONE/ROCK_UNSUPPORTED | UNRESOLVED_CODE | 12 | 12.0 |
 | GR | CONFLICT_REVIEW_REQUIRED | 6 | 6.0 |
 | SGS+GR | CONFLICT_REVIEW_REQUIRED | 5 | 5.0 |
-| NONE | UNRESOLVED_NO_COMMENT | 3 | 3.0 |
-| SGS+GR | UNRESOLVED_PARTIAL_EVIDENCE | 3 | 3.0 |
-| GR+CMT/ROCK_MISSING | UNRESOLVED_CODE | 1 | 1.0 |

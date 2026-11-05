@@ -1,16 +1,15 @@
-**T02: Lithological code dictionary and graphitic-evidence disagreement [T02_code_dictionary] (obj1_master 741da971d12c; PROVISIONAL where labels or coordinates are used)**
+**T02: Lithological code dictionary and graphitic-evidence disagreement [T02_code_dictionary] (obj1_master eefc5858c1ef; PROVISIONAL where labels or coordinates are used)**
 
 | code | legend_description | code_status | n_intervals | logged_m |
 |---|---|---|---|---|
-| fsc |  | UNSUPPORTED | 12 | 12.0 |
 | Sbs | meta-sediment biotite schist | VALID | 586 | 586.0 |
-| Sgs | meta-sediment graphite schist | VALID | 529 | 529.0 |
+| Sgs | meta-sediment graphite schist | VALID | 530 | 530.0 |
 | Rso | Soil/Loam general | VALID | 284 | 284.0 |
 | Lcs | Clay - saprolitic | VALID | 246 | 246.0 |
 | Sqs | Quartz sericite schist/rock | VALID | 171 | 171.0 |
 | Fpg | pegmatite | VALID | 64 | 64.0 |
 | Ssu | Sedimentary rock undifferentiated | VALID | 16 | 16.0 |
-| Fsc | Felsic schist | VALID | 1 | 1.0 |
+| Fsc | Felsic schist | VALID | 13 | 13.0 |
 | Fda | Dacite | VALID | 0 | 0.0 |
 | Fgd | Granodiorite | VALID | 0 | 0.0 |
 | Fgn | Felsic gneiss | VALID | 0 | 0.0 |

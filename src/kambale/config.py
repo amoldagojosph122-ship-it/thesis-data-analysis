@@ -9,7 +9,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_NAME = "Kambale RAB_Collar_Sampling_Geology_2012a.xlsx"
 SOURCE_PATH = PROJECT_ROOT / "Kambale RAB_Collar_Sampling_Geology_2012a.xlsx"
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
-RAW_COPY_PATH = RAW_DIR / "Kambale RAB_Collar_Sampling_Geology_2012a.xlsx"
+# Verified, read-only copy of the corrected workbook (six comments and 13 rock codes corrected on 2026-11-05).
+# The original copy, Kambale RAB_Collar_Sampling_Geology_2012a.xlsx, is kept unchanged as an archive.
+RAW_COPY_PATH = RAW_DIR / "Kambale RAB_Collar_Sampling_Geology_2012a_corrected_2026-11-05_rock_codes.xlsx"
 DERIVED_DIR = PROJECT_ROOT / "data" / "derived"
 DB_PATH = PROJECT_ROOT / "database" / "kambale_thesis.sqlite"
 MIGRATIONS_DIR = PROJECT_ROOT / "migrations"
@@ -24,7 +26,8 @@ REGIONAL_SHP = (
          r"GEOLOGY OF GHANA shapefile/GE0_KOA/GEOMAP1000_shp/Shapefiles/Geology/geology_polygon.shp")
 )
 
-ETL_VERSION = "1.1.0"
+# 1.2.0: provisional DEM collar elevations (migration 0014) and the QA wording that reports them.
+ETL_VERSION = "1.2.0"
 CODE_VERSION = ETL_VERSION
 
 STAGE_STATUS = ("VERIFIED", "PROVISIONAL", "BLOCKED", "DEFERRED", "FAILED")

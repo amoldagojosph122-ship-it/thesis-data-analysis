@@ -1,4 +1,4 @@
-**T04: Trace-excluded sensitivity of the earlier candidate RECON_2OF3_v1 [T04_by_hole] (obj1_master 741da971d12c; PROVISIONAL where labels or coordinates are used)**
+**T04: Trace-excluded sensitivity of the earlier candidate RECON_2OF3_v1 [T04_by_hole] (obj1_master eefc5858c1ef; PROVISIONAL where labels or coordinates are used)**
 
 | hole_id | line_code | logged_m | n_changed | recon_positive_m | notrace_positive_m |
 |---|---|---|---|---|---|
@@ -19,7 +19,7 @@
 | 12KBRB 002 | NOM_N1112140 | 63.0 | 0 | 39.0 | 39.0 |
 | 12KBRB 003 | NOM_N1112140 | 37.0 | 0 | 29.0 | 29.0 |
 | 12KBRB 004 | NOM_N1112140 | 35.0 | 0 | 8.0 | 8.0 |
-| 12KBRB 005 | NOM_N1112140 | 26.0 | 0 | 15.0 | 15.0 |
+| 12KBRB 005 | NOM_N1112140 | 26.0 | 0 | 16.0 | 16.0 |
 | 12KBRB 006 | NOM_N1112140 | 33.0 | 0 | 14.0 | 14.0 |
 | 12KBRB 007 | NOM_N1112140 | 32.0 | 0 | 12.0 | 12.0 |
 | 12KBRB 008 | NOM_N1112140 | 24.0 | 0 | 2.0 | 2.0 |

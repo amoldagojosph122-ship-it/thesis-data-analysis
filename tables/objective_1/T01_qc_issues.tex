@@ -1,11 +1,11 @@
 \begin{table}[htbp]
 \centering
-\caption{T01: Workbook inventory, reconciliation and integrity checks [T01\_qc\_issues] (obj1\_master 741da971d12c; PROVISIONAL where labels or coordinates are used)}
+\caption{T01: Workbook inventory, reconciliation and integrity checks [T01\_qc\_issues] (obj1\_master eefc5858c1ef; PROVISIONAL where labels or coordinates are used)}
 \begin{tabular}{lllllll}
 \toprule
 check\_id & category & severity & status & result & n\_records & description \\
 \midrule
-QC-CODE-ROCK-UNSUPPORTED & Codes & ERROR & BLOCKED & FAIL & 12 & rock\_type1 code not in logging legend \\
+QC-CODE-ROCK-UNSUPPORTED & Codes & ERROR & APPROVED & PASS & 0 & rock\_type1 code not in logging legend \\
 QC-DATE & Metadata & ERROR & APPROVED & PASS & 71 & DateDrilled parses under the explicit format \%d-\%m-\%Y \\
 QC-DEPTH-INTERVAL & Depth & ERROR & APPROVED & PASS & 0 & Non-numeric, negative or DEPTH\_FROM >= DEPTH\_TO intervals \\
 QC-DUP-LOG & Duplicates & ERROR & APPROVED & PASS & 0 & Duplicate logging interval (hole, DEPTH\_FROM) \\
@@ -17,9 +17,7 @@ QC-OVERLAP & Depth & ERROR & APPROVED & PASS & 0 & Overlapping logging intervals
 QC-QUARANTINE & Curation & ERROR & APPROVED & PASS & 0 & Records excluded from curated tables by a hard rule \\
 QC-SRC-HASH & Provenance & ERROR & APPROVED & PASS & 0 & Workbook SHA-256 equals raw copy SHA-256 \\
 QC-SURVEY-RANGE & Survey & ERROR & APPROVED & PASS & 0 & Dip outside [-90, 0] or azimuth outside [0, 360) \\
-QC-CODE-ROCK-MISSING & Codes & WARNING & PROVISIONAL & FAIL & 1 & rock\_type1 blank \\
 QC-CODE-WEATHER-MISSING & Codes & WARNING & PROVISIONAL & FAIL & 21 & weathering blank \\
-QC-COMMENT-MISSING & Codes & WARNING & PROVISIONAL & FAIL & 6 & Comment blank \\
 QC-COMMENT-TRACE & Labels & WARNING & PROVISIONAL & FAIL & 56 & Graphite comment qualified by 'trace' (false-positive review) \\
 QC-COORD-PAIR & Coordinates & WARNING & PROVISIONAL & FAIL & 17 & Discrepancy between UTM and Easting/Northing pairs \\
 QC-CRS & Coordinates & WARNING & PROVISIONAL & FAIL & 0 & CRS declared and datum verified \\
@@ -35,6 +33,8 @@ QC-SURVEY-STATIONS & Survey & WARNING & PROVISIONAL & FAIL & 71 & Number and typ
 QC-SURVEY-UNIFORM & Survey & WARNING & PROVISIONAL & FAIL & 71 & Dip and azimuth identical across all holes \\
 QC-CODE-COLOUR-MISSING & Codes & INFO & PROVISIONAL & FAIL & 6 & colour1 blank \\
 QC-CONTRACTOR & Metadata & INFO & PROVISIONAL & FAIL & 71 & Contractor blank in source \\
+QC-LABEL-RECON & Labels & INFO & PROVISIONAL & FAIL & 1910 & Evidence distribution versus ThesisDesign.docx \\
+QC-SGS-COUNT & Labels & INFO & PROVISIONAL & FAIL & 530 & Sgs interval count versus ThesisDesign.docx \\
 \bottomrule
 \end{tabular}
 \end{table}

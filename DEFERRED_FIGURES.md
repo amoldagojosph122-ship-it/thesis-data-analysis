@@ -1,6 +1,6 @@
 # Deferred figures and tables (Stage B and out-of-scope items)
 
-Dataset 741da971d12cfaf269e421d2094709031f911e00c803a004e907f743a1067796. These items are NOT produced in Stage A. Each has a registry row with stage status `DEFERRED` in `figure_registry`, and no output file exists for it.
+Dataset eefc5858c1ef559fba8cd6188b33583b14c614921e27e785230cbe80f5cae3b3. These items are NOT produced in Stage A. Each has a registry row with stage status `DEFERRED` in `figure_registry`, and no output file exists for it.
 
 The Stage A figure catalogue (F01-F09, T01-T03) is complete for the data-supported items. Only the items below are deferred.
 
@@ -17,13 +17,13 @@ The Stage A figure catalogue (F01-F09, T01-T03) is complete for the data-support
 | D09 | O5 | Predictive probability volumes and 3-D graphitic probability | Stage B; needs final model and approved geometry |
 | D10 | O5 | Entropy maps and uncertainty volumes | Stage B; needs probability volumes |
 | D11 | O5 | Sequential indicator simulation realizations | Stage B; needs SIS validation gates |
-| D12 | O1 | Absolute 3-D elevation model and georeferenced volume | Needs approved collar RL or DEM with vertical datum |
+| D12 | O1 | Absolute 3-D elevation model and georeferenced volume | Needs an approved collar RL, or an approved DEM method with a verified vertical datum |
 | D13 | O1 | Grade, tonnage or resource estimates | Not in scope: no graphite assays or TGC in workbook |
 
 ## Gates that must pass before Stage B starts
 
 1. A supervising geologist approves one graphitic label rule (`label_reviews`, decision APPROVE_RULE).
 2. Collar coordinates and datum are confirmed, and the drill-line grouping is approved or replaced.
-3. Collar RL is supplied with a vertical datum, or a DEM method is approved. Until then, all vertical outputs remain relative and no georeferenced volume is claimed.
+3. Collar RL is supplied with a vertical datum, or the DEM elevations are approved. Until then, all vertical outputs remain relative and no georeferenced volume is claimed.
 4. Stage B tables are populated only in their objective databases (`kambale_obj2_spatial.sqlite` and later). The blocking triggers in obj1_master must stay in place.
 5. Variograms and models are fitted only on training data inside each spatial fold. A variogram fitted on all holes is exploratory only.

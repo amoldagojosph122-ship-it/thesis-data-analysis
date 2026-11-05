@@ -1,0 +1,18 @@
+# Provisional collar elevations from a digital elevation model (DEM).
+# Used only because the workbook has no surveyed collar RL. The values are stored in separate columns
+# (holes.dem_elevation_m and interval_coordinates.z_dem_absolute_m) and are PROVISIONAL.
+# z_absolute_m stays NULL until an APPROVED elevation source exists.
+dem_key: COPERNICUS_GLO30_N10_W003
+dem_name: Copernicus DEM GLO-30 (digital surface model), tile N10 W003
+source_url: https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N10_00_W003_00_DEM/Copernicus_DSM_COG_10_N10_00_W003_00_DEM.tif
+file: data/dem/Copernicus_DSM_COG_10_N10_00_W003_00_DEM.tif
+file_bytes: 41080038
+sha256: 58f4cf42b46ea82fde3644bc33ab4a895629c450b0514b90c4ee69d224c5c399
+crs_projected: EPSG:32630
+crs_geographic: EPSG:4326
+method: bilinear interpolation at each collar; UTM coordinates transformed to WGS 84 first
+vertical_reference: heights as distributed by the Copernicus DEM (EGM2008 geoid)
+status: PROVISIONAL
+limitations: >-
+  Digital surface model: includes vegetation and buildings. Not a surveyed collar RL. The vertical accuracy
+  has not been verified for this site, so each value is a provisional collar elevation only.
