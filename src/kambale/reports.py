@@ -87,7 +87,7 @@ absolute 3-D product is produced. No graphite assay exists, so no grade, tonnage
 
 - The three fields are logged indicators (rock code `Sgs`; mineral code `gr`; comment containing "graphit").
   They are not independent laboratory confirmations and do not measure graphite grade.
-- The five candidate rules (four primary and one trace-excluded sensitivity) are PROPOSED. None is approved. `label_reviews` is empty, and a database trigger blocks
+- The six candidate rules (STRICT_SGS_v1 for Target A, DESIGN_8_2_v1 for the ThesisDesign 8.2 Target B, the earlier reconciled candidates RECON_2OF3_v1, ALL3_v1 and ANY_v1, and the trace-excluded sensitivity RECON_2OF3_NOTRACE_v1) are PROPOSED. None is approved. `label_reviews` is empty, and a database trigger blocks
   approval without an APPROVE_RULE review.
 - Conflicts are counted with the rule written in `config/label_rules.yaml`. The conflict count is 126: the naive count
   of 130 mixed-evidence intervals excludes one interval with an unsupported or missing code and three intervals
@@ -122,7 +122,7 @@ absolute 3-D product is produced. No graphite assay exists, so no grade, tonnage
 
 1. Coordinate datum and pair choice: confirm the UTM pair (adopted, provisional) or the Easting/Northing pair. 17 holes differ by more than 5 m.
 2. Collar RL: obtain the DGPS collar elevations or approve a DEM method. Until then, no absolute elevation exists.
-3. Graphitic label rule: a supervising geologist must review the five candidate rules and the 126 conflicts (`ambiguity_review_intervals.csv`).
+3. Graphitic label rule: a supervising geologist must review the six candidate rules and the 126 conflicts (`ambiguity_review_intervals.csv`).
 4. Unsupported rock code `fsc` (12 intervals, quartz mica schist comments) is not mapped. It is not assumed to equal `Fsc`.
 5. One interval has a blank rock code (12KBRB 005, 8-9 m) with graphite mineral and comment evidence.
 6. Dip and azimuth are a single end-of-hole nominal orientation; SurveyedBy and Instrument are blank.
@@ -169,7 +169,7 @@ kambale report          # this report, FIGURE_MANIFEST.csv, DEFERRED_FIGURES.md,
                                            "rock_code_raw, rock_code_status, weathering_code, is_sgs, has_gr_mineral, "
                                            "comment_graphitic, comment_trace_qualified, positive_indicators, "
                                            "negative_indicators, label_conflict, evidence_pattern, label_review_status, "
-                                           "strict_state, recon_state, all3_state, any_state, comment_raw FROM v_interval_flags "
+                                           "strict_state, recon_state, design_state, all3_state, any_state, comment_raw FROM v_interval_design "
                                            "ORDER BY hole_id, depth_from_m",
             "interval_geometry_relative_z.csv": "SELECT interval_key, hole_id, line_code, midpoint_m, dip_deg, azimuth_deg, "
                                                 "delta_e_m, delta_n_m, delta_z_m, easting_m, northing_m, z_relative_m, "
@@ -177,7 +177,7 @@ kambale report          # this report, FIGURE_MANIFEST.csv, DEFERRED_FIGURES.md,
                                                 "ORDER BY hole_id, depth_from_m",
             "ambiguity_review_intervals.csv": "SELECT interval_key, hole_id, line_code, depth_from_m, depth_to_m, rock_code_raw, "
                                               "is_sgs, has_gr_mineral, comment_graphitic, comment_raw, evidence_pattern, "
-                                              "label_review_status, strict_state, recon_state FROM v_interval_flags "
+                                              "label_review_status, strict_state, design_state FROM v_interval_design "
                                               "WHERE label_conflict = 1 OR rock_code_status <> 'VALID' "
                                               "ORDER BY hole_id, depth_from_m",
             "qaqc_findings.csv": "SELECT check_id, severity, status, result, entity_type, entity_key, source_sheet, source_row, "

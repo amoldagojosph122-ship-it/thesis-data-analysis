@@ -1,6 +1,6 @@
 # Deferred figures and tables (Stage B and out-of-scope items)
 
-Dataset 9ebb983eec9fc2c6de45b34b33692e05b69432a53c78a87fe9ad1bbbbfdaa22e. These items are NOT produced in Stage A. Each has a registry row with stage status `DEFERRED` in `figure_registry`, and no output file exists for it.
+Dataset 741da971d12cfaf269e421d2094709031f911e00c803a004e907f743a1067796. These items are NOT produced in Stage A. Each has a registry row with stage status `DEFERRED` in `figure_registry`, and no output file exists for it.
 
 The Stage A figure catalogue (F01-F09, T01-T03) is complete for the data-supported items. Only the items below are deferred.
 

@@ -163,7 +163,7 @@ def f03(rows: dict, key: str) -> list:
     b.legend(handles=[Rectangle((0, 0), 1, 1, color=c, label=s) for s, c in sev_colour.items()],
              loc="lower right", frameon=False)
     header(fig, "F03", "Completeness and QA/QC summary")
-    fig.subplots_adjust(top=0.92, bottom=0.10, left=0.25, right=0.98, wspace=0.75)
+    fig.subplots_adjust(top=0.92, bottom=0.14, left=0.25, right=0.98, wspace=0.75)
     footer(fig, key, "PASS checks are listed in T01 part C and reports/QAQC_REPORT.md")
     return [("F03_completeness_qc", fig)]
 
@@ -254,7 +254,7 @@ def f05(rows: dict, key: str) -> list:
     a.set_title("A. Count")
     b.set_title("B. Logged metres")
     header(fig, "F05", "Lithology code frequency (logged as recorded)")
-    fig.subplots_adjust(top=0.88, bottom=0.12, left=0.42, right=0.98, wspace=0.08)
+    fig.subplots_adjust(top=0.88, bottom=0.15, left=0.42, right=0.98, wspace=0.08)
     footer(fig, key, "grey = code not in legend or blank; red = Sgs")
     return [("F05_lithology_frequency", fig)]
 
@@ -266,8 +266,8 @@ def f06(rows: dict, key: str) -> list:
     y = list(range(len(order)))
     fig, (a, b) = plt.subplots(1, 2, figsize=(7.4, 7.2), sharey=True, gridspec_kw={"width_ratios": [1.3, 1]})
     a.barh(y, [r["sgs_m"] for r in order], color=OI["vermillion"], label="Sgs, strict candidate (Target A)")
-    a.barh(y, [r["recon_pos_m"] for r in order], color="none", edgecolor=OI["blue"], linewidth=0.6,
-           hatch="..", label="RECON_2OF3 positive metres (proposed, not approved)")
+    a.barh(y, [r["design_pos_m"] for r in order], color="none", edgecolor=OI["blue"], linewidth=0.6,
+           hatch="..", label="DESIGN_8_2_v1 graphitic metres (Target B; proposed, not approved)")
     a.set_yticks(y)
     a.set_yticklabels(names, fontsize=4.6)
     a.invert_yaxis()
@@ -281,7 +281,7 @@ def f06(rows: dict, key: str) -> list:
     b.set_xlabel("Sgs fraction of logged metres")
     b.set_title("B. Strict fraction")
     header(fig, "F06", "Graphitic (Sgs) apparent thickness and proportion by hole")
-    fig.subplots_adjust(top=0.92, bottom=0.07, left=0.08, right=0.98, wspace=0.08)
+    fig.subplots_adjust(top=0.92, bottom=0.13, left=0.08, right=0.98, wspace=0.08)
     footer(fig, key, "apparent thickness, not true stratigraphic thickness")
     return [("F06_graphitic_by_hole", fig)]
 
@@ -344,7 +344,7 @@ def f08(rows: dict, key: str) -> list:
     ax.set_ylabel("Northing (m, UTM 30N; provisional)")
     ax.legend(loc="upper right", frameon=False, fontsize=6)
     header(fig, "F08", "Plan map of graphitic fraction by collar and provisional drill line")
-    fig.subplots_adjust(top=0.92, bottom=0.10, left=0.10, right=0.98)
+    fig.subplots_adjust(top=0.92, bottom=0.10, left=0.10, right=0.90)
     footer(fig, key, "marker size proportional to logged metres; line labels provisional")
     return [("F08_plan_graphitic_fraction", fig)]
 

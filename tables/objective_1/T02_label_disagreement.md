@@ -1,4 +1,4 @@
-**T02: Lithological code dictionary and graphitic-evidence disagreement [T02_label_disagreement] (obj1_master 9ebb983eec9f; PROVISIONAL where labels or coordinates are used)**
+**T02: Lithological code dictionary and graphitic-evidence disagreement [T02_label_disagreement] (obj1_master 741da971d12c; PROVISIONAL where labels or coordinates are used)**
 
 | evidence_pattern | label_review_status | n_intervals | logged_m |
 |---|---|---|---|

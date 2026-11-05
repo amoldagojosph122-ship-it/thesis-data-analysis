@@ -1,4 +1,4 @@
-**T04: Trace-excluded sensitivity of Target B [T04_by_hole] (obj1_master 9ebb983eec9f; PROVISIONAL where labels or coordinates are used)**
+**T04: Trace-excluded sensitivity of the earlier candidate RECON_2OF3_v1 [T04_by_hole] (obj1_master 741da971d12c; PROVISIONAL where labels or coordinates are used)**
 
 | hole_id | line_code | logged_m | n_changed | recon_positive_m | notrace_positive_m |
 |---|---|---|---|---|---|

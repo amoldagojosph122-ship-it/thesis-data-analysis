@@ -178,3 +178,34 @@ def test_lithology_rows_carry_the_convention_digest(built_db):
         assert digests == {lithology.convention_sha256()}
     finally:
         conn.close()
+
+
+def test_design_rule_counts_match_the_review_form_and_earlier_rules_are_unchanged(built_db):
+    conn = _conn(built_db)
+    try:
+        def counts(rule_id):
+            return dict(conn.execute(
+                "SELECT label_state, COUNT(*) FROM v_label_candidates WHERE rule_id = ? GROUP BY label_state",
+                (rule_id,)).fetchall())
+        assert counts("DESIGN_8_2_v1") == {"POSITIVE": 524, "NEGATIVE": 1289, "AMBIGUOUS": 81, "UNRESOLVED": 16}
+        assert counts("STRICT_SGS_v1") == {"POSITIVE": 529, "NEGATIVE": 1368, "UNRESOLVED": 13}
+        assert counts("RECON_2OF3_v1") == {"POSITIVE": 562, "NEGATIVE": 1289, "UNRESOLVED": 59}
+        ambiguous_rules = {r[0] for r in conn.execute(
+            "SELECT DISTINCT rule_id FROM v_label_candidates WHERE label_state = 'AMBIGUOUS'")}
+        assert ambiguous_rules == {"DESIGN_8_2_v1"}
+        approved = conn.execute("SELECT COUNT(*) FROM graphite_label_rules WHERE status <> 'PROPOSED'").fetchone()[0]
+        assert approved == 0
+    finally:
+        conn.close()
+
+
+def test_target_b_outputs_use_the_design_rule(built_db):
+    conn = _conn(built_db)
+    try:
+        totals = ("SELECT ROUND(SUM(design_pos_m), 3), ROUND(SUM(design_ambiguous_m), 3), "
+                  "ROUND(SUM(design_unresolved_m), 3) FROM ")
+        assert conn.execute(totals + "v_hole_design").fetchone() == (524.0, 81.0, 16.0)
+        assert conn.execute(totals + "v_line_design").fetchone() == (524.0, 81.0, 16.0)
+        assert conn.execute("SELECT ROUND(SUM(recon_pos_m), 3) FROM v_hole_graphite").fetchone()[0] == 562.0
+    finally:
+        conn.close()

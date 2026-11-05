@@ -1,4 +1,4 @@
-**T04: Trace-excluded sensitivity of Target B [T04_transitions] (obj1_master 9ebb983eec9f; PROVISIONAL where labels or coordinates are used)**
+**T04: Trace-excluded sensitivity of the earlier candidate RECON_2OF3_v1 [T04_transitions] (obj1_master 741da971d12c; PROVISIONAL where labels or coordinates are used)**
 
 | recon_state | notrace_state | n_intervals | logged_m |
 |---|---|---|---|

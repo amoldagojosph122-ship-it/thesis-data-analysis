@@ -14,7 +14,9 @@
 #   2. STRICT_CODE: label = is_sgs.
 #   3. MIN_POSITIVE(k): label 1 if positive_indicators >= k;
 #      label 0 if positive_indicators == 0 AND the comment is present; otherwise UNRESOLVED.
-label_rule_set_version: LABELRULES-S1-2026.11.05
+#   4. DESIGN_8_2 (Target B, ThesisDesign section 8.2): see design_8_2 in src/kambale/labels.py.
+#      Adds the AMBIGUOUS state (no label) for one indicator or for evidence that disagrees with the code.
+label_rule_set_version: LABELRULES-S1-2026.11.06
 rules:
   - rule_id: STRICT_SGS_v1
     rule_version: "1.0.0"
@@ -23,6 +25,17 @@ rules:
     description: >-
       Target A (strict). Label 1 when rock_type1 is Sgs (meta-sediment graphite schist);
       label 0 when rock_type1 is another valid legend code; unresolved for missing or unsupported codes.
+  - rule_id: DESIGN_8_2_v1
+    rule_version: "1.0.0"
+    family: RECONCILED
+    logic: DESIGN_8_2
+    description: >-
+      Target B as set out in ThesisDesign section 8.2 (reconciled; review form). Label 1 when the rock
+      code is Sgs, at least one further indicator supports it and the description does not conflict.
+      Label 0 when the code is another valid legend code, no graphite indicator is present and a comment
+      exists. Ambiguous (no label) when only one indicator is present, or when the code and the other
+      evidence disagree. Unresolved when the code is missing or unsupported, or when a non-Sgs interval
+      has a blank comment. A blank graphite field is not counted against graphite.
   - rule_id: RECON_2OF3_v1
     rule_version: "1.0.0"
     family: RECONCILED

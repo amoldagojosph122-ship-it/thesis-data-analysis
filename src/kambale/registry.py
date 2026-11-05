@@ -59,9 +59,9 @@ FIGURE_SPECS = {
                 ("F05_rock_usage.sql", "F05_missing_codes.sql")),
     "F06": Spec("F06", "O2", "FIGURE", "Graphitic apparent thickness and proportion by hole",
                 "Strict graphitic (rock_type1 = Sgs) apparent along-hole metres by hole, with the proposed "
-                "reconciled-candidate metres outlined. Denominator: logged metres per hole. Thickness is apparent, "
+                "Target B (DESIGN_8_2_v1) graphitic metres outlined. Denominator: logged metres per hole. Thickness is apparent, "
                 "not true stratigraphic thickness. Logged indicators are not graphite assays.",
-                "PROVISIONAL", "not used", "STRICT_SGS_v1 PROPOSED; RECON_2OF3_v1 PROPOSED",
+                "PROVISIONAL", "not used", "STRICT_SGS_v1 PROPOSED; DESIGN_8_2_v1 PROPOSED",
                 "logged metres per hole (sum 1,910 m)", ("F06_hole_graphite.sql",)),
     "F07": Spec("F07", "O2", "FIGURE", "Graphitic intervals by depth and weathering",
                 "Strict graphitic intervals per 5-m measured-depth bin, stacked by weathering class. The black "
@@ -93,11 +93,11 @@ TABLE_SPECS = {
                 "PROVISIONAL", "not used", "PROPOSED", "1,910 intervals",
                 ("T02_code_dictionary.sql", "T02_label_disagreement.sql")),
     "T03": Spec("T03", "O2", "TABLE", "Graphitic-domain evidence and ambiguity by hole and drill line",
-                "Part A: per hole metres for each indicator, reconciled-candidate positives, unresolved metres, "
+                "Part A: per hole metres for each indicator, Target B (DESIGN_8_2_v1) graphitic and ambiguous metres, unresolved metres, "
                 "conflicts and unresolved codes. Part B: the same by provisional drill line.",
                 "PROVISIONAL", "not used", "PROPOSED", "logged metres per hole and line",
                 ("T03_hole_evidence.sql", "T03_line_evidence.sql")),
-    "T04": Spec("T04", "O1", "TABLE", "Trace-excluded sensitivity of Target B",
+    "T04": Spec("T04", "O1", "TABLE", "Trace-excluded sensitivity of the earlier candidate RECON_2OF3_v1",
                 "Part A: state pairs for RECON_2OF3_v1 and its trace-excluded variant RECON_2OF3_NOTRACE_v1. "
                 "Part B: intervals whose state changes, by hole. Sensitivity analysis only; both rules are PROPOSED.",
                 "PROVISIONAL", "not used", "PROPOSED (sensitivity)", "logged metres per hole",
