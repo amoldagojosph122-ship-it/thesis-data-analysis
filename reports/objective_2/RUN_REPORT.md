@@ -1,6 +1,6 @@
 # Objective 2 run report: spatial distribution, geological controls and indicator variography
 
-Configuration O2-CFG-2026.11.05-2 (SHA-256 ab3bc367fc82), code 2.1.0, schema O2-SCHEMA-2026.11.05-4, commit ef1a853. Import run 1, analysis run 2, gate run 6. Report written 2026-11-05T14:34:47Z.
+Configuration O2-CFG-2026.11.05-4 (SHA-256 bfc2962a9e89), code 2.1.0, schema O2-SCHEMA-2026.11.05-4, commit cb4be24. Import run 1, analysis run 2, gate run 6. Report written 2026-11-05T15:19:20Z.
 
 ## 1. Status
 
@@ -17,7 +17,7 @@ Handoff decision for Objective 3: NOT_IDENTIFIABLE (candidate family NONE). Full
 
 ## 3. Configuration
 
-Predeclared version O2-CFG-2026.11.05-2 supersedes O2-CFG-2026.11.05-1. Correction: Configuration 1 measured every between-hole lag in three dimensions. Vertical separation between intervals at different depths then dominated the lag, and the directional classes used three-dimensional distances. Configuration 2 assesses lateral continuity with horizontal lag distances between intervals at similar depth (absolute relative-Z difference at most 3 m). The three-dimensional family is kept and reported, but it is not the handoff basis. Configuration 1 gave a flat omnidirectional curve at the marginal variance and a fitted range at the 10 m lower bound. That result is recorded in RUN_REPORT.md as superseded and is not used.
+Predeclared version O2-CFG-2026.11.05-4 supersedes O2-CFG-2026.11.05-2. Revision: Adds one SKIP record to the sensitivity list for the tentative geologic orientation factor, which specification 02 section 10 names and the earlier list did not record. No numeric setting changed. Configuration 2 is kept in config/objective_2/superseded/ (decisions.md, O2-D15). Correction history (configuration 1 to 2): Configuration 1 measured every between-hole lag in three dimensions. Vertical separation between intervals at different depths then dominated the lag, and the directional classes used three-dimensional distances. Configuration 2 assesses lateral continuity with horizontal lag distances between intervals at similar depth (absolute relative-Z difference at most 3 m). The three-dimensional family is kept and reported, but it is not the handoff basis. Configuration 1 gave a flat omnidirectional curve at the marginal variance and a fitted range at the 10 m lower bound. That result is recorded in RUN_REPORT.md as superseded and is not used.
 
 ## 4. Superseded configuration (recorded, not used)
 
@@ -63,6 +63,7 @@ Fit-by-fit identifiability and stability are in table O2-T03 (below).
 | STRICT_SUPPORT_200_PAIRS | min_pairs_per_bin | 200 | COMPLETED | 25 | 25 supported bins; spherical NOT_IDENTIFIABLE; exponential NOT_IDENTIFIABLE |
 | STRICT_LABEL_COMPARATOR | label_rule | STRICT_SGS_v1 | SKIPPED | 0 | SKIP_NOT_AUTHORISED: not run |
 | ABSOLUTE_ELEVATION_GEOMETRY | vertical | z_absolute_m | SKIPPED | 0 | SKIP_NO_VALIDATED_RL: not run |
+| TENTATIVE_GEOLOGIC_ORIENTATION | geologic_orientation | NONE_AVAILABLE | SKIPPED | 0 | SKIP_NO_GEOLOGIC_ORIENTATION: no strike or dip is recorded for the geology; all holes share one nominal orientation (G09) |
 
 ### 5.6 Anisotropy
 
@@ -89,7 +90,7 @@ Neither result changes the configuration-2 handoff (NOT_IDENTIFIABLE), which sta
 
 | gate | name | status | detail |
 |---|---|---|---|
-| G01 | Receipt match | PASS | recomputed content abf6f758faf7 vs receipt abf6f758faf7 |
+| G01 | Receipt match | PASS | recomputed content abf6f758faf7 vs receipt abf6f758faf7; rows 1910 vs receipt 1910; observed holes missing upstream: 0 |
 | G02 | Approved label rule | PASS | DESIGN_8_2_v1 APPROVED |
 | G03 | Relative geometry only | PASS | z_absolute_m non-null rows = 0 |
 | G04 | Coordinate pair and datum | PASS | pair APPROVED; datum VERIFIED |
@@ -108,7 +109,7 @@ Neither result changes the configuration-2 handoff (NOT_IDENTIFIABLE), which sta
 | G17 | Marginal variance departure | PASS | 0 fits depart from p(1-p) by more than 50 per cent |
 | G18 | Anisotropy claims | PASS | anisotropy decisions: NOT_EVALUATED 2 |
 | G19 | Base excludes within-hole pairs | PASS | 0 base between-hole experiments include within-hole pairs; lateral handoff base present: True |
-| G20 | Sensitivity completeness | PASS | 7 of 7 configured sensitivity entries have a row (completed or skipped with reason) |
+| G20 | Sensitivity completeness | PASS | 8 of 8 configured sensitivity entries have a row (completed or skipped with reason) |
 | G21 | Relative depth only | WARN | 5 of 5 sections labelled RELATIVE_DEPTH; no collar elevation is available, so the relative-depth limitation is always reported |
 | G22 | No absolute-elevation products | PASS | absolute-elevation columns in the Objective 2 database: none |
 | G23 | Observed versus inferred | PASS | 0 section rows claim an inferred contact as observation |
@@ -186,13 +187,13 @@ Source: sql/objective_2/tables/O2-T04.sql, receipt 1, 13 rows.
 | GATE | G09 | WARN | Declared orientation: survey orientations [(-60.0, 90.0)]; declared (-60.0, 90.0); uniform across holes = True |
 | GATE | G10 | WARN | Class imbalance: lines below 10 per cent positive: NOM_N1113000 0.041 |
 | GATE | G12 | WARN | Directional support: skipped directions: LAT_AZ_000, LAT_AZ_045, LAT_AZ_135 |
-| GATE | G21 | WARN | Relative depth only: 5 of 5 sections labelled RELATIVE_DEPTH; no collar elevation is available, so the relative-depth limitation is always reported |
 | HANDOFF | O3-HANDOFF-1 | NOT_IDENTIFIABLE | candidate_family=NONE; full_data_parameters_for_test_folds=0; No lateral model is both FITTED and stable under leave-one-line-out: spherical NOT_IDENTIFIABLE (structured sill below 5% of p(1-p): no structure beyond the nugget); exponential NOT_IDENTIFIABLE (range at the smallest supported lag: no spatial dependence beyond the nugget; structured sill below 5% of p(1-p): no structure beyond the nugget). Lateral continuity is not identified at this support. Objective 3 must not use a between-hole continuity model whose parameters come from these fits; models without a geostatistical continuity term may proceed without a continuity claim. |
 | QUESTION | COLLAR_RL | OPEN | no collar elevation (RL) is available; depth is relative to collar and absolute elevation is not used |
 | QUESTION | LAG_WINDOW | OPEN | collar pairs have a median separation of 921.0 m, while the lateral lag window ends at 500.0 m; longer-range structure is not assessed |
 | QUESTION | LINE_PREVALENCE | OPEN | binary prevalence by line ranges from 0.041 to 0.506 across 5 lines; whether this reflects zones, sampling or geology is not resolved |
 | SENSITIVITY | ABSOLUTE_ELEVATION_GEOMETRY | SKIPPED | SKIP_NO_VALIDATED_RL: not run |
 | SENSITIVITY | STRICT_LABEL_COMPARATOR | SKIPPED | SKIP_NOT_AUTHORISED: not run |
+| SENSITIVITY | TENTATIVE_GEOLOGIC_ORIENTATION | SKIPPED | SKIP_NO_GEOLOGIC_ORIENTATION: no strike or dip is recorded for the geology; all holes share one nominal orientation (G09) |
 
 Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are in tables/objective_2 as CSV, Markdown and LaTeX.
 
@@ -205,14 +206,14 @@ Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are i
 - O2-F05 (GENERATED): Pair support by lag. Number of pairs and of independent hole pairs per lag bin for the base experiments (counts only; no semivariance). Within-hole pairs are shown separately from between-hole pairs. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 - O2-F06 (GENERATED): Between-hole indicator semivariograms. Experimental indicator semivariograms of between-hole pairs for the lateral basis (horizontal lag, relative-depth difference at most 3 m) and the three-dimensional family (reported). Dashed line: marginal variance p(1 - p) = 0.205; no base fit is FITTED, so no curve is drawn (fit status in O2-T03). Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 - O2-F07 (GENERATED): Horizontal azimuth semivariograms (exploratory). Horizontal azimuth semivariograms (exploratory) at 0, 45, 90 and 135 degrees clockwise from grid north, tolerance ±22.5°. Dashed line: p(1 - p) = 0.205. Under-powered bins are marked with their pair counts; a direction with no supported bin is SKIPPED. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
-- O2-F08 (GENERATED): Sensitivity of supported bins and fit status. Supported lag bins and fit status (spherical and exponential) for 8 completed sensitivity experiments and their base experiments; 2 configured entries were skipped, with reasons shown in the figure. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
+- O2-F08 (GENERATED): Sensitivity of supported bins and fit status. Supported lag bins and fit status (spherical and exponential) for 8 completed sensitivity experiments and their base experiments; 3 configured entries were skipped, with reasons shown in the figure. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 - O2-F09 (GENERATED): Configuration-3 lateral extension with the STRICT comparator (exploratory). Configuration-3 exploratory lateral extension: experimental indicator semivariograms with 50 m bins to 2000 m and a relative-depth difference of at most 3 m, for DESIGN_8_2_v1 (approved, primary) and STRICT_SGS_v1 (comparator, authorised for this run only). Dashed line: the DESIGN marginal variance; dotted line, where it differs: the STRICT marginal variance; no model is FITTED, so no curve is drawn. The two samples give identical semivariances at every lag, because the comparator reproduces the DESIGN indicator on every DESIGN binary interval; the series coincide, so the comparator is drawn as hollow markers. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 
 ## 9. Tests
 
 ```text
-.............................................................            [100%]
-61 passed in 6.12s
+...............................................................          [100%]
+63 passed in 23.93s
 ```
 
 ## 10. Deviations and corrections in this stage
@@ -228,6 +229,11 @@ Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are i
 - The independent comparison with scikit-gstat was denied by the permission system once. It was run after the user approved it in chat; its result is in section 13.
 - A Stage A test rewrote three tracked F06 figures in the Objective 2 folder during a full test run. They were restored from git, and the test now renders into a temporary folder.
 - Configuration 3 was written before it ran and was not changed afterwards. Its comparator sample is the DESIGN binary set. STRICT agrees with DESIGN on that set, so the comparator does not test the 81 intervals that DESIGN excludes; a comparator on the full STRICT sample would need a further predeclared version.
+- Configuration O2-CFG-2026.11.05-4 adds one SKIP record for the tentative geologic orientation factor that specification 02 section 10 names. No numeric setting changed. Configuration 2 is kept in config/objective_2/superseded/. The rebuilt database was compared with the configuration-2 build, and its experiments, fits and handoff are identical (decisions.md, O2-D15).
+- The run order of `all` changed. Gates run before any figure or table is written, again before the report, and once more after the report (decisions.md, O2-D16). A STOP withdraws the receipt's handoff rows. Analysis rows are written once per receipt, so a withdrawn handoff needs a rebuild from an empty database.
+- Gate G01 now also checks the row count against the receipt and every observed hole identifier against the upstream v_holes (specification 04, section 9). It previously checked only the version key and the content hash (decisions.md, O2-D17).
+- Specifications 01, 03, 04 and 06 were corrected to the implemented command set, the nine figures, the within-hole pair flag and the gate numbers (decisions.md, O2-D17). Stage A's figures F05 to F09 are still under figures/objective_2: the Stage A registry tags F05 to F08 as Objective 2, and the Objective 1 database records the F05 and F06 outputs there. Moving them would change those database rows, so the move is left for a decision (decisions.md, O2-D14).
+- The official Spec Kit initialisation (specify init) and the agent-side Spec Kit commands were not run. Re-initialising an existing project risks overwriting its templates. Specifications 01 to 07 and the task table in specification 07 are the record instead (specification 07, section 1a).
 
 ## 11. Objective 3 handoff contract
 
@@ -245,18 +251,52 @@ Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are i
 - One orientation for all holes (dip -60, azimuth 090): geology cannot be separated from the sampling direction.
 - Five drill lines; the between-line contrast is large and its cause is not resolved.
 - The lateral window (20 m bins to 500 m) excludes most collar pairs; regional structure beyond it is not assessed.
+- Line NOM_N1111930 has 3 holes (84 binary intervals). Any statement about that line rests on those collars. No gate issues a WARN for it, and no direction is FITTED, so no fitted range depends on it.
 
 ## 13. Commands and environment
 
 ```bash
-./.venv/Scripts/python.exe -I -m kambale.objective_2 import
-./.venv/Scripts/python.exe -I -m kambale.objective_2 analyse
-./.venv/Scripts/python.exe -I -m kambale.objective_2 figures
-./.venv/Scripts/python.exe -I -m kambale.objective_2 tables
-./.venv/Scripts/python.exe -I -m kambale.objective_2 verify
+./.venv/Scripts/python.exe -I -m kambale.objective_2 all
+./.venv/Scripts/python.exe -I -m pytest -o addopts= -q tests/objective_2 > reports/objective_2/PYTEST_OUTPUT.txt
 ./.venv/Scripts/python.exe -I -m kambale.objective_2 report
-./.venv/Scripts/python.exe -I -m pytest -o addopts= -q tests/objective_2
+./.venv/Scripts/python.exe -I -m kambale.objective_2 verify
 ```
 
+`all` runs import, analyse, extension, verify, figures, tables, verify, report and verify. The stages can also be run one at a time with `import`, `analyse`, `extension`, `figures`, `tables`, `report` and `verify`. The report reads PYTEST_OUTPUT.txt, so the test run comes before the second report.
+
 Python 3.14.6 on Windows 11; numpy 2.4.6, scipy 1.18.0, matplotlib 3.11.1, PyYAML 6.0.3, pytest 9.1.1.
-Independent check: scikit-gstat was installed with uv into a scratch directory outside the project environment, because installing it into the project environment would downgrade scipy from 1.18.0 to 1.16.3. The comparison ran after the user approved it in chat, on the three-dimensional omnidirectional experiment with within-hole pairs included, which scikit-gstat's Matheron estimator also uses. Maximum absolute difference in semivariance: 2.776e-17 (tolerance 1e-09). Result: PASS. The lateral basis is not compared directly, because scikit-gstat cannot restrict pairs to a relative-depth band. Both use the same estimator, so the agreement is evidence for the pair counting and the binning.
+Independent check: scikit-gstat was installed with uv into a scratch directory outside the project environment, because installing it into the project environment would downgrade scipy from 1.18.0 to 1.16.3. The comparison ran after the user approved it in chat, on the three-dimensional omnidirectional experiment with within-hole pairs included, which scikit-gstat's Matheron estimator also uses. Maximum absolute difference in semivariance: 2.776e-17 (tolerance 1e-09). Result: PASS. The lateral basis is not compared directly, because scikit-gstat cannot restrict pairs to a relative-depth band. Both use the same estimator, so the agreement is evidence for the pair counting and the binning. It is run from a scratch directory outside the project environment: `./.venv/Scripts/python.exe -I -m kambale.objective_2.independent_check --site <scratch-directory>`.
+
+## 14. Database row counts and receipt hashes
+
+| table | rows |
+|---|---|
+| analysis_observations | 1910 |
+| anisotropy_diagnostics | 2 |
+| collar_locations | 71 |
+| comparator_observations | 1910 |
+| continuity_handoff_decisions | 1 |
+| depth_lithology_summaries | 28 |
+| direction_registry | 7 |
+| export_manifests | 46 |
+| figure_query_registry | 23 |
+| figure_registry | 9 |
+| gate_results | 90 |
+| geological_section_registry | 5 |
+| hole_occurrence_summaries | 71 |
+| line_occurrence_summaries | 5 |
+| pair_sampling_diagnostics | 180 |
+| schema_version | 1 |
+| sensitivity_runs | 34 |
+| source_receipts | 1 |
+| spatial_support_statistics | 17 |
+| stage_runs | 6 |
+| table_query_registry | 4 |
+| table_registry | 4 |
+| variogram_experiments | 28 |
+| variogram_fit_parameters | 12 |
+| variogram_fits | 56 |
+| variogram_lag_bins | 835 |
+| weathering_cross_tabs | 12 |
+
+Receipt 1: content SHA-256 abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22; ordered identifier digest a94753f238d017f378b4b81fa61fcb061b63c62a687a68bafcdbbaf480027f55; selection query SHA-256 677203494777ff7efc26c6e5286142522049c7112f95109ed366a2da3481a767. Counts are taken when this report is written.

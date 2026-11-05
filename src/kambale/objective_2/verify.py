@@ -86,7 +86,8 @@ def run(o2_path=O2_DB_PATH, upstream=UPSTREAM_DB_PATH, config_path=O2_CONFIG_PAT
     try:
         version = up.execute("SELECT dataset_version_key FROM v_active_version").fetchone()[0]
         rows = [dict(r) for r in up.execute(IMPORT_QUERY)]
-        absolute = up.execute("SELECT COUNT(*) FROM v_interval_geometry WHERE z_absolute_m IS NOT NULL").fetchone()[0]
+        upstream_holes = {r[0] for r in up.execute("SELECT hole_id FROM v_holes")}
+        absolute =up.execute("SELECT COUNT(*) FROM v_interval_geometry WHERE z_absolute_m IS NOT NULL").fetchone()[0]
         orient = [tuple(r) for r in up.execute("SELECT DISTINCT dip_deg, azimuth_deg FROM v_survey")]
         rule_def = up.execute("SELECT definition_sha256 FROM graphite_label_rules WHERE rule_id = ?",
                               (receipt["label_rule_id"],)).fetchone()[0]
@@ -95,8 +96,14 @@ def run(o2_path=O2_DB_PATH, upstream=UPSTREAM_DB_PATH, config_path=O2_CONFIG_PAT
     canon = "\n".join(json.dumps(r, sort_keys=True, separators=(",", ":"), ensure_ascii=False) for r in rows)
     recomputed = sha256_text(canon)
     same = recomputed == receipt["content_sha256"] and version == receipt["upstream_dataset_version_key"]
-    g.append(_result("G01", "Receipt match", "PASS" if same else "STOP", "input",
-                     f"recomputed content {recomputed[:12]} vs receipt {receipt['content_sha256'][:12]}"))
+    # Cross-database checks of specification 04, section 9: the row count and every observed hole identifier must agree.
+    rows_match = obs_count == receipt["row_count"]
+    observed_holes = {r[0] for r in conn.execute(
+        "SELECT DISTINCT hole_id FROM analysis_observations WHERE receipt_id = ?", (rid,))}
+    missing_holes = sorted(observed_holes - upstream_holes)
+    g.append(_result("G01", "Receipt match", "PASS" if same and rows_match and not missing_holes else "STOP", "input",
+                     f"recomputed content {recomputed[:12]} vs receipt {receipt['content_sha256'][:12]}; rows {obs_count} "
+                     f"vs receipt {receipt['row_count']}; observed holes missing upstream: {len(missing_holes)}"))
     g.append(_result("G02", "Approved label rule", "PASS" if receipt["label_rule_status"] == "APPROVED" and rule_def ==
                      receipt["label_rule_definition_sha256"] else "STOP", "input",
                      f"{receipt['label_rule_id']} {receipt['label_rule_status']}"))
@@ -257,7 +264,13 @@ def run(o2_path=O2_DB_PATH, upstream=UPSTREAM_DB_PATH, config_path=O2_CONFIG_PAT
                      "VALUES (?, ?, ?, ?, ?, ?, ?)",
                      (run_id, row["gate_id"], row["gate_name"], row["status"], row["scope"], row["detail"], utc_now()))
     stopped = any(r["status"] == "STOP" for r in g)
-    conn.execute("UPDATE stage_runs SET status = ?, finished_utc = ? WHERE run_id = ?",
-                 ("STOPPED" if stopped else "COMPLETED", utc_now(), run_id))
+    # A STOP writes no handoff (specification 06, section 3.6). The analysis wrote the handoff first, so it is withdrawn here.
+    withdrawn = 0
+    if stopped:
+        withdrawn = conn.execute("DELETE FROM continuity_handoff_decisions WHERE receipt_id = ?", (rid,)).rowcount
+    note = f"gate runner; handoff rows withdrawn: {withdrawn}" if stopped else "gate runner"
+    conn.execute("UPDATE stage_runs SET status = ?, finished_utc = ?, note = ? WHERE run_id = ?",
+                 ("STOPPED" if stopped else "COMPLETED", utc_now(), note, run_id))
     conn.close()
-    return {"run_id": run_id, "gates": g, "stopped": stopped, "observations": obs_count}
+    return {"run_id": run_id, "gates": g, "stopped": stopped, "observations": obs_count,
+            "handoff_rows_withdrawn": withdrawn}

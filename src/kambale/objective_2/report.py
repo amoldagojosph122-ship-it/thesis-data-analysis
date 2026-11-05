@@ -3,7 +3,8 @@
 Writes reports/objective_2/README.md, RUN_REPORT.md, BLOCKED_OR_DEFERRED.md, DATA_LINEAGE.json and FIGURE_MANIFEST.csv.
 Every number in the reports is read from the database, or from the tables already rendered from it. Manifest rows are
 written for each report file (kind REPORT) and for the two manifest files (kind MANIFEST), so that verify G30 re-checks
-them. The gate table is taken from the latest VERIFY run; run verify again after this command to re-check the hashes.
+them. The gate table is taken from the latest VERIFY run, which `all` runs before this command; `all` then runs verify once
+more to re-check the hashes of these files.
 """
 
 from __future__ import annotations
@@ -58,7 +59,22 @@ DEVIATIONS = (
     "git, and the test now renders into a temporary folder.",
     "Configuration 3 was written before it ran and was not changed afterwards. Its comparator sample is the DESIGN binary set. "
     "STRICT agrees with DESIGN on that set, so the comparator does not test the 81 intervals that DESIGN excludes; a comparator "
-    "on the full STRICT sample would need a further predeclared version.")
+    "on the full STRICT sample would need a further predeclared version.",
+    "Configuration O2-CFG-2026.11.05-4 adds one SKIP record for the tentative geologic orientation factor that specification 02 "
+    "section 10 names. No numeric setting changed. Configuration 2 is kept in config/objective_2/superseded/. The rebuilt database "
+    "was compared with the configuration-2 build, and its experiments, fits and handoff are identical (decisions.md, O2-D15).",
+    "The run order of `all` changed. Gates run before any figure or table is written, again before the report, and once more "
+    "after the report (decisions.md, O2-D16). A STOP withdraws the receipt's handoff rows. Analysis rows are written once per "
+    "receipt, so a withdrawn handoff needs a rebuild from an empty database.",
+    "Gate G01 now also checks the row count against the receipt and every observed hole identifier against the upstream v_holes "
+    "(specification 04, section 9). It previously checked only the version key and the content hash (decisions.md, O2-D17).",
+    "Specifications 01, 03, 04 and 06 were corrected to the implemented command set, the nine figures, the within-hole pair flag "
+    "and the gate numbers (decisions.md, O2-D17). Stage A's figures F05 to F09 are still under figures/objective_2: the Stage A "
+    "registry tags F05 to F08 as Objective 2, and the Objective 1 database records the F05 and F06 outputs there. Moving them "
+    "would change those database rows, so the move is left for a decision (decisions.md, O2-D14).",
+    "The official Spec Kit initialisation (specify init) and the agent-side Spec Kit commands were not run. Re-initialising an "
+    "existing project risks overwriting its templates. Specifications 01 to 07 and the task table in specification 07 are the "
+    "record instead (specification 07, section 1a).")
 
 
 def _rows(conn, sql: str, params: tuple = ()) -> list[dict]:
@@ -165,6 +181,8 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
                             "WHERE receipt_id = ?", (rid,))
         figures = _rows(conn, "SELECT figure_id, title, status, reason, caption FROM figure_registry ORDER BY figure_id")
         tables = _rows(conn, "SELECT table_id, title, status, row_count, reason FROM table_registry ORDER BY table_id")
+        table_names = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name").fetchall()]
+        table_counts = [{"name": name, "n": conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0]} for name in table_names]
         pytest_text = PYTEST_OUTPUT.read_text(encoding="utf-8").strip() if PYTEST_OUTPUT.exists() else (
             "Not recorded in this report. Run pytest with its output written to reports/objective_2/PYTEST_OUTPUT.txt, "
             "then run report again.")
@@ -236,6 +254,11 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
             "- Collar elevations: the RL column of the raw Collars sheet is empty for all 71 holes. The data request is in "
             "COLLAR_RL_REQUEST.md.",
             "- Objective 3 modelling: not started. The handoff contract is in RUN_REPORT.md section 11.",
+            "- On-line versus between-line pairs (master prompt, step 4): not computed. Pairs are split only into within-hole and "
+            "between-hole. This needs a further predeclared configuration.",
+            "- Projected sections with line orientation and projection offset (master prompt, step 3): not produced. O2-F04 shows "
+            "observed hole strips only.",
+            "- Official Spec Kit initialisation (specify init) and the agent-side commands: not run (specification 07, section 1a).",
             "- Commit and push of the Objective 2 work: not done. It waits for the user's instruction.", ""]
         blocked_path = O2_REPORT_DIR / "BLOCKED_OR_DEFERRED.md"
         blocked_path.write_text("\n".join(blocked), encoding="utf-8", newline="\n")
@@ -264,7 +287,8 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
             f"- Coordinates {rc['crs_key']} with datum {rc['crs_datum_status']}; coordinate pair {rc['coordinate_pair_status']}; "
             f"drill lines {rc['drill_line_status']}.", "",
             "## 3. Configuration", "",
-            f"Predeclared version {cfg['config_version']} supersedes {cfg.get('supersedes')}. Correction: "
+            f"Predeclared version {cfg['config_version']} supersedes {cfg.get('supersedes')}. Revision: "
+            f"{' '.join(str(cfg['revision_reason']).split())} Correction history (configuration 1 to 2): "
             f"{' '.join(str(cfg['correction_reason']).split())}", "",
             "## 4. Superseded configuration (recorded, not used)", "", SUPERSEDED_NOTE, "",
             "## 5. Results", "",
@@ -333,17 +357,26 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
             "- Relative depth only: collar elevations are absent, so absolute elevation and the DEM are not used.",
             "- One orientation for all holes (dip -60, azimuth 090): geology cannot be separated from the sampling direction.",
             "- Five drill lines; the between-line contrast is large and its cause is not resolved.",
-            "- The lateral window (20 m bins to 500 m) excludes most collar pairs; regional structure beyond it is not assessed.", "",
+            "- The lateral window (20 m bins to 500 m) excludes most collar pairs; regional structure beyond it is not assessed.",
+            *[f"- Line {r['line_code']} has {r['n_holes']} holes ({r['binary_n']} binary intervals). Any statement about that line "
+              "rests on those collars. No gate issues a WARN for it, and no direction is FITTED, so no fitted range depends on it."
+              for r in line_prev if r["n_holes"] <= 3], "",
             "## 13. Commands and environment", "", "```bash",
-            "./.venv/Scripts/python.exe -I -m kambale.objective_2 import",
-            "./.venv/Scripts/python.exe -I -m kambale.objective_2 analyse",
-            "./.venv/Scripts/python.exe -I -m kambale.objective_2 figures",
-            "./.venv/Scripts/python.exe -I -m kambale.objective_2 tables",
-            "./.venv/Scripts/python.exe -I -m kambale.objective_2 verify",
+            "./.venv/Scripts/python.exe -I -m kambale.objective_2 all",
+            "./.venv/Scripts/python.exe -I -m pytest -o addopts= -q tests/objective_2 > reports/objective_2/PYTEST_OUTPUT.txt",
             "./.venv/Scripts/python.exe -I -m kambale.objective_2 report",
-            "./.venv/Scripts/python.exe -I -m pytest -o addopts= -q tests/objective_2", "```", "",
+            "./.venv/Scripts/python.exe -I -m kambale.objective_2 verify", "```", "",
+            "`all` runs import, analyse, extension, verify, figures, tables, verify, report and verify. The stages can also be run "
+            "one at a time with `import`, `analyse`, `extension`, `figures`, `tables`, `report` and `verify`. The report reads "
+            "PYTEST_OUTPUT.txt, so the test run comes before the second report.", "",
             f"Python {platform.python_version()} on {platform.system()} {platform.release()}; " + ", ".join(_versions()) + ".",
-            f"Independent check: {_independent_check_status()}.", ""]
+            f"Independent check: {_independent_check_status()}. It is run from a scratch directory outside the project environment: "
+            "`./.venv/Scripts/python.exe -I -m kambale.objective_2.independent_check --site <scratch-directory>`.", "",
+            "## 14. Database row counts and receipt hashes", "", "| table | rows |", "|---|---|",
+            *[f"| {t['name']} | {t['n']} |" for t in table_counts], "",
+            f"Receipt {rc['receipt_id']}: content SHA-256 {rc['content_sha256']}; ordered identifier digest "
+            f"{rc['ordered_id_digest']}; selection query SHA-256 {rc['selection_query_sha256']}. Counts are taken when this report "
+            "is written.", ""]
         run_path = O2_REPORT_DIR / "RUN_REPORT.md"
         run_path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
 

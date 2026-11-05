@@ -1,8 +1,12 @@
 """Gate outcomes and structural checks on the built database (specification 03). Each test is named for the gate it checks."""
 
+import shutil
+import sqlite3
+
 import pytest
 
-from kambale.objective_2.config import O2_CONFIG_PATH, UPSTREAM_DB_PATH, load_config
+from kambale.objective_2 import verify
+from kambale.objective_2.config import O2_CONFIG_PATH, O2_DB_PATH, UPSTREAM_DB_PATH, load_config
 from kambale.objective_2.db import connect_upstream_readonly
 
 EXIT_GATES = ("G01", "G02", "G03", "G07", "G08", "G14", "G19", "G25", "G26", "G27", "G28", "G29", "G30")
@@ -135,3 +139,39 @@ def test_synthetic_not_exported(o2_ro):  # G24
 def test_sections_are_observed_log_only(o2_ro, receipt_id):  # G23 companion check on section status values
     rows = o2_ro.execute("SELECT observed_or_inferred FROM geological_section_registry WHERE receipt_id = ?", (receipt_id,)).fetchall()
     assert all(r[0] == "OBSERVED_LOG_ONLY" for r in rows)
+
+
+def _copy_of_database(tmp_path):
+    """A copy of the built database. The gate tests change the copy, never the Objective 2 database."""
+    target = tmp_path / "o2_copy.sqlite"
+    shutil.copy(O2_DB_PATH, target)
+    return target
+
+
+@needs_upstream
+def test_receipt_row_count_mismatch_stops(tmp_path):  # G01, row count against the receipt (specification 04, section 9)
+    db = _copy_of_database(tmp_path)
+    conn = sqlite3.connect(db)
+    conn.execute("UPDATE source_receipts SET row_count = row_count - 1")
+    conn.commit()
+    conn.close()
+    result = verify.run(o2_path=db, upstream=UPSTREAM_DB_PATH)
+    g01 = next(g for g in result["gates"] if g["gate_id"] == "G01")
+    assert g01["status"] == "STOP"
+    assert "vs receipt" in g01["detail"]
+
+
+@needs_upstream
+def test_stop_withdraws_handoff(tmp_path):  # a STOP writes no handoff (specification 06, section 3.6)
+    db = _copy_of_database(tmp_path)
+    conn = sqlite3.connect(db)
+    conn.execute("UPDATE source_receipts SET content_sha256 = 'corrupted'")
+    conn.commit()
+    assert conn.execute("SELECT COUNT(*) FROM continuity_handoff_decisions").fetchone()[0] == 1
+    conn.close()
+    result = verify.run(o2_path=db, upstream=UPSTREAM_DB_PATH)
+    assert result["stopped"]
+    assert result["handoff_rows_withdrawn"] == 1
+    conn = sqlite3.connect(db)
+    assert conn.execute("SELECT COUNT(*) FROM continuity_handoff_decisions").fetchone()[0] == 0
+    conn.close()

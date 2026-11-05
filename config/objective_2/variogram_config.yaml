@@ -1,7 +1,11 @@
 # Objective 2 analysis configuration. Predeclared before any variogram of this version is computed.
 # A change of value requires a new config_version. Earlier configurations are kept in config/objective_2/superseded/.
-config_version: O2-CFG-2026.11.05-2
-supersedes: O2-CFG-2026.11.05-1
+config_version: O2-CFG-2026.11.05-4
+supersedes: O2-CFG-2026.11.05-2
+revision_reason: >
+  Adds one SKIP record to the sensitivity list for the tentative geologic orientation factor, which specification 02
+  section 10 names and the earlier list did not record. No numeric setting changed. Configuration 2 is kept in
+  config/objective_2/superseded/ (decisions.md, O2-D15).
 correction_reason: >
   Configuration 1 measured every between-hole lag in three dimensions. Vertical separation between intervals at
   different depths then dominated the lag, and the directional classes used three-dimensional distances. Configuration 2
@@ -87,3 +91,4 @@ sensitivity:                        # each row changes one factor of the named f
   - {name: STRICT_SUPPORT_200_PAIRS, applies_to: LATERAL_BETWEEN, factor: min_pairs_per_bin, value: 200}
   - {name: STRICT_LABEL_COMPARATOR, applies_to: LATERAL_BETWEEN, factor: label_rule, value: STRICT_SGS_v1, status_if_run: SKIP_NOT_AUTHORISED}
   - {name: ABSOLUTE_ELEVATION_GEOMETRY, applies_to: LATERAL_BETWEEN, factor: vertical, value: z_absolute_m, status_if_run: SKIP_NO_VALIDATED_RL}
+  - {name: TENTATIVE_GEOLOGIC_ORIENTATION, applies_to: LATERAL_BETWEEN, factor: geologic_orientation, value: NONE_AVAILABLE, status_if_run: SKIP_NO_GEOLOGIC_ORIENTATION, reason: "no strike or dip is recorded for the geology; all holes share one nominal orientation (G09)"}

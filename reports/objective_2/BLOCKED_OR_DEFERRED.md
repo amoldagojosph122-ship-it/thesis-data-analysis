@@ -15,6 +15,7 @@ Gate results are from VERIFY run 6. Every WARN, SKIP, DOWNGRADE and STOP is list
 
 - STRICT_LABEL_COMPARATOR: SKIP_NOT_AUTHORISED: not run
 - ABSOLUTE_ELEVATION_GEOMETRY: SKIP_NO_VALIDATED_RL: not run
+- TENTATIVE_GEOLOGIC_ORIENTATION: SKIP_NO_GEOLOGIC_ORIENTATION: no strike or dip is recorded for the geology; all holes share one nominal orientation (G09)
 
 ## Figures and tables not supported
 
@@ -33,4 +34,7 @@ Gate results are from VERIFY run 6. Every WARN, SKIP, DOWNGRADE and STOP is list
 - STRICT_SGS_v1 comparator: run under configuration 3 as authorised (RUN_REPORT.md section 5.7). The rule stays PROPOSED; the authorisation covers the comparator run only. A comparator on the full STRICT sample of 1910 intervals is not run.
 - Collar elevations: the RL column of the raw Collars sheet is empty for all 71 holes. The data request is in COLLAR_RL_REQUEST.md.
 - Objective 3 modelling: not started. The handoff contract is in RUN_REPORT.md section 11.
+- On-line versus between-line pairs (master prompt, step 4): not computed. Pairs are split only into within-hole and between-hole. This needs a further predeclared configuration.
+- Projected sections with line orientation and projection offset (master prompt, step 3): not produced. O2-F04 shows observed hole strips only.
+- Official Spec Kit initialisation (specify init) and the agent-side commands: not run (specification 07, section 1a).
 - Commit and push of the Objective 2 work: not done. It waits for the user's instruction.

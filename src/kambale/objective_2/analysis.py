@@ -218,7 +218,7 @@ def _write_sensitivity(conn, run_id: int, receipt_id: int, obs, p: float, specs:
             conn.execute("INSERT INTO sensitivity_runs (run_id, base_experiment_id, variant_name, changed_factor, "
                          "changed_value, status, reason) VALUES (?, ?, ?, ?, ?, 'SKIPPED', ?)",
                          (run_id, base_ids.get(entry["applies_to"]), name, factor, value,
-                          f"{entry['status_if_run']}: not run"))
+                          f"{entry['status_if_run']}: {entry.get('reason', 'not run')}"))
             continue
         targets = [s for s in specs.values() if entry["applies_to"] in (s.name, s.family)]
         if not targets:

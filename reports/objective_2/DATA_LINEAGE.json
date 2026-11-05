@@ -1,12 +1,12 @@
 {
-  "code_commit": "ef1a853",
+  "code_commit": "cb4be24",
   "code_version": "2.1.0",
   "configuration": {
-    "sha256": "ab3bc367fc82455146bd47b17a67d376d384a8f98dbffe32eebd6b2fd42753c9",
-    "supersedes": "O2-CFG-2026.11.05-1",
-    "version": "O2-CFG-2026.11.05-2"
+    "sha256": "bfc2962a9e8999472193ebb8ca7e17b3470c127d26cac90789b5675c51d5ce20",
+    "supersedes": "O2-CFG-2026.11.05-2",
+    "version": "O2-CFG-2026.11.05-4"
   },
-  "generated_utc": "2026-11-05T14:34:47Z",
+  "generated_utc": "2026-11-05T15:19:20Z",
   "geometry": {
     "build_id": 10,
     "coordinate_pair_status": "APPROVED",
@@ -152,19 +152,19 @@
       "id": "O2-F08",
       "kind": "FIGURE",
       "path": "figures/objective_2/O2_F08_sensitivity.svg",
-      "sha256": "62d64855be6ed6b7685171bacb986b0b3c479e1e9a921c907e44d992366b72ab"
+      "sha256": "b214b642bd59f7c8f874de6979175b692463cb4852ffc112dc1e48b5bbf498e2"
     },
     {
       "id": "O2-F08",
       "kind": "FIGURE",
       "path": "figures/objective_2/O2_F08_sensitivity.pdf",
-      "sha256": "7e944ddcb3aa32f33db0136943b0afedfe3849baf45928d85f3f3eaeefac6f63"
+      "sha256": "3caafba51a3c0a6f6cf8618af2bb5a8b5269801c576f42bc68a9ec8c23de94f0"
     },
     {
       "id": "O2-F08",
       "kind": "FIGURE",
       "path": "figures/objective_2/O2_F08_sensitivity.png",
-      "sha256": "67199e8fe059ff84708ff31a32b857b1cc9e83d349947ddb26e7b8d70e1a390c"
+      "sha256": "f110a8397ab95235ebe02cfa6738ca501b07ff042399284c8b2cbd2a7f1671ef"
     },
     {
       "id": "O2-F09",
@@ -242,37 +242,37 @@
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.csv",
-      "sha256": "48bc3018cbde116263a6e3c17141790a695a34e1667da5ac0be45d46b72520e3"
+      "sha256": "15b21fe4a3ed732c37e3f3355f50ea31473d1efe853f8da6de9e5031e08a981d"
     },
     {
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.md",
-      "sha256": "6eeb449a7ee1d363535aa3045777984b31055c6749a89b3874c96af358459d49"
+      "sha256": "5a6c818a68ddaf604eda07fadb0c701750d3372362b0537a38525b9a57939890"
     },
     {
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.tex",
-      "sha256": "dad9b55440f0607893ad8eaa0580b3907668226397df9c405070263abb937bf5"
+      "sha256": "163fda70c2520399d4a53024fc0c393e1d92c13c0e507fd874ff84f9d9e28806"
     },
     {
       "id": "FIGURE_MANIFEST",
       "kind": "MANIFEST",
       "path": "reports/objective_2/FIGURE_MANIFEST.csv",
-      "sha256": "6012b0bcdc528ce9b980af6d0d5940a0b25d57cec34b240ee0fa9fcf2f168ad4"
+      "sha256": "56d36e2ea6756e02a9d7e3532ca3b3340578def771595c5739884f0eb675f68a"
     },
     {
       "id": "RUN_REPORT",
       "kind": "REPORT",
       "path": "reports/objective_2/RUN_REPORT.md",
-      "sha256": "b502bc2c8e958ff4bf17ae3742f860ef192225a054c69e4af46c0921ca18801d"
+      "sha256": "0765b85aac3e6c1d4b41d19ad54ca31bf0a0026099ffcf7728a3923d07addef5"
     },
     {
       "id": "BLOCKED_OR_DEFERRED",
       "kind": "REPORT",
       "path": "reports/objective_2/BLOCKED_OR_DEFERRED.md",
-      "sha256": "67d72e984af3501dba0588e10507a343ed5f2aed74c946fae754cc89ba0d58e9"
+      "sha256": "06897e4f2516739cb31ccd0184383c10856c1fae4eb1545f65d22423c9646e06"
     }
   ],
   "runs": {
