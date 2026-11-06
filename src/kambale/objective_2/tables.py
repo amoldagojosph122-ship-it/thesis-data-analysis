@@ -33,6 +33,11 @@ TABLES = OrderedDict([
                 "Front = shallowest interval with weathering code mw or sw, depth in metres relative to collar. Interpolation "
                 "is inverse-distance (power 2, 8 nearest holes); skill ratio = IDW RMSE / training-mean RMSE; interpolable when "
                 "the ratio is at most 0.8. Configuration 5 is a sensitivity stage and writes no handoff.")),
+    ("O2-T06", ("Structural-frame alignment score by apparent dip, selection-null p-value and leave-one-line-out dips",
+                "O2_T06_structural_alignment", "O2-T06.sql",
+                'Alignment score A(d) = 1 - mean semivariance at the first two supported bins divided by p(1 - p), for within-line between-hole pairs with |ds| at most 3 m. The selection-null p-value uses 500 circular down-hole shifts with the whole grid rescored. The DEM_ABSOLUTE frame is sensitivity only and sets no decision.')),
+    ("O2-T07", ("Structural-frame fit at the selected dip and between-line report", "O2_T07_structural_fit_between_line",
+                "O2-T07.sql", 'Fits use the configuration-5 rules at the selected dip. A range is STABLE only when every leave-one-line-out refit is FITTED with a range ratio between 0.5 and 2.0. The between-line report is REPORT_ONLY and carries no fit.')),
 ])
 WIDE_TEXT = {"detail", "reason", "rationale", "projection_basis"}
 TEX_SPECIAL = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_", "{": r"\{",

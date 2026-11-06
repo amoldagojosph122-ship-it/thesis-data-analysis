@@ -1,6 +1,6 @@
 # Objective 2 run report: spatial distribution, geological controls and indicator variography
 
-Configuration O2-CFG-2026.11.05-4 (SHA-256 bfc2962a9e89), code 2.1.0, schema O2-SCHEMA-2026.11.06-5, commit 7d83644. Import run 1, analysis run 2, gate run 12. Report written 2026-11-06T04:33:48Z.
+Configuration O2-CFG-2026.11.05-4 (SHA-256 bfc2962a9e89), code 2.1.0, schema O2-SCHEMA-2026.11.06-6, commit c13a75c. Import run 1, analysis run 2, gate run 20. Report written 2026-11-06T09:07:14Z.
 
 ## 1. Status
 
@@ -116,7 +116,82 @@ Observability: 3 of 647 intervals logged cw or hw carry a POSITIVE DESIGN label.
 
 Configuration 5 writes no handoff row; the configuration-2 handoff (NOT_IDENTIFIABLE) stands as recorded.
 
-## 6. Gate results (VERIFY run 12)
+### 5.9 Configuration 6: structural frame (apparent-dip search, selection null, between-line report)
+
+Configuration O2-CFG-2026.11.06-6 (SHA-256 89ce6fff3fed), stage run 14: configuration 6: structural-frame indicator variography (dip search, circular down-hole null); no handoff row written; in-memory YAML scalar repairs: 2.
+
+Dip grid -80 to 80 degrees in 17 steps. Pairs: within-line between-hole, |ds| at most 3 m, lag |dt| binned 20 m to 500 m. Null: circular down-hole shift, 500 permutations, whole grid rescored. Same-hole pairs in the experiments: 0; same-hole candidates excluded before the experiments: 478152.
+
+| sample | frame | selected dip (deg) | A at selected dip | A at dip 0 | null 95th percentile of max | null p-value | lines within 10 deg of full dip | decision |
+|---|---|---|---|---|---|---|---|---|
+| ALL_BINARY | DEM_ABSOLUTE | +0 | 0.1837 | 0.1837 | 0.1669 | 0.0399 | 5 of 5 | sensitivity only |
+| ALL_BINARY | RELATIVE | +0 | 0.1686 | 0.1686 | 0.1676 | 0.0519 | 5 of 5 | NOT_IDENTIFIABLE (structural frame) |
+| FRESH | DEM_ABSOLUTE | +20 | 0.3033 | 0.1863 | 0.4286 | 0.5409 | 3 of 5 | sensitivity only |
+| FRESH | RELATIVE | +20 | 0.2892 | 0.1914 | 0.4269 | 0.6048 | 2 of 5 | NOT_IDENTIFIABLE (structural frame) |
+
+Leave-one-line-out dips (degrees):
+
+- ALL_BINARY, DEM_ABSOLUTE, without NOM_N1111930: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, DEM_ABSOLUTE, without NOM_N1112140: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, DEM_ABSOLUTE, without NOM_N1112500: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, DEM_ABSOLUTE, without NOM_N1112600: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, DEM_ABSOLUTE, without NOM_N1113000: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, RELATIVE, without NOM_N1111930: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, RELATIVE, without NOM_N1112140: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, RELATIVE, without NOM_N1112500: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, RELATIVE, without NOM_N1112600: +0 (within 10 degrees of the full dip).
+- ALL_BINARY, RELATIVE, without NOM_N1113000: +0 (within 10 degrees of the full dip).
+- FRESH, DEM_ABSOLUTE, without NOM_N1111930: -60 (outside 10 degrees of the full dip).
+- FRESH, DEM_ABSOLUTE, without NOM_N1112140: +20 (within 10 degrees of the full dip).
+- FRESH, DEM_ABSOLUTE, without NOM_N1112500: +20 (within 10 degrees of the full dip).
+- FRESH, DEM_ABSOLUTE, without NOM_N1112600: -20 (outside 10 degrees of the full dip).
+- FRESH, DEM_ABSOLUTE, without NOM_N1113000: +20 (within 10 degrees of the full dip).
+- FRESH, RELATIVE, without NOM_N1111930: -60 (outside 10 degrees of the full dip).
+- FRESH, RELATIVE, without NOM_N1112140: +20 (within 10 degrees of the full dip).
+- FRESH, RELATIVE, without NOM_N1112500: -50 (outside 10 degrees of the full dip).
+- FRESH, RELATIVE, without NOM_N1112600: -20 (outside 10 degrees of the full dip).
+- FRESH, RELATIVE, without NOM_N1113000: +20 (within 10 degrees of the full dip).
+
+Fits at the selected dip (sill and nugget in indicator units; range in metres):
+
+| sample | frame | model | fit status | nugget | structured sill | range | leave-one-line-out stability | range ratio min to max |
+|---|---|---|---|---|---|---|---|---|
+| ALL_BINARY | DEM_ABSOLUTE | exponential | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+| ALL_BINARY | DEM_ABSOLUTE | spherical | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+| ALL_BINARY | RELATIVE | exponential | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+| ALL_BINARY | RELATIVE | spherical | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+| FRESH | DEM_ABSOLUTE | exponential | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+| FRESH | DEM_ABSOLUTE | spherical | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+| FRESH | RELATIVE | exponential | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+| FRESH | RELATIVE | spherical | NOT_IDENTIFIABLE | n/a | n/a | n/a | NOT_ASSESSED | n/a to n/a |
+
+Between-line along-strike report (REPORT_ONLY, RELATIVE frame, selected dip; no fit):
+
+- ALL_BINARY, lag 50 to 150 m: 43897 pairs, 315 independent hole pairs, gamma 0.186, supported.
+- ALL_BINARY, lag 150 to 250 m: 6666 pairs, 39 independent hole pairs, gamma 0.186, supported.
+- ALL_BINARY, lag 250 to 350 m: 3707 pairs, 32 independent hole pairs, gamma 0.188, supported.
+- ALL_BINARY, lag 350 to 450 m: 72723 pairs, 526 independent hole pairs, gamma 0.170, supported.
+- ALL_BINARY, lag 450 to 600 m: 89649 pairs, 657 independent hole pairs, gamma 0.150, supported.
+- FRESH, lag 50 to 150 m: 0 pairs, 0 independent hole pairs, gamma n/a, below 100 pairs.
+- FRESH, lag 150 to 250 m: 0 pairs, 0 independent hole pairs, gamma n/a, below 100 pairs.
+- FRESH, lag 250 to 350 m: 0 pairs, 0 independent hole pairs, gamma n/a, below 100 pairs.
+- FRESH, lag 350 to 450 m: 0 pairs, 0 independent hole pairs, gamma n/a, below 100 pairs.
+- FRESH, lag 450 to 600 m: 1692 pairs, 42 independent hole pairs, gamma 0.244, supported.
+
+Decisions (RELATIVE frame, structural frame): ALL_BINARY NOT_IDENTIFIABLE (structural frame) (selection-null p = 0.0519 (not below 0.05); 5 of 5 leave-one-line-out dips within 10 degrees (need 4); stable FITTED model: none; decision NOT_IDENTIFIABLE (structural frame)); FRESH NOT_IDENTIFIABLE (structural frame) (selection-null p = 0.6048 (not below 0.05); 2 of 5 leave-one-line-out dips within 10 degrees (need 4); stable FITTED model: none; decision NOT_IDENTIFIABLE (structural frame)).
+
+The DEM_ABSOLUTE frame is sensitivity only and sets no decision. Configuration 6 writes no handoff row; the configuration-2 handoff (NOT_IDENTIFIABLE) stands as recorded.
+
+Claims not permitted by configuration 6 (from its claims_not_permitted list):
+
+- a measured strike or dip of the ore horizons (the dip here is an apparent, statistically selected dip)
+- an along-strike range
+- any change to the configuration-2 handoff decision
+- geological continuity beyond the drilled lines
+
+Decision label for a PROVISIONAL result: PROVISIONAL (structural frame). It supplies a structural-frame across-strike covariance only; no along-strike range is identified.
+
+## 6. Gate results (VERIFY run 20)
 
 | gate | name | status | detail |
 |---|---|---|---|
@@ -151,14 +226,22 @@ Configuration 5 writes no handoff row; the configuration-2 handoff (NOT_IDENTIFI
 | G29 | NOT_SUPPORTED entries carry a reason | PASS | 0 NOT_SUPPORTED figures without a stated reason |
 | G30 | Export hashes | PASS | 0 manifest entries differ from the file on disk |
 | G31 | Configuration-5 stage writes no handoff | PASS | 0 handoff rows created at or after the start of configuration-5 run 4 |
+| G32 | Structural stage: no within-hole pair | PASS | 68 dip and frame pair sets; within-hole pairs inside the experiments: 0; same-hole candidates excluded before the experiment: 478152 |
+| G33 | Structural stage: grid, band, lag and seed | PASS | 68 alignment rows; 4 sample-frame combinations; configuration mismatches: none |
+| G34 | Structural stage: d = 0 pair set | PASS | independent within-line between-hole set with |dz| <= 3 m: 75201 pairs; stage: 75201 pairs; digests agree |
+| G35 | Structural stage writes no handoff | PASS | 0 handoff rows created at or after the start of configuration-6 run 14 |
+| G36 | Structural selected dip not at the grid edge | PASS | selected dips at plus or minus 80 degrees: none |
+| G37 | Structural frames agree on the selected dip | PASS | RELATIVE and DEM_ABSOLUTE selected dips: ALL_BINARY 0 and 0; FRESH 20 and 20; more than 20 degrees apart: 0 |
 
 ## 7. Tables
 
 - O2-T01: GENERATED, 76 rows; Hole and line geological summary with support.
 - O2-T02: GENERATED, 6 rows; Indicator prevalence, ambiguity and missingness by line.
 - O2-T03: GENERATED, 40 rows; Variogram fitting report.
-- O2-T04: GENERATED, 14 rows; Handoff contract and open items.
+- O2-T04: GENERATED, 15 rows; Handoff contract and open items.
 - O2-T05: GENERATED, 20 rows; Weathering front continuity and interpolation check.
+- O2-T06: GENERATED, 68 rows; Structural-frame alignment score by apparent dip, selection-null p-value and leave-one-line-out dips.
+- O2-T07: GENERATED, 28 rows; Structural-frame fit at the selected dip and between-line report.
 
 ### O2-T03 variogram fitting report
 
@@ -213,7 +296,7 @@ Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 40 rows.
 
 
 The handoff is for Objective 3 only. Full-data parameters are never supplied for test folds, and every open item is listed with its status.
-Source: sql/objective_2/tables/O2-T04.sql, receipt 1, 14 rows.
+Source: sql/objective_2/tables/O2-T04.sql, receipt 1, 15 rows.
 
 | item_type | item_id | status | detail |
 |---|---|---|---|
@@ -223,6 +306,7 @@ Source: sql/objective_2/tables/O2-T04.sql, receipt 1, 14 rows.
 | GATE | G09 | WARN | Declared orientation: survey orientations [(-60.0, 90.0)]; declared (-60.0, 90.0); uniform across holes = True |
 | GATE | G10 | WARN | Class imbalance: lines below 10 per cent positive: NOM_N1113000 0.041 |
 | GATE | G12 | WARN | Directional support: skipped directions: LAT_AZ_000, LAT_AZ_045, LAT_AZ_135 |
+| GATE | G16 | WARN | Leave-one-line-out stability: 2 fits are unstable; 10 refit rows for 5 lines (two models each); of which configuration 5 (fresh rock): 2 (see RUN_REPORT 5.8) |
 | GATE | G21 | WARN | Relative depth only: 5 of 5 sections labelled RELATIVE_DEPTH; no collar elevation is available, so the relative-depth limitation is always reported |
 | HANDOFF | O3-HANDOFF-1 | NOT_IDENTIFIABLE | candidate_family=NONE; full_data_parameters_for_test_folds=0; No lateral model is both FITTED and stable under leave-one-line-out: spherical NOT_IDENTIFIABLE (structured sill below 5% of p(1-p): no structure beyond the nugget); exponential NOT_IDENTIFIABLE (range at the smallest supported lag: no spatial dependence beyond the nugget; structured sill below 5% of p(1-p): no structure beyond the nugget). Lateral continuity is not identified at this support. Objective 3 must not use a between-hole continuity model whose parameters come from these fits; models without a geostatistical continuity term may proceed without a continuity claim. |
 | QUESTION | COLLAR_RL | OPEN | no collar elevation (RL) is available; depth is relative to collar and absolute elevation is not used |
@@ -246,6 +330,9 @@ Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are i
 - O2-F08 (GENERATED): Sensitivity of supported bins and fit status. Supported lag bins and fit status (spherical and exponential) for 8 completed sensitivity experiments and their base experiments; 3 configured entries were skipped, with reasons shown in the figure. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 - O2-F09 (GENERATED): Configuration-3 lateral extension with the STRICT comparator (exploratory). Configuration-3 exploratory lateral extension: experimental indicator semivariograms with 50 m bins to 2000 m and a relative-depth difference of at most 3 m, for DESIGN_8_2_v1 (approved, primary) and STRICT_SGS_v1 (comparator, authorised for this run only). Dashed line: the DESIGN marginal variance; dotted line, where it differs: the STRICT marginal variance; no model is FITTED, so no curve is drawn. The two samples give identical semivariances at every lag, because the comparator reproduces the DESIGN indicator on every DESIGN binary interval; the series coincide, so the comparator is drawn as hollow markers. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 - O2-F10 (GENERATED): Weathering front and fresh-rock indicator semivariograms. Left: weathering front (shallowest interval with weathering mw or sw) of 71 holes by collar easting, one marker per drill line (vertical: relative depth of the front, m). Right: supported experimental indicator semivariograms of the fresh-rock sample (1163 binary intervals) for pairs at equal relative depth and for pairs at equal depth below their own front, 20 m bins to 500 m, with 95 per cent hole-bootstrap bands. Dashed line: p(1 - p) = 0.247; 2 fitted curve(s) drawn. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
+- O2-F11 (GENERATED): Structural-frame alignment score against apparent dip, with selection-null bands. Alignment score A(d) = 1 - mean semivariance at the first two supported lag bins divided by p(1 - p), for within-line between-hole pairs on the plane of apparent dip d (17 dips, -80 to 80 degrees). Each panel is one sample; blue solid is the RELATIVE frame (primary), green dashed is the DEM_ABSOLUTE frame (sensitivity). Dotted lines give the 95th percentile of the maximum over the dip grid under the circular down-hole shift null (500 permutations). Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
+- O2-F12 (GENERATED): Structural-frame experimental variograms at the selected dip and at dip 0. Experimental indicator semivariogram of within-line between-hole pairs in the RELATIVE frame, at the selected apparent dip (blue, with its hole-bootstrap band) and at dip 0 (green, horizontal control), for each sample; no model is FITTED at the selected dip, so no curve is drawn. Pairs lie within 3 m of one another across the plane. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
+- O2-F13 (GENERATED): Drill-line sections with the selected-dip planes. One vertical east-west section per drill line (relative depth). Intervals: filled vermillion indicator 1, open blue indicator 0. Black traces: planes of the selected apparent dip +0 degrees (positive dips toward east), spaced 20 m across the plane. Visual aid only; the dip is statistically selected and is not a measured orientation. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 
 ## 9. Tests
 
@@ -300,7 +387,7 @@ Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are i
 ./.venv/Scripts/python.exe -I -m kambale.objective_2 verify
 ```
 
-`all` runs import, analyse, extension, weathering, verify, figures, tables, verify, report and verify. The stages can also be run one at a time with `import`, `analyse`, `extension`, `weathering`, `figures`, `tables`, `report` and `verify`. The report reads PYTEST_OUTPUT.txt, so the test run comes before the second report.
+`all` runs import, analyse, extension, weathering, structural, verify, figures, tables, verify, report and verify. The stages can also be run one at a time with `import`, `analyse`, `extension`, `weathering`, `structural`, `figures`, `tables`, `report` and `verify`. The report reads PYTEST_OUTPUT.txt, so the test run comes before the second report.
 
 Python 3.14.6 on Windows 11; numpy 2.4.6, scipy 1.18.0, matplotlib 3.11.1, PyYAML 6.0.3, pytest 9.1.1.
 Independent check: scikit-gstat was installed with uv into a scratch directory outside the project environment, because installing it into the project environment would downgrade scipy from 1.18.0 to 1.16.3. The comparison ran after the user approved it in chat, on the three-dimensional omnidirectional experiment with within-hole pairs included, which scikit-gstat's Matheron estimator also uses. Maximum absolute difference in semivariance: 2.776e-17 (tolerance 1e-09). Result: PASS. The lateral basis is not compared directly, because scikit-gstat cannot restrict pairs to a relative-depth band. Both use the same estimator, so the agreement is evidence for the pair counting and the binning. It is run from a scratch directory outside the project environment: `./.venv/Scripts/python.exe -I -m kambale.objective_2.independent_check --site <scratch-directory>`.
@@ -317,10 +404,10 @@ Independent check: scikit-gstat was installed with uv into a scratch directory o
 | continuity_handoff_decisions | 1 |
 | depth_lithology_summaries | 28 |
 | direction_registry | 9 |
-| export_manifests | 52 |
-| figure_query_registry | 28 |
-| figure_registry | 10 |
-| gate_results | 248 |
+| export_manifests | 67 |
+| figure_query_registry | 34 |
+| figure_registry | 13 |
+| gate_results | 501 |
 | geological_section_registry | 5 |
 | hole_occurrence_summaries | 71 |
 | line_occurrence_summaries | 5 |
@@ -329,9 +416,17 @@ Independent check: scikit-gstat was installed with uv into a scratch directory o
 | sensitivity_runs | 56 |
 | source_receipts | 1 |
 | spatial_support_statistics | 17 |
-| stage_runs | 12 |
-| table_query_registry | 5 |
-| table_registry | 5 |
+| stage_runs | 20 |
+| structural_alignment_scores | 68 |
+| structural_between_line | 20 |
+| structural_decisions | 2 |
+| structural_fits | 8 |
+| structural_lolo_dips | 20 |
+| structural_null_summary | 4 |
+| structural_pair_digests | 68 |
+| structural_variogram_bins | 200 |
+| table_query_registry | 7 |
+| table_registry | 7 |
 | variogram_experiments | 40 |
 | variogram_fit_parameters | 42 |
 | variogram_fits | 80 |

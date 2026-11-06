@@ -1,6 +1,6 @@
 # Objective 2: blocked, skipped and deferred items
 
-Gate results are from VERIFY run 12. Every WARN, SKIP, DOWNGRADE and STOP is listed.
+Gate results are from VERIFY run 20. Every WARN, SKIP, DOWNGRADE and STOP is listed.
 
 ## Gates with a warning or a skip
 

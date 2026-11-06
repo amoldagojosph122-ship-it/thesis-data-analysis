@@ -19,6 +19,7 @@ from kambale.objective_2.config import (O2_CONFIG_PATH, O2_DB_PATH, PROJECT_ROOT
 from kambale.objective_2.db import connect_o2, connect_upstream_readonly
 from kambale.objective_2.importer import IMPORT_QUERY
 from kambale.objective_2.pairs import bin_edges
+from kambale.objective_2.structural import EDGE_DIP_DEG, FRAME_DIP_GAP_DEG, read_structural_config
 from kambale.objective_2.weathering import WEATHERING_CONFIG_PATH
 
 PAIR_CHECK_SEED = 20261105
@@ -279,6 +280,105 @@ def run(o2_path=O2_DB_PATH, upstream=UPSTREAM_DB_PATH, config_path=O2_CONFIG_PAT
                              (rid, w5["started_utc"])).fetchone()[0]
         g.append(_result("G31", "Configuration-5 stage writes no handoff", "PASS" if later == 0 else "STOP", "handoff",
                          f"{later} handoff rows created at or after the start of configuration-5 run {w5['run_id']}"))
+
+    # G32 to G37 (configuration 6, structural frame). Every check reads the configuration file or the database; none is
+    # marked PASS without being run. The configuration-6 stage writes no handoff row, so G35 is the time check of G31.
+    s_version = read_structural_config()[0]["config_version"]
+    s_cfg, _, _ = read_structural_config()
+    s_run = conn.execute("SELECT run_id, started_utc FROM stage_runs WHERE run_kind = 'SENSITIVITY' AND config_version = ? "
+                         "AND receipt_id = ? ORDER BY run_id DESC LIMIT 1", (s_version, rid)).fetchone()
+    if s_run is None:
+        for gid, name in (("G32", "Structural stage: no within-hole pair"), ("G33", "Structural stage: grid, band, lag and seed"),
+                          ("G34", "Structural stage: d = 0 pair set"), ("G35", "Structural stage writes no handoff"),
+                          ("G36", "Structural selected dip not at the grid edge"),
+                          ("G37", "Structural frames agree on the selected dip")):
+            g.append(_result(gid, name, "SKIP", "analysis", f"no {s_version} stage run on receipt {rid}"))
+    else:
+        s_rid_version = (rid, s_version)
+        # G32: no within-hole pair inside any between-hole experiment.
+        wh = conn.execute("SELECT COUNT(*), COALESCE(SUM(n_within_hole_pairs), 0), COALESCE(SUM(n_within_hole_candidates_excluded), 0) "
+                          "FROM structural_pair_digests WHERE receipt_id = ? AND config_version = ?", s_rid_version).fetchone()
+        g.append(_result("G32", "Structural stage: no within-hole pair", "PASS" if wh[0] > 0 and wh[1] == 0 else "STOP", "analysis",
+                         f"{wh[0]} dip and frame pair sets; within-hole pairs inside the experiments: {wh[1]}; same-hole "
+                         f"candidates excluded before the experiment: {wh[2]}"))
+
+        # G33: dip grid, |ds| band, lag width and maximum, permutation count, seed, alpha and bootstrap settings match the file.
+        pw = s_cfg["pairing"]["within_line_between_hole"]
+        sn = s_cfg["dip_selection"]["selection_null"]
+        hb = s_cfg["model_fitting"]["hole_bootstrap"]
+        grid = sorted(float(d) for d in s_cfg["frame"]["apparent_dip_grid_deg"])
+        bad = []
+        for r in conn.execute("SELECT * FROM structural_null_summary WHERE receipt_id = ? AND config_version = ?", s_rid_version):
+            checks = {"max_abs_ds_m": float(pw["max_abs_ds_m"]), "lag_width_m": float(pw["lag_width_m"]),
+                      "lag_max_m": float(pw["lag_max_m"]), "n_permutations": int(sn["n_permutations"]),
+                      "null_seed": int(sn["seed"]), "alpha": float(sn["alpha"]),
+                      "bootstrap_replicates": int(hb["n_replicates"]), "bootstrap_seed": int(hb["seed"])}
+            for key, want in checks.items():
+                if abs(float(r[key]) - want) > 1e-9:
+                    bad.append(f"{r['sample_id']} {r['frame_id']} {key} {r[key]} vs {want}")
+        combos = conn.execute("SELECT sample_id, frame_id, dip_deg FROM structural_alignment_scores WHERE receipt_id = ? "
+                              "AND config_version = ?", s_rid_version).fetchall()
+        by_combo: dict = {}
+        for r in combos:
+            by_combo.setdefault((r["sample_id"], r["frame_id"]), []).append(float(r["dip_deg"]))
+        for key, dips in by_combo.items():
+            if sorted(dips) != grid:
+                bad.append(f"{key[0]} {key[1]} dip grid differs ({len(dips)} dips)")
+        if len(by_combo) != 4:
+            bad.append(f"{len(by_combo)} sample and frame combinations, expected 4")
+        g.append(_result("G33", "Structural stage: grid, band, lag and seed", "STOP" if bad else "PASS", "analysis",
+                         f"{len(combos)} alignment rows; {len(by_combo)} sample-frame combinations; configuration mismatches: "
+                         f"{'; '.join(bad) if bad else 'none'}"))
+
+        # G34: the d = 0 RELATIVE ALL_BINARY pair set equals an independent double loop over the within-line between-hole pairs
+        # with |dz| at most the band and 0 < |dx| < lag maximum (the d = 0 lag is the easting difference).
+        band = float(pw["max_abs_ds_m"])
+        lag_max = float(pw["lag_max_m"])
+        obs = conn.execute("SELECT upstream_interval_id, hole_id, line_code, easting_m, z_relative_m FROM analysis_observations "
+                           "WHERE receipt_id = ? AND in_binary_target = 1 ORDER BY upstream_interval_id", (rid,)).fetchall()
+        indep = []
+        for a in range(len(obs)):
+            ua, ha, la, xa, za = (obs[a][k] for k in range(5))
+            for b in range(a + 1, len(obs)):
+                ub, hb_, lb, xb, zb = (obs[b][k] for k in range(5))
+                if lb != la or hb_ == ha or abs(zb - za) > band:
+                    continue
+                lag = abs(xb - xa)
+                if 1e-6 < lag < lag_max:
+                    indep.append((ua, ub))
+        indep_arr = np.array(sorted(indep), dtype="<i8").reshape(-1, 2)
+        indep_digest = hashlib.sha256(indep_arr.tobytes()).hexdigest()
+        stored = conn.execute("SELECT n_pairs, pair_digest FROM structural_pair_digests WHERE receipt_id = ? AND config_version = ? "
+                              "AND sample_id = 'ALL_BINARY' AND frame_id = 'RELATIVE' AND dip_deg = 0.0", s_rid_version).fetchone()
+        same = stored is not None and stored["n_pairs"] == len(indep) and stored["pair_digest"] == indep_digest
+        g.append(_result("G34", "Structural stage: d = 0 pair set", "PASS" if same else "STOP", "analysis",
+                         f"independent within-line between-hole set with |dz| <= {band:g} m: {len(indep)} pairs; stage: "
+                         f"{stored['n_pairs'] if stored else 'missing'} pairs; digests {'agree' if same else 'DISAGREE'}"))
+
+        # G35: no handoff row created at or after the start of the configuration-6 stage run.
+        s_later = conn.execute("SELECT COUNT(*) FROM continuity_handoff_decisions WHERE receipt_id = ? AND created_utc >= ?",
+                               (rid, s_run["started_utc"])).fetchone()[0]
+        g.append(_result("G35", "Structural stage writes no handoff", "PASS" if s_later == 0 else "STOP", "handoff",
+                         f"{s_later} handoff rows created at or after the start of configuration-6 run {s_run['run_id']}"))
+
+        # G36 (WARN): a selected dip at the edge of the grid.
+        edge = conn.execute("SELECT sample_id, frame_id, selected_dip_deg FROM structural_null_summary WHERE receipt_id = ? "
+                            "AND config_version = ? AND ABS(selected_dip_deg) >= ?", (*s_rid_version, EDGE_DIP_DEG)).fetchall()
+        g.append(_result("G36", "Structural selected dip not at the grid edge", "WARN" if edge else "PASS", "analysis",
+                         "selected dips at plus or minus 80 degrees: " + (", ".join(
+                             f"{r['sample_id']} {r['frame_id']} {r['selected_dip_deg']:g}" for r in edge) or "none")))
+
+        # G37 (WARN): RELATIVE and DEM_ABSOLUTE selecting dips more than 20 degrees apart.
+        pairs_frames = conn.execute("SELECT a.sample_id, a.selected_dip_deg AS rel, b.selected_dip_deg AS dem "
+                                    "FROM structural_null_summary a JOIN structural_null_summary b ON b.receipt_id = a.receipt_id "
+                                    "AND b.config_version = a.config_version AND b.sample_id = a.sample_id AND b.frame_id = 'DEM_ABSOLUTE' "
+                                    "WHERE a.receipt_id = ? AND a.config_version = ? AND a.frame_id = 'RELATIVE'",
+                                    s_rid_version).fetchall()
+        far = [r for r in pairs_frames if abs(r["rel"] - r["dem"]) > FRAME_DIP_GAP_DEG]
+        g.append(_result("G37", "Structural frames agree on the selected dip", "WARN" if far else "PASS", "analysis",
+                         "RELATIVE and DEM_ABSOLUTE selected dips: " + ("; ".join(
+                             f"{r['sample_id']} {r['rel']:g} and {r['dem']:g}" for r in pairs_frames) or "none") +
+                         f"; more than {FRAME_DIP_GAP_DEG:g} degrees apart: {len(far)}"))
 
     for row in g:
         conn.execute("INSERT INTO gate_results (run_id, gate_id, gate_name, status, scope, detail, created_utc) "

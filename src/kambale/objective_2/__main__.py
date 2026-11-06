@@ -1,6 +1,6 @@
 """Command-line entry point: python -I -m kambale.objective_2 <command>.
 
-`all` runs import, analyse, extension, weathering, verify, figures, tables, verify, report and verify, in that order. A verify step that
+`all` runs import, analyse, extension, weathering, structural, verify, figures, tables, verify, report and verify, in that order. A verify step that
 finds a STOP gate ends the run before anything after it is written (specification 03). Every command prints a JSON summary
 and exits with status 1 when a STOP gate fails.
 """
@@ -31,7 +31,7 @@ def _finish(summary: dict, status: int) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="kambale.objective_2")
-    parser.add_argument("command", choices=["import", "analyse", "extension", "weathering", "figures", "tables", "report", "verify", "all"])
+    parser.add_argument("command", choices=["import", "analyse", "extension", "weathering", "structural", "figures", "tables", "report", "verify", "all"])
     args = parser.parse_args(argv)
     command = args.command
     summary: dict = {}
@@ -46,6 +46,9 @@ def main(argv: list[str] | None = None) -> int:
         if command in ("weathering", "all"):
             from kambale.objective_2 import weathering
             summary["weathering"] = weathering.run()
+        if command in ("structural", "all"):
+            from kambale.objective_2 import structural
+            summary["structural"] = structural.run()
         if command == "verify" and _verify_step(summary, "verify"):
             return _finish(summary, 1)
         if command == "all" and _verify_step(summary, "verify_before_exports"):

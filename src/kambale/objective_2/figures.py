@@ -15,6 +15,7 @@ same rows is byte-identical.
 
 from __future__ import annotations
 
+import math
 import textwrap
 from collections import OrderedDict
 from pathlib import Path
@@ -596,6 +597,144 @@ def _weathering(rows: dict, receipt: dict):
                                   f"p(1 - p) = {pq:.3f}; {fit_text}.")
 
 
+STRUCTURAL_SAMPLE_LABEL = {"ALL_BINARY": "All binary intervals (primary)", "FRESH": "Fresh rock mw or sw (secondary)"}
+STRUCTURAL_FRAME_LABEL = {"RELATIVE": "relative depth (primary)", "DEM_ABSOLUTE": "DEM elevation (sensitivity)"}
+
+
+def _structural_scores(rows: dict, receipt: dict):
+    scores = [r for r in rows["scores"] if r["alignment_score"] is not None]
+    if not scores:
+        raise NotSupported("no structural alignment rows for configuration 6")
+    nulls = {(r["sample_id"], r["frame_id"]): r for r in rows["nulls"]}
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.5), sharey=True)
+    fig.subplots_adjust(left=0.1, right=0.98, top=0.8, bottom=0.2, wspace=0.12)
+    for ax, sid in zip(axes, ("ALL_BINARY", "FRESH")):
+        for frame, colour, ls in (("RELATIVE", BLUE, "-"), ("DEM_ABSOLUTE", GREEN, "--")):
+            pts = sorted((r for r in scores if r["sample_id"] == sid and r["frame_id"] == frame), key=lambda r: r["dip_deg"])
+            if not pts:
+                continue
+            ax.plot([r["dip_deg"] for r in pts], [r["alignment_score"] for r in pts], ls=ls, marker="o", ms=2.8, lw=0.9,
+                    color=colour, label=STRUCTURAL_FRAME_LABEL[frame])
+            sel = [r for r in pts if r["is_selected"]]
+            if sel:
+                ax.plot([sel[0]["dip_deg"]], [sel[0]["alignment_score"]], ls="none", marker="*", ms=8, mfc="white",
+                        mec=colour, mew=0.9)
+            null = nulls.get((sid, frame))
+            if null and null["null_p95_max"] is not None:
+                ax.axhline(null["null_p95_max"], color=colour, ls=":", lw=0.8)
+                ax.text(78, null["null_p95_max"], "null 95th pct" + (" (DEM)" if frame == "DEM_ABSOLUTE" else ""),
+                        fontsize=5.4, color=colour, ha="right",
+                        va="top" if frame == "DEM_ABSOLUTE" else "bottom")   # DEM label below the line, so the two do not overlap
+        ax.axvline(0.0, color=NEUTRAL_LIGHT, lw=0.7)
+        ax.set_xlim(-80, 80)
+        ax.set_xlabel("Apparent dip d (degrees; positive dips toward east)")
+        ax.set_title(STRUCTURAL_SAMPLE_LABEL[sid], loc="left", fontsize=7)
+    axes[0].set_ylabel("Alignment score A(d)")
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper right", ncol=2, fontsize=6.0, bbox_to_anchor=(0.98, 0.99))
+    _footer(fig, receipt, "stars mark the selected dip; dotted lines: selection-null 95th percentile of the maximum over the grid")
+    return fig, _caption(receipt, "Alignment score A(d) = 1 - mean semivariance at the first two supported lag bins divided by "
+                                  "p(1 - p), for within-line between-hole pairs on the plane of apparent dip d (17 dips, -80 to "
+                                  "80 degrees). Each panel is one sample; blue solid is the RELATIVE frame (primary), green dashed "
+                                  "is the DEM_ABSOLUTE frame (sensitivity). Dotted lines give the 95th percentile of the maximum "
+                                  "over the dip grid under the circular down-hole shift null (500 permutations).")
+
+
+def _structural_variogram(rows: dict, receipt: dict):
+    bins = [b for b in rows["bins"] if b["supported"]]
+    if not bins:
+        raise NotSupported("no supported structural bins for configuration 6")
+    fits = rows["fits"]
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.6), sharey=True)
+    fig.subplots_adjust(left=0.1, right=0.98, top=0.8, bottom=0.2, wspace=0.12)
+    ymax = 0.25
+    for ax, sid in zip(axes, ("ALL_BINARY", "FRESH")):
+        sel_dip = None
+        for purpose, colour, mk in (("SELECTED", BLUE, "o"), ("HORIZONTAL_CONTROL", GREEN, "s")):
+            rr = [b for b in bins if b["sample_id"] == sid and b["purpose"] == purpose]
+            if not rr:
+                continue
+            dip = rr[0]["dip_deg"]
+            if purpose == "SELECTED":
+                sel_dip = dip
+            label = (f"selected dip {dip:+g} degrees" if dip else "selected dip 0 degrees" if purpose == "SELECTED" else "dip 0 (horizontal control)")
+            banded = [b for b in rr if b["gamma_lower"] is not None]
+            if banded:
+                ax.fill_between([b["lag_centre_m"] for b in banded], [b["gamma_lower"] for b in banded],
+                                [b["gamma_upper"] for b in banded], color=colour, alpha=0.16, linewidth=0)
+            ax.plot([b["lag_centre_m"] for b in rr], [b["gamma"] if b["supported"] else np.nan for b in rr], marker=mk,
+                    ms=3.2, lw=0.6, color=colour, label=label, ls="none" if purpose == "HORIZONTAL_CONTROL" else "-")
+            ymax = max(ymax, max((b["gamma_upper"] or 0.0) for b in rr))
+        xmax = max(b["lag_centre_m"] for b in bins if b["sample_id"] == sid) + 10.0
+        h = np.linspace(0.0, xmax, 300)
+        for f in fits:
+            if f["sample_id"] != sid or f["fit_status"] != "FITTED":
+                continue
+            curve = gamma_model(h, f["model"], f["nugget"], f["structured_sill"], f["range_m"])
+            ymax = max(ymax, float(np.max(curve)))
+            ax.plot(h, curve, ls="-." if f["model"] == "exponential" else "--", lw=1.0, color=INK,
+                    label=f"fitted {f['model']} at the selected dip")
+        ax.set_xlim(0.0, xmax)
+        ax.set_xlabel("Lag centre (m), along the plane")
+        ax.set_title(STRUCTURAL_SAMPLE_LABEL[sid], loc="left", fontsize=7)
+        ax.legend(loc="lower right", fontsize=5.4)
+    for ax in axes:
+        ax.set_ylim(0.0, 1.1 * ymax)
+    axes[0].set_ylabel("Semivariance gamma(h) (indicator units)")
+    _footer(fig, receipt, "RELATIVE frame; 20 m bins to 500 m; bands are 95 per cent hole-bootstrap percentile intervals")
+    fitted = [f for f in fits if f["fit_status"] == "FITTED"]
+    fit_text = (f"{len(fitted)} fitted curve(s) drawn" if fitted else "no model is FITTED at the selected dip, so no curve is drawn")
+    return fig, _caption(receipt, "Experimental indicator semivariogram of within-line between-hole pairs in the RELATIVE frame, "
+                                  "at the selected apparent dip (blue, with its hole-bootstrap band) and at dip 0 (green, horizontal "
+                                  f"control), for each sample; {fit_text}. Pairs lie within 3 m of one another across the plane.")
+
+
+def _structural_sections(rows: dict, receipt: dict):
+    pts = rows["intervals"]
+    if not pts:
+        raise NotSupported("no binary intervals for the configuration-6 sections")
+    if not rows["selected"]:
+        raise NotSupported("no selected dip for configuration 6")
+    dip = float(rows["selected"][0]["selected_dip_deg"])
+    lines = sorted({p["line_code"] for p in pts})
+    ncol = min(len(lines), 3)
+    nrow = int(np.ceil(len(lines) / ncol))
+    fig, axes = plt.subplots(nrow, ncol, figsize=(7.6, 2.5 * nrow + 0.6), squeeze=False)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.9, bottom=0.12, hspace=0.45, wspace=0.25)
+    d = math.radians(dip)
+    for k, ax in enumerate(axes.ravel()):
+        if k >= len(lines):
+            ax.axis("off")
+            continue
+        line = lines[k]
+        sub = [p for p in pts if p["line_code"] == line]
+        xs = np.array([p["easting_m"] for p in sub], dtype=float)
+        zs = np.array([p["z_relative_m"] for p in sub], dtype=float)
+        ind = np.array([p["indicator"] for p in sub], dtype=int)
+        ax.scatter(xs[ind == 0], zs[ind == 0], s=4.5, facecolors="white", edgecolors=BLUE, linewidths=0.5,
+                   label="indicator 0")
+        ax.scatter(xs[ind == 1], zs[ind == 1], s=5.5, color=VERMILLION, linewidths=0, label="indicator 1")
+        s_all = zs * math.cos(d) + xs * math.sin(d)
+        s_mid = float(np.median(s_all))
+        xr = np.linspace(xs.min(), xs.max(), 2)
+        for m in (-2, -1, 0, 1, 2):
+            s_k = s_mid + 20.0 * m
+            ax.plot(xr, (s_k - xr * math.sin(d)) / math.cos(d), color=INK, lw=0.6, ls="--" if m else "-", alpha=0.8)
+        ax.set_title(f"{line.replace('NOM_', '')}, {len(sub)} binary intervals", loc="left", fontsize=6.5)
+        ax.set_xlabel("UTM 30N easting (m)", fontsize=6)
+        ax.set_ylabel("z relative to collar (m)", fontsize=6)
+        ax.ticklabel_format(style="plain", useOffset=False, axis="x")
+        ax.tick_params(labelsize=5.5)
+        if k == 0:
+            ax.legend(loc="lower left", fontsize=5.4)
+    _footer(fig, receipt, f"ALL_BINARY sample, RELATIVE frame; traces: selected apparent dip {dip:+g} degrees, planes of constant s "
+                          "spaced 20 m (centre trace solid)")
+    return fig, _caption(receipt, f"One vertical east-west section per drill line (relative depth). Intervals: filled vermillion "
+                                  f"indicator 1, open blue indicator 0. Black traces: planes of the selected apparent dip "
+                                  f"{dip:+g} degrees (positive dips toward east), spaced 20 m across the plane. Visual aid only; the "
+                                  "dip is statistically selected and is not a measured orientation.")
+
+
 FIGURES = OrderedDict([
     ("O2-F01", ("Drill-hole plan view by approved line", "O2_F01_drill_hole_plan", _plan, "O2-F01.sql")),
     ("O2-F02", ("Positive metres and graphitic fraction by hole and line", "O2_F02_occurrence_hole_line", _occurrence,
@@ -611,6 +750,12 @@ FIGURES = OrderedDict([
                 _extension, "O2-F09.sql")),
     ("O2-F10", ("Weathering front and fresh-rock indicator semivariograms", "O2_F10_weathering_fresh", _weathering,
                 "O2-F10.sql")),
+    ("O2-F11", ("Structural-frame alignment score against apparent dip, with selection-null bands", "O2_F11_structural_alignment",
+                _structural_scores, "O2-F11.sql")),
+    ("O2-F12", ("Structural-frame experimental variograms at the selected dip and at dip 0",
+                "O2_F12_structural_variogram", _structural_variogram, "O2-F12.sql")),
+    ("O2-F13", ("Drill-line sections with the selected-dip planes", "O2_F13_structural_sections", _structural_sections,
+                "O2-F13.sql")),
 ])
 
 

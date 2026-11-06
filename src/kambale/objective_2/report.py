@@ -333,6 +333,7 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
               for a in aniso], "",
             *_extension_section(conn, rid),
             *_weathering_section(conn, rid),
+            *_structural_section(conn, rid),
             "## 6. Gate results (VERIFY run " + str(vr["run_id"]) + ")", "",
             "| gate | name | status | detail |", "|---|---|---|---|",
             *[f"| {g['gate_id']} | {g['gate_name']} | {g['status']} | {g['detail']} |" for g in gates], "",
@@ -367,8 +368,8 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
             "./.venv/Scripts/python.exe -I -m pytest -o addopts= -q tests/objective_2 > reports/objective_2/PYTEST_OUTPUT.txt",
             "./.venv/Scripts/python.exe -I -m kambale.objective_2 report",
             "./.venv/Scripts/python.exe -I -m kambale.objective_2 verify", "```", "",
-            "`all` runs import, analyse, extension, weathering, verify, figures, tables, verify, report and verify. The stages can also be run "
-            "one at a time with `import`, `analyse`, `extension`, `weathering`, `figures`, `tables`, `report` and `verify`. The report reads "
+            "`all` runs import, analyse, extension, weathering, structural, verify, figures, tables, verify, report and verify. The stages "
+            "can also be run one at a time with `import`, `analyse`, `extension`, `weathering`, `structural`, `figures`, `tables`, `report` and `verify`. The report reads "
             "PYTEST_OUTPUT.txt, so the test run comes before the second report.", "",
             f"Python {platform.python_version()} on {platform.system()} {platform.release()}; " + ", ".join(_versions()) + ".",
             f"Independent check: {_independent_check_status()}. It is run from a scratch directory outside the project environment: "
@@ -564,6 +565,91 @@ def _weathering_section(conn, rid: int) -> list[str]:
         "relabelled.", "",
         f"Configuration 5 writes no handoff row; the configuration-2 handoff ({handoff.get('decision_status', 'none')}) stands "
         "as recorded.", ""]
+
+
+def _structural_section(conn, rid: int) -> list[str]:
+    """Section 5.9 of the run report: the configuration-6 structural frame, read from the database."""
+    from kambale.objective_2.structural import DECISION_PROVISIONAL, read_structural_config
+    s_cfg, _, _ = read_structural_config()
+    version = s_cfg["config_version"]
+    head = ["### 5.9 Configuration 6: structural frame (apparent-dip search, selection null, between-line report)", ""]
+    run = _one(conn, "SELECT run_id, config_sha256, note FROM stage_runs WHERE run_kind = 'SENSITIVITY' AND config_version = ? "
+                     "AND receipt_id = ? ORDER BY run_id DESC LIMIT 1", (version, rid))
+    if not run:
+        return head + ["Not run.", ""]
+    nulls = _rows(conn, "SELECT n.sample_id, n.frame_id, n.selected_dip_deg, n.observed_max_alignment, n.null_p95_max, n.p_value, "
+                        "n.n_permutations, n.n_null_valid, "
+                        "(SELECT a.alignment_score FROM structural_alignment_scores a WHERE a.receipt_id = n.receipt_id "
+                        " AND a.config_version = n.config_version AND a.sample_id = n.sample_id AND a.frame_id = n.frame_id "
+                        " AND a.dip_deg = n.selected_dip_deg) AS a_sel, "
+                        "(SELECT a.alignment_score FROM structural_alignment_scores a WHERE a.receipt_id = n.receipt_id "
+                        " AND a.config_version = n.config_version AND a.sample_id = n.sample_id AND a.frame_id = n.frame_id "
+                        " AND a.dip_deg = 0.0) AS a_zero "
+                        "FROM structural_null_summary n WHERE n.receipt_id = ? AND n.config_version = ? "
+                        "ORDER BY n.sample_id, n.frame_id", (rid, version))
+    lolo = _rows(conn, "SELECT sample_id, frame_id, excluded_line, lolo_dip_deg, within_tolerance FROM structural_lolo_dips "
+                       "WHERE receipt_id = ? AND config_version = ? ORDER BY sample_id, frame_id, excluded_line", (rid, version))
+    decisions = _rows(conn, "SELECT sample_id, decision, reason FROM structural_decisions WHERE receipt_id = ? AND config_version = ? "
+                            "ORDER BY sample_id", (rid, version))
+    fits = _rows(conn, "SELECT sample_id, frame_id, model, fit_status, nugget, structured_sill, range_m, stability_status, "
+                       "range_ratio_min, range_ratio_max, reason FROM structural_fits WHERE receipt_id = ? AND config_version = ? "
+                       "ORDER BY sample_id, frame_id, model", (rid, version))
+    between = _rows(conn, "SELECT sample_id, frame_id, lag_from_m, lag_to_m, n_pairs, n_independent_hole_pairs, gamma, supported "
+                          "FROM structural_between_line WHERE receipt_id = ? AND config_version = ? "
+                          "ORDER BY sample_id, frame_id, lag_from_m", (rid, version))
+    digests = _one(conn, "SELECT COUNT(*) AS n, COALESCE(SUM(n_within_hole_pairs), 0) AS within, "
+                         "COALESCE(SUM(n_within_hole_candidates_excluded), 0) AS excluded FROM structural_pair_digests "
+                         "WHERE receipt_id = ? AND config_version = ?", (rid, version))
+    handoff = _one(conn, "SELECT decision_status FROM continuity_handoff_decisions WHERE receipt_id = ? "
+                         "ORDER BY handoff_id DESC LIMIT 1", (rid,))
+    out = head + [
+        f"Configuration {version} (SHA-256 {run['config_sha256'][:12]}), stage run {run['run_id']}: {run['note']}.", "",
+        f"Dip grid {s_cfg['frame']['apparent_dip_grid_deg'][0]:g} to {s_cfg['frame']['apparent_dip_grid_deg'][-1]:g} degrees in "
+        f"{len(s_cfg['frame']['apparent_dip_grid_deg'])} steps. Pairs: within-line between-hole, |ds| at most "
+        f"{s_cfg['pairing']['within_line_between_hole']['max_abs_ds_m']:g} m, lag |dt| binned "
+        f"{s_cfg['pairing']['within_line_between_hole']['lag_width_m']:g} m to "
+        f"{s_cfg['pairing']['within_line_between_hole']['lag_max_m']:g} m. Null: circular down-hole shift, "
+        f"{nulls[0]['n_permutations'] if nulls else 'n/a'} permutations, whole grid rescored. Same-hole pairs in the experiments: "
+        f"{digests['within']}; same-hole candidates excluded before the experiments: {digests['excluded']}.", "",
+        "| sample | frame | selected dip (deg) | A at selected dip | A at dip 0 | null 95th percentile of max | null p-value | "
+        "lines within 10 deg of full dip | decision |",
+        "|---|---|---|---|---|---|---|---|---|"]
+    dec = {d["sample_id"]: d["decision"] for d in decisions}
+    for n in nulls:
+        within = sum(1 for r in lolo if r["sample_id"] == n["sample_id"] and r["frame_id"] == n["frame_id"]
+                     and r["within_tolerance"] == 1)
+        out.append(f"| {n['sample_id']} | {n['frame_id']} | {n['selected_dip_deg']:+g} | {_f(n['a_sel'], 4)} | "
+                   f"{_f(n['a_zero'], 4)} | {_f(n['null_p95_max'], 4)} | {_f(n['p_value'], 4)} | {within} of {sum(1 for r in lolo if r['sample_id'] == n['sample_id'] and r['frame_id'] == n['frame_id'])} | "
+                   f"{dec.get(n['sample_id'], 'sensitivity only') if n['frame_id'] == 'RELATIVE' else 'sensitivity only'} |")
+    out += ["", "Leave-one-line-out dips (degrees):", ""]
+    for r in lolo:
+        out.append(f"- {r['sample_id']}, {r['frame_id']}, without {r['excluded_line']}: "
+                   f"{'none' if r['lolo_dip_deg'] is None else format(r['lolo_dip_deg'], '+g')}"
+                   f" ({'within' if r['within_tolerance'] else 'outside'} 10 degrees of the full dip).")
+    out += ["", "Fits at the selected dip (sill and nugget in indicator units; range in metres):", "",
+            "| sample | frame | model | fit status | nugget | structured sill | range | leave-one-line-out stability | range ratio min to max |",
+            "|---|---|---|---|---|---|---|---|---|"]
+    for f in fits:
+        out.append(f"| {f['sample_id']} | {f['frame_id']} | {f['model']} | {f['fit_status']} | {_f(f['nugget'], 4)} | "
+                   f"{_f(f['structured_sill'], 4)} | {_f(f['range_m'], 1)} | {f['stability_status']} | "
+                   f"{_f(f['range_ratio_min'], 2)} to {_f(f['range_ratio_max'], 2)} |")
+    out += ["", "Between-line along-strike report (REPORT_ONLY, RELATIVE frame, selected dip; no fit):", ""]
+    for b in between:
+        if b["frame_id"] != "RELATIVE":
+            continue
+        out.append(f"- {b['sample_id']}, lag {b['lag_from_m']:g} to {b['lag_to_m']:g} m: {b['n_pairs']} pairs, "
+                   f"{b['n_independent_hole_pairs']} independent hole pairs, gamma "
+                   f"{_f(b['gamma'], 3)}, {'supported' if b['supported'] else 'below 100 pairs'}.")
+    out += ["", "Decisions (RELATIVE frame, structural frame): " + "; ".join(
+        f"{d['sample_id']} {d['decision']} ({d['reason']})" for d in decisions) + ".", "",
+        "The DEM_ABSOLUTE frame is sensitivity only and sets no decision. "
+        f"Configuration 6 writes no handoff row; the configuration-2 handoff ({handoff.get('decision_status', 'none')}) stands "
+        "as recorded.", "",
+        "Claims not permitted by configuration 6 (from its claims_not_permitted list):", ""]
+    out += [f"- {c}" for c in s_cfg["claims_not_permitted"]]
+    out += ["", f"Decision label for a PROVISIONAL result: {DECISION_PROVISIONAL}. It supplies a structural-frame across-strike "
+            "covariance only; no along-strike range is identified.", ""]
+    return out
 
 
 def p_one_minus_p(conn, rid: int) -> float:

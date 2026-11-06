@@ -22,8 +22,10 @@ def connect_o2(path: Path = O2_DB_PATH) -> sqlite3.Connection:
 def apply_schema(conn: sqlite3.Connection) -> None:
     """Apply the DDL (idempotent: every statement uses IF NOT EXISTS)."""
     conn.executescript(O2_SCHEMA_PATH.read_text(encoding="utf-8"))
-    conn.execute("INSERT OR IGNORE INTO schema_version (version_id, schema_name, applied_utc) VALUES (1, ?, ?)",
-                 (O2_SCHEMA_VERSION, utc_now()))
+    # The row records the schema the database was last brought to (configuration 6 moved it to schema -6).
+    conn.execute("INSERT INTO schema_version (version_id, schema_name, applied_utc) VALUES (1, ?, ?) "
+                 "ON CONFLICT(version_id) DO UPDATE SET schema_name = excluded.schema_name, "
+                 "applied_utc = excluded.applied_utc", (O2_SCHEMA_VERSION, utc_now()))
 
 
 def connect_upstream_readonly(path: Path) -> sqlite3.Connection:

@@ -433,3 +433,144 @@ CREATE TABLE IF NOT EXISTS bootstrap_gamma_bands (
     PRIMARY KEY (experiment_id, bin_index),
     CHECK (gamma_lower IS NULL OR gamma_upper IS NULL OR gamma_lower <= gamma_upper)
 );
+
+-- Configuration 6 (structural frame: apparent-dip search, circular down-hole null, LOLO dips, fits, between-line report).
+-- frame_id RELATIVE is primary; DEM_ABSOLUTE is sensitivity only. No column name here contains the word absolute (G22).
+CREATE TABLE IF NOT EXISTS structural_alignment_scores (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    sample_id               TEXT    NOT NULL CHECK (sample_id IN ('ALL_BINARY','FRESH')),
+    frame_id                TEXT    NOT NULL CHECK (frame_id IN ('RELATIVE','DEM_ABSOLUTE')),
+    dip_deg                 REAL    NOT NULL CHECK (dip_deg BETWEEN -90 AND 90),
+    n_supported_bins        INTEGER NOT NULL CHECK (n_supported_bins >= 0),
+    n_pairs                 INTEGER NOT NULL CHECK (n_pairs >= 0),
+    alignment_score         REAL,
+    is_selected             INTEGER NOT NULL CHECK (is_selected IN (0,1)),
+    is_horizontal_control   INTEGER NOT NULL CHECK (is_horizontal_control IN (0,1)),
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id, dip_deg)
+);
+
+CREATE TABLE IF NOT EXISTS structural_null_summary (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    sample_id               TEXT    NOT NULL CHECK (sample_id IN ('ALL_BINARY','FRESH')),
+    frame_id                TEXT    NOT NULL CHECK (frame_id IN ('RELATIVE','DEM_ABSOLUTE')),
+    selected_dip_deg        REAL    NOT NULL,
+    observed_max_alignment  REAL    NOT NULL,
+    null_p95_max            REAL,
+    n_permutations          INTEGER NOT NULL CHECK (n_permutations > 0),
+    null_seed               INTEGER NOT NULL,
+    n_null_valid            INTEGER NOT NULL CHECK (n_null_valid >= 0),
+    p_value                 REAL    NOT NULL CHECK (p_value > 0 AND p_value <= 1),
+    alpha                   REAL    NOT NULL,
+    max_abs_ds_m            REAL    NOT NULL,
+    lag_width_m             REAL    NOT NULL,
+    lag_max_m               REAL    NOT NULL,
+    bootstrap_replicates    INTEGER NOT NULL,
+    bootstrap_seed          INTEGER NOT NULL,
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id)
+);
+
+CREATE TABLE IF NOT EXISTS structural_lolo_dips (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    sample_id               TEXT    NOT NULL,
+    frame_id                TEXT    NOT NULL,
+    excluded_line           TEXT    NOT NULL,
+    full_dip_deg            REAL    NOT NULL,
+    lolo_dip_deg            REAL,
+    within_tolerance        INTEGER NOT NULL CHECK (within_tolerance IN (0,1)),
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id, excluded_line)
+);
+
+CREATE TABLE IF NOT EXISTS structural_variogram_bins (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    sample_id               TEXT    NOT NULL,
+    frame_id                TEXT    NOT NULL,
+    purpose                 TEXT    NOT NULL CHECK (purpose IN ('SELECTED','HORIZONTAL_CONTROL')),
+    dip_deg                 REAL    NOT NULL,
+    bin_index               INTEGER NOT NULL CHECK (bin_index >= 0),
+    lag_from_m              REAL    NOT NULL,
+    lag_to_m                REAL    NOT NULL CHECK (lag_to_m > lag_from_m),
+    lag_centre_m            REAL    NOT NULL,
+    n_pairs                 INTEGER NOT NULL CHECK (n_pairs >= 0),
+    n_independent_hole_pairs INTEGER NOT NULL CHECK (n_independent_hole_pairs >= 0),
+    gamma                   REAL    CHECK (gamma IS NULL OR gamma >= 0),
+    supported               INTEGER NOT NULL CHECK (supported IN (0,1)),
+    gamma_lower             REAL,
+    gamma_upper             REAL,
+    gamma_median            REAL,
+    n_band_replicates       INTEGER NOT NULL CHECK (n_band_replicates >= 0),
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id, purpose, bin_index),
+    CHECK (supported = 0 OR gamma IS NOT NULL)
+);
+
+CREATE TABLE IF NOT EXISTS structural_fits (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    sample_id               TEXT    NOT NULL,
+    frame_id                TEXT    NOT NULL,
+    model                   TEXT    NOT NULL CHECK (model IN ('spherical','exponential')),
+    selected_dip_deg        REAL    NOT NULL,
+    fit_status              TEXT    NOT NULL CHECK (fit_status IN ('FITTED','NOT_IDENTIFIABLE','INADMISSIBLE')),
+    reason                  TEXT    NOT NULL,
+    nugget                  REAL,
+    structured_sill         REAL,
+    range_m                 REAL,
+    n_bins_used             INTEGER NOT NULL CHECK (n_bins_used >= 0),
+    objective_value         REAL,
+    stability_status        TEXT    NOT NULL CHECK (stability_status IN ('STABLE','UNSTABLE','NOT_ASSESSED')),
+    stability_reason        TEXT    NOT NULL,
+    range_ratio_min         REAL,
+    range_ratio_max         REAL,
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id, model),
+    CHECK (fit_status = 'FITTED' OR (nugget IS NULL AND structured_sill IS NULL AND range_m IS NULL))
+);
+
+-- Between-line along-strike report (REPORT_ONLY): no fit, no decision, no handoff.
+CREATE TABLE IF NOT EXISTS structural_between_line (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    sample_id               TEXT    NOT NULL,
+    frame_id                TEXT    NOT NULL,
+    selected_dip_deg        REAL    NOT NULL,
+    lag_from_m              REAL    NOT NULL,
+    lag_to_m                REAL    NOT NULL CHECK (lag_to_m > lag_from_m),
+    n_pairs                 INTEGER NOT NULL CHECK (n_pairs >= 0),
+    n_independent_hole_pairs INTEGER NOT NULL CHECK (n_independent_hole_pairs >= 0),
+    n_different_class       INTEGER NOT NULL CHECK (n_different_class >= 0),
+    gamma                   REAL    CHECK (gamma IS NULL OR gamma >= 0),
+    supported               INTEGER NOT NULL CHECK (supported IN (0,1)),
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id, lag_from_m)
+);
+
+CREATE TABLE IF NOT EXISTS structural_decisions (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    sample_id               TEXT    NOT NULL,
+    frame_id                TEXT    NOT NULL CHECK (frame_id = 'RELATIVE'),
+    decision                TEXT    NOT NULL CHECK (decision IN ('PROVISIONAL (structural frame)','NOT_IDENTIFIABLE (structural frame)')),
+    p_value_below_alpha     INTEGER NOT NULL CHECK (p_value_below_alpha IN (0,1)),
+    dip_stable              INTEGER NOT NULL CHECK (dip_stable IN (0,1)),
+    lines_within_tolerance  INTEGER NOT NULL CHECK (lines_within_tolerance >= 0),
+    stable_fitted_model     TEXT,
+    range_stable            INTEGER NOT NULL CHECK (range_stable IN (0,1)),
+    reason                  TEXT    NOT NULL,
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id)
+);
+
+-- Digest of the sorted pair identifiers of each dip and frame, and the within-hole counts (zero by construction in the
+-- experiment; the candidates excluded are reported as a diagnostic).
+CREATE TABLE IF NOT EXISTS structural_pair_digests (
+    receipt_id                          INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version                      TEXT    NOT NULL,
+    sample_id                           TEXT    NOT NULL,
+    frame_id                            TEXT    NOT NULL,
+    dip_deg                             REAL    NOT NULL,
+    n_pairs                             INTEGER NOT NULL CHECK (n_pairs >= 0),
+    n_within_hole_pairs                 INTEGER NOT NULL CHECK (n_within_hole_pairs >= 0),
+    n_within_hole_candidates_excluded   INTEGER NOT NULL CHECK (n_within_hole_candidates_excluded >= 0),
+    pair_digest                         TEXT    NOT NULL,
+    PRIMARY KEY (receipt_id, config_version, sample_id, frame_id, dip_deg)
+);

@@ -1,12 +1,12 @@
 {
-  "code_commit": "7d83644",
+  "code_commit": "c13a75c",
   "code_version": "2.1.0",
   "configuration": {
     "sha256": "bfc2962a9e8999472193ebb8ca7e17b3470c127d26cac90789b5675c51d5ce20",
     "supersedes": "O2-CFG-2026.11.05-2",
     "version": "O2-CFG-2026.11.05-4"
   },
-  "generated_utc": "2026-11-06T04:33:48Z",
+  "generated_utc": "2026-11-06T09:07:14Z",
   "geometry": {
     "build_id": 10,
     "coordinate_pair_status": "APPROVED",
@@ -203,6 +203,60 @@
       "sha256": "502cc36d163e58be57298af5adc2c911690bc495bcddddbfdbdc9938295f7556"
     },
     {
+      "id": "O2-F11",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F11_structural_alignment.svg",
+      "sha256": "dc045b74cab192d9e364f9114be45310608f06ac6e2d2e0115087134b3289ff6"
+    },
+    {
+      "id": "O2-F11",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F11_structural_alignment.pdf",
+      "sha256": "4a3d5f5bc3c3ba8c85e9033fbe59db0633feff5e4ef7853854dc42970735deba"
+    },
+    {
+      "id": "O2-F11",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F11_structural_alignment.png",
+      "sha256": "842ad5c37c4ff67c15cf16cb43dc169dce44ae58f2b38c532df61417941a2968"
+    },
+    {
+      "id": "O2-F12",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F12_structural_variogram.svg",
+      "sha256": "b6460c802503198332933cb61637f48a90ba3e4e0ec56b8d0ad80be5bc9d8698"
+    },
+    {
+      "id": "O2-F12",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F12_structural_variogram.pdf",
+      "sha256": "32dd82266815d7ac82f905603140930e5da9db3b9febf7c5e59153fda5556154"
+    },
+    {
+      "id": "O2-F12",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F12_structural_variogram.png",
+      "sha256": "bfe849905d76c63ce60d39be3e0ff517099fc599f6a98e1f52c9db8de5558fb2"
+    },
+    {
+      "id": "O2-F13",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F13_structural_sections.svg",
+      "sha256": "f8aad5e92ca6b25d2e7f105978bb480f3a2751042e2d869c1ac10a297ad9fb32"
+    },
+    {
+      "id": "O2-F13",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F13_structural_sections.pdf",
+      "sha256": "a79bd8910602c74a6e72602faba563ee392f3eecc8e12488c123d1405cfb2628"
+    },
+    {
+      "id": "O2-F13",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F13_structural_sections.png",
+      "sha256": "567c55faef27c4763495a0f0e7173248c6a866370900cc2ee854ea7d1515459c"
+    },
+    {
       "id": "O2-T01",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T01_hole_line_summary.csv",
@@ -260,19 +314,19 @@
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.csv",
-      "sha256": "e12d45e0f0f7b54c35e8d721bf65d4b5c29ef9837bd7653698a3e1cc0d5e21c2"
+      "sha256": "be6916f7b765f7ea2341085dd0c6595b7259df3f0895e95fa773a1c34c34563d"
     },
     {
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.md",
-      "sha256": "8fe2daff5ae49023b8db55d2d07f416fcde1245dfed6ef0c9f9af45259538eeb"
+      "sha256": "d7c80a18ca43e9a677099af78cdfb5532069126debad1a5a82f5e4a05a349f21"
     },
     {
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.tex",
-      "sha256": "3ddd0a3fd9e5ca4acee07e17f8ea6d03899d72b9181f8b2f9a9e7e261e13bd82"
+      "sha256": "873236d6e2630a85bd74134343e833caa9545d6dd96272bc77eabb18f0ed37e2"
     },
     {
       "id": "O2-T05",
@@ -293,30 +347,66 @@
       "sha256": "9949a1ffada762231887c2de94a2f644d90a4a9841834c12de35b7b5082e71df"
     },
     {
+      "id": "O2-T06",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T06_structural_alignment.csv",
+      "sha256": "d90886eb88a0b8aa63403436cac886e1f86afd1452595ab540f6e6411e3c6524"
+    },
+    {
+      "id": "O2-T06",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T06_structural_alignment.md",
+      "sha256": "0b4a972260274dd7d66c4370fc36d5f388d6841e02ada107ef60e68158687f50"
+    },
+    {
+      "id": "O2-T06",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T06_structural_alignment.tex",
+      "sha256": "5f88cccfbaa2f0166371a69243863248b43e6df3ed62ed7029eadf475ae7a279"
+    },
+    {
+      "id": "O2-T07",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T07_structural_fit_between_line.csv",
+      "sha256": "89a8adc2d2c4071a00b8cbc41fed3d3155aabed55024bec182fe6e48a5f6ee94"
+    },
+    {
+      "id": "O2-T07",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T07_structural_fit_between_line.md",
+      "sha256": "9353a12278cfc8bf4b4f47354d7183dc826d42acc9e24e20236fec147ceca58a"
+    },
+    {
+      "id": "O2-T07",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T07_structural_fit_between_line.tex",
+      "sha256": "373f6a98d5e6ae984de3b279deb6412b00c6dd84d554f802deeb5ff79784eaec"
+    },
+    {
       "id": "FIGURE_MANIFEST",
       "kind": "MANIFEST",
       "path": "reports/objective_2/FIGURE_MANIFEST.csv",
-      "sha256": "1d34d1ba14ed0fe9f6e1ece61463633a33ed0b3c57912e64b690b7984849e5d1"
+      "sha256": "42d50d87f3a9bd93cecce24d69f8c55787cb15ba922707c868df0ea231ba9d0c"
     },
     {
       "id": "RUN_REPORT",
       "kind": "REPORT",
       "path": "reports/objective_2/RUN_REPORT.md",
-      "sha256": "88cd8d4ab75c732098667e61ab9d8cf052b8950d4254c0b9af91055b5072b9cb"
+      "sha256": "f5e2c5d17ebd5869b6bf74a8162007ef9f9deae4520d9a487fcff23265b78497"
     },
     {
       "id": "BLOCKED_OR_DEFERRED",
       "kind": "REPORT",
       "path": "reports/objective_2/BLOCKED_OR_DEFERRED.md",
-      "sha256": "6ce1fe76aad985da2f7d3e55446a3ab3e1a193a13336eaba9515a8725bddc411"
+      "sha256": "f51656863b3a261261c08c14144f53800ffdf68ba59a3172fe245d9ed6723be3"
     }
   ],
   "runs": {
     "analyse": 2,
     "import": 1,
-    "verify": 12
+    "verify": 20
   },
-  "schema_version": "O2-SCHEMA-2026.11.06-5",
+  "schema_version": "O2-SCHEMA-2026.11.06-6",
   "stage": "Objective 2",
   "upstream": {
     "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",
