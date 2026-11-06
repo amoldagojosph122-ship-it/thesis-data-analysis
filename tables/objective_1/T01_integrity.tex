@@ -5,6 +5,19 @@
 \toprule
 test\_group & test\_name & expected & observed & outcome & run\_utc \\
 \midrule
+RECONCILIATION & Holes & 71 & 71 & PASS & 2026-11-06T14:21:27Z \\
+RECONCILIATION & Holes intersecting Sgs & 42 & 42 & PASS & 2026-11-06T14:21:27Z \\
+RECONCILIATION & Logging intervals & 1910 & 1910 & PASS & 2026-11-06T14:21:27Z \\
+RECONCILIATION & Sgs intervals & 529 & 530 & WARN & 2026-11-06T14:21:27Z \\
+RECONCILIATION & Survey stations & 71 & 71 & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & PRAGMA foreign\_key\_check & 0 rows & 0 rows & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & PRAGMA integrity\_check & ok & ok & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & Stage B contract tables: blocking triggers present and empty & 9 triggers; 0 rows & 9 triggers; 0 rows & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & collars with a provisional DEM elevation & 71 & 71 & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & interval rows with a provisional DEM elevation & 1910 & 1910 & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & one lithology refinement row per active interval & 1910 & 1910 & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & raw\_* UPDATE rejected by trigger & rejected & rejected & PASS & 2026-11-06T14:21:27Z \\
+SQL\_INTEGRITY & z\_absolute\_m non-null rows & 0 & 0 & PASS & 2026-11-06T14:21:27Z \\
 \bottomrule
 \end{tabular}
 \end{table}

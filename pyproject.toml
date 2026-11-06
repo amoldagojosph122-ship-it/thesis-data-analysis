@@ -26,6 +26,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest==9.1.1"]
 interactive = ["plotly"]
+notebook = ["jupyter", "nbformat", "nbconvert", "nbclient", "papermill", "ipykernel"]
 
 [project.scripts]
 kambale = "kambale.cli:main"

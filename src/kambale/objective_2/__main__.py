@@ -1,6 +1,6 @@
 """Command-line entry point: python -I -m kambale.objective_2 <command>.
 
-`all` runs import, analyse, extension, weathering, structural, verify, figures, tables, verify, report and verify, in that order. A verify step that
+`all` runs import, analyse, extension, weathering, structural, verify, figures, verify, tables, verify, report and verify, in that order. A verify step that
 finds a STOP gate ends the run before anything after it is written (specification 03). Every command prints a JSON summary
 and exits with status 1 when a STOP gate fails.
 """
@@ -56,6 +56,9 @@ def main(argv: list[str] | None = None) -> int:
         if command in ("figures", "all"):
             from kambale.objective_2 import figures
             summary["figures"] = figures.render_all()
+        # Gates such as G21 read the rendered sections, so check again before the handoff table is written.
+        if command == "all" and _verify_step(summary, "verify_after_figures"):
+            return _finish(summary, 1)
         if command in ("tables", "all"):
             from kambale.objective_2 import tables
             summary["tables"] = tables.render_all()
