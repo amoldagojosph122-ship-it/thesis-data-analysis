@@ -1,0 +1,44 @@
+{
+  "calibration": {
+    "intercept": -0.22888028320664727,
+    "method": "PLATT",
+    "reason": "Platt scaling on 1442 inner out-of-fold predictions",
+    "slope": 0.5591242887713301,
+    "status": "FITTED"
+  },
+  "candidate_run_id": "M2_HGB_WF",
+  "family_id": "M2_HGB_WF",
+  "feature_names": [
+    "easting_m",
+    "northing_m",
+    "z_relative_m"
+  ],
+  "fold_id": 5,
+  "hyperparameters": {
+    "l2_regularization": 1.0,
+    "learning_rate": 0.05,
+    "max_iter": 150,
+    "max_leaf_nodes": 7,
+    "min_samples_leaf": 20
+  },
+  "inner_cv_score": 0.5678534842722571,
+  "inner_cv_score_sd": 0.02914082575869665,
+  "model_class": "HistGradientBoostingClassifier",
+  "predictor_set": "TREND_WF",
+  "seed": 20261105,
+  "selection_metric": "LOG_LOSS",
+  "software": {
+    "numpy": "2.4.6",
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.0"
+  },
+  "split_plan_id": "O3-SPLIT-LODO-1",
+  "threshold": {
+    "source": "INNER_CV_MAX_YOUDEN_J_TIE_CLOSEST_TO_HALF",
+    "threshold": 0.4,
+    "youden_j": 0.39270410215267737
+  },
+  "training_id_digest": "5ddf20a85f35d0f29ca3ca9f49d5e671ff692012d6bef856cfd3e479653481f3",
+  "training_n": 1442
+}

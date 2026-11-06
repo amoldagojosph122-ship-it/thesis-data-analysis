@@ -224,6 +224,7 @@ __marimo__/
 *.xlsm
 *.sqlite
 *.sqlite-journal
+*.sqlite.*
 data/
 
 # Word documents: source material and generated forms, not repository content
@@ -242,3 +243,33 @@ specs/
 Architecture/
 Objective_*/
 Kambale_*.md
+
+# Objective 2 code, configuration, SQL, tests, reports, figures and tables are tracked.
+# specs/ and the database stay ignored.
+!src/kambale/objective_2/
+!sql/objective_2/
+!config/objective_2/
+!tests/objective_2/
+!reports/objective_2/
+!figures/objective_2/
+!tables/objective_2/
+
+# Objective 3 code, configuration, SQL, tests, reports, figures and tables are tracked.
+# specs/ and the database stay ignored.
+!src/kambale/objective_3/
+!sql/objective_3/
+!config/objective_3/
+!tests/objective_3/
+!reports/objective_3/
+!figures/objective_3/
+!tables/objective_3/
+
+# Objective 4 code, configuration, SQL, tests, reports, figures and tables are tracked.
+# specs/ and the database stay ignored.
+!src/kambale/objective_4/
+!sql/objective_4/
+!config/objective_4/
+!tests/objective_4/
+!reports/objective_4/
+!figures/objective_4/
+!tables/objective_4/

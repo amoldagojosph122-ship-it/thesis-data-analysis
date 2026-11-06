@@ -1,0 +1,13 @@
+Independent check of the experimental semivariogram against scikit-gstat
+
+Checked at 2026-11-05T13:42:53Z for configuration O2-CFG-2026.11.05-2, receipt 1, 1829 binary intervals.
+scikit-gstat 1.0.27, imported from C:/Users/THINKP~1/AppData/Local/Temp/claude/C--Users-ThinkPad-P1-G4--claude-spares-spare-bWXAv6/de1f9b5a-9916-475f-8ef7-77ad9894c1dd/scratchpad/skgstat_site (outside the project environment).
+Experiment: OMNI_3D_BETWEEN with within-hole pairs included, 20 m bins to 500 m, equal-pair (Matheron) estimator.
+Bins: ours 25, scikit-gstat 25.
+Maximum absolute difference in semivariance: 2.776e-17 (tolerance 1e-09). Result: PASS.
+
+Our semivariance, first five bins: 0.157441, 0.207096, 0.206378, 0.199397, 0.200513
+scikit-gstat semivariance, first five bins: 0.157441, 0.207096, 0.206378, 0.199397, 0.200513
+
+The lateral basis is not compared directly, because scikit-gstat cannot restrict pairs to a relative-depth band.
+Both use the same estimator, so the agreement is evidence for the pair counting and the binning.

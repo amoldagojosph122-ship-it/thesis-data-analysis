@@ -1,0 +1,32 @@
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{O2-T05. Weathering front continuity and interpolation check. Front = shallowest interval with weathering code mw or sw, depth in metres relative to collar. Interpolation is inverse-distance (power 2, 8 nearest holes); skill ratio = IDW RMSE / training-mean RMSE; interpolable when the ratio is at most 0.8. Configuration 5 is a sensitivity stage and writes no handoff. Receipt 1.}
+\label{tab:O2-T05}
+\begin{tabular}{lllll}
+\toprule
+stat\_group & stat\_name & stat\_value & unit & n\_basis \\
+\midrule
+ALONG\_LINE\_ADJACENT & max\_abs\_front\_difference\_m & 18.1865 & m & 66 \\
+ALONG\_LINE\_ADJACENT & median\_abs\_front\_difference\_m & 2.5981 & m & 66 \\
+ALONG\_LINE\_ADJACENT & median\_collar\_distance\_m & 33.3449 & m & 66 \\
+ALONG\_LINE\_ADJACENT & n\_adjacent\_pairs & 66 & count & 66 \\
+ALONG\_LINE\_ADJACENT & p90\_abs\_front\_difference\_m & 7.7942 & m & 66 \\
+FRONT\_SUMMARY & max\_front\_z\_relative\_m & 0 & m & 71 \\
+FRONT\_SUMMARY & mean\_front\_z\_relative\_m & -7.3917 & m & 71 \\
+FRONT\_SUMMARY & min\_front\_z\_relative\_m & -19.9186 & m & 71 \\
+FRONT\_SUMMARY & n\_holes & 71 & count & 71 \\
+FRONT\_SUMMARY & n\_holes\_with\_reversals & 9 & count & 71 \\
+FRONT\_SUMMARY & n\_holes\_without\_front & 0 & count & 71 \\
+FRONT\_SUMMARY & sd\_front\_z\_relative\_m & 4.4613 & m & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_HOLE\_OUT & interpolable & 0 & flag & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_HOLE\_OUT & rmse\_idw\_m & 4.8495 & m & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_HOLE\_OUT & rmse\_training\_mean\_m & 4.4931 & m & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_HOLE\_OUT & skill\_ratio & 1.0793 & ratio & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_LINE\_OUT & interpolable & 0 & flag & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_LINE\_OUT & rmse\_idw\_m & 5.5637 & m & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_LINE\_OUT & rmse\_training\_mean\_m & 4.7344 & m & 71 \\
+INTERPOLATION\_LEAVE\_ONE\_LINE\_OUT & skill\_ratio & 1.1752 & ratio & 71 \\
+\bottomrule
+\end{tabular}
+\end{table}

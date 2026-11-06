@@ -1,0 +1,50 @@
+# Objective 2 configuration 3: exploratory lateral extension and STRICT comparator.
+# Written on 2026-11-05 after the configuration-2 result and before any configuration-3 result was computed.
+# Any change of value requires a new config_version. The configuration-2 file is unchanged.
+config_version: O2-CFG-2026.11.05-3
+extends: O2-CFG-2026.11.05-2
+status: EXPLORATORY_EXTENSION
+purpose: >
+  Test whether the lateral between-hole indicator structure is identified at lags beyond the 500 m window of
+  configuration 2, and run the STRICT_SGS_v1 label comparator that the user authorised in chat on 2026-11-05. Neither
+  result replaces the configuration-2 handoff decision, which stays NOT_IDENTIFIABLE unless the user decides otherwise
+  on the rules below.
+reason: >
+  Configuration 2 analysed pairs up to 500 m. Its support statistics show that most collar pairs lie beyond that window
+  (median separation 921 m, 95th percentile 2008 m). The lag maximum below covers the 95th percentile, so the window is set
+  by the support of the data, not by a search over windows. This is one predeclared extension, not a sequence of trials.
+label_rule:
+  id: DESIGN_8_2_v1
+  status: APPROVED
+sample: the 1829 DESIGN_8_2_v1 binary intervals of configuration 2, unchanged
+lateral_between_hole:
+  lag_width_m: 50.0
+  lag_max_m: 2000.0
+  max_abs_dz_m: 3.0
+  min_pairs_per_bin: 100
+  min_independent_hole_pairs_per_bin: 10
+  min_supported_bins_for_fit: 5
+  within_hole_pairs: EXCLUDED
+  pair_weighting: EQUAL_PAIR
+model_fitting:
+  models: [spherical, exponential]
+  weighting: CRESSIE_N_OVER_GAMMA2
+  nugget_bounds: [0.0, p_one_minus_p]
+  structured_sill_bounds: [0.0, 1.5_p_one_minus_p]
+  range_bounds_m: [first_supported_lag_centre, lag_max_m]
+  min_structured_sill_fraction: 0.05
+  identifiability: [range_at_smallest_lag, range_at_upper_bound, sill_at_upper_bound, structure_below_minimum]
+  stability_check: LEAVE_ONE_LINE_OUT
+  stable_if_range_ratio_between: [0.5, 2.0]
+  fit_failure_status: NOT_IDENTIFIABLE
+comparator:
+  label_rule: STRICT_SGS_v1
+  authorised: user, in chat, 2026-11-05 (run the comparator). This is not an approval of the rule; STRICT_SGS_v1 stays PROPOSED in graphite_label_rules.
+  sample: the same 1829 DESIGN binary intervals, labelled under STRICT_SGS_v1 (every interval is binary under STRICT)
+  lag_settings: [configuration 2 lateral, 20 m bins to 500 m; configuration 3 lateral, 50 m bins to 2000 m]
+  leave_one_line_out: false
+  role: sensitivity only; it cannot set or change the handoff
+decision_rule: >
+  The extension decision uses the configuration-2 rules unchanged. PROVISIONAL (extension) requires a FITTED model that
+  passes the identifiability rules and is STABLE under leave-one-line-out on all five lines. Otherwise the decision is
+  NOT_IDENTIFIABLE (extension). This configuration writes no handoff row; the configuration-2 handoff stands.

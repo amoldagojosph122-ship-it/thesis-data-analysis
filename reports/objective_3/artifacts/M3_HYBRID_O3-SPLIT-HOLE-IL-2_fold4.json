@@ -1,0 +1,31 @@
+{
+  "candidate_run_id": "M3_HYBRID",
+  "fallback": "FALLBACK_ML_ONLY",
+  "fold_id": 4,
+  "residual_covariance": {
+    "covariance": "PURE_NUGGET",
+    "model": null,
+    "nugget_fraction": null,
+    "range_m": null
+  },
+  "residual_covariance_label": "PURE_NUGGET",
+  "residual_sill": 0.16143883297290412,
+  "seed": 20261105,
+  "software": {
+    "numpy": "2.4.6",
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.0"
+  },
+  "split_plan_id": "O3-SPLIT-HOLE-IL-2",
+  "training_id_digest": "0d97a72a9e0d101bf6de6b6b754995c85cecbb2f56b6b12c535dcc337082a606",
+  "training_n": 1526,
+  "trend_candidate": "M2_RF_WF",
+  "trend_composite": "M2_WF_SEL",
+  "trend_hyperparameters": {
+    "max_depth": 4,
+    "max_features": "sqrt",
+    "min_samples_leaf": 20,
+    "n_estimators": 200
+  }
+}

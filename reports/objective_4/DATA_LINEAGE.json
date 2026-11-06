@@ -1,0 +1,1559 @@
+{
+  "bootstrap_replicates": 120000,
+  "calibration": [
+    {
+      "intercept": 0.06015588434932466,
+      "model_id": "BASE_LOGISTIC",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 0.8872381343491637,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": 0.0527767848425502,
+      "model_id": "BASE_LOGISTIC_WF",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 0.8780315970747953,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": -4.320374074577805,
+      "model_id": "BASE_PREVALENCE",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": -3.5666991625250404,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": -4.268909243408331,
+      "model_id": "M1_IK",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": -3.4717400749392606,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": 0.22273109018276488,
+      "model_id": "M2_HGB",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 1.0767965635021681,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": 0.22577699842451468,
+      "model_id": "M2_HGB_WF",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 1.0604193366487134,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": 0.26317103432959754,
+      "model_id": "M2_RF",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 1.3692601362826815,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": -0.009390528299812032,
+      "model_id": "M2_RF_WF",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 0.9939068575413722,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": 0.26317103432959754,
+      "model_id": "M2_SEL",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 1.3692601362826815,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": -0.009390528299812032,
+      "model_id": "M2_WF_SEL",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 0.9939068575413722,
+      "status": "DEFINED"
+    },
+    {
+      "intercept": -0.009390528299812032,
+      "model_id": "M3_HYBRID",
+      "n": 1829,
+      "reason": "diagnostic logistic fit on pooled held-out predictions",
+      "slope": 0.9939068575413722,
+      "status": "DEFINED"
+    }
+  ],
+  "claim": "skill when predicting a whole undrilled line from the other four lines",
+  "code_commit": "02943da",
+  "code_version": "4.1.0",
+  "config_sha256": "32c33d408d216ab899dc378f51487e9af8d4168d6ce4aeb9dfbe989297d37b21",
+  "config_version": "O4-CFG-2026.11.06-2",
+  "coverage": [
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "BASE_LOGISTIC",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "BASELINE",
+      "status": "FULL"
+    },
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "BASE_LOGISTIC_WF",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "BASELINE",
+      "status": "FULL"
+    },
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "BASE_PREVALENCE",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "BASELINE",
+      "status": "FULL"
+    },
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M1_IK",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M1",
+      "status": "FULL"
+    },
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_HGB",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M2",
+      "status": "FULL"
+    },
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_HGB_WF",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M2",
+      "status": "FULL"
+    },
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_RF",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M2",
+      "status": "FULL"
+    },
+    {
+      "comparable": 1,
+      "coverage": 1.0,
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_RF_WF",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M2",
+      "status": "FULL"
+    },
+    {
+      "comparable": 0,
+      "coverage": 1.0,
+      "identical_to": "M2_RF",
+      "identity_status": "IDENTICAL_TO",
+      "model_id": "M2_SEL",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M2",
+      "status": "FULL"
+    },
+    {
+      "comparable": 0,
+      "coverage": 1.0,
+      "identical_to": "M2_RF_WF",
+      "identity_status": "IDENTICAL_TO",
+      "model_id": "M2_WF_SEL",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M2",
+      "status": "FULL"
+    },
+    {
+      "comparable": 0,
+      "coverage": 1.0,
+      "identical_to": "M2_WF_SEL",
+      "identity_status": "IDENTICAL_TO",
+      "model_id": "M3_HYBRID",
+      "n_expected": 1829,
+      "n_failed": 0,
+      "n_predicted": 1829,
+      "reason": "a prediction exists for every held-out interval",
+      "role": "M3",
+      "status": "FULL"
+    }
+  ],
+  "created_utc": "2026-11-06T04:57:55Z",
+  "decisions": [
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": 0.013737241467553622,
+      "ci_low": -0.01395652912599766,
+      "coverage": 1.0,
+      "decision_id": 1,
+      "delta_brier": -0.00044477832713135657,
+      "discrimination_status": "WORSE",
+      "fold_consistency": 2,
+      "improvement_status": "INCONCLUSIVE",
+      "model_id": "BASE_LOGISTIC_WF",
+      "rank": 1,
+      "reason": "lowest pooled interval Brier among distinct full-coverage models; against comparator M2_RF: delta Brier (selected minus comparator) -0.000445, 95% hole-cluster interval [-0.013957, 0.013737], selected better in 2 of 5 folds; calibration ACCEPTABLE; discrimination WORSE; interval includes zero; selected better in 2 of 5 folds (minimum 4); ROC-AUC worse than the comparator by more than the margin",
+      "role": "SELECTED",
+      "selection_basis": "POINT_ESTIMATE_WITH_CAVEAT"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": 0.013956529125997659,
+      "ci_low": -0.013737241467553639,
+      "coverage": 1.0,
+      "decision_id": 2,
+      "delta_brier": 0.00044477832713135657,
+      "discrimination_status": "NOT_WORSE",
+      "fold_consistency": null,
+      "improvement_status": "INCONCLUSIVE",
+      "model_id": "M2_RF",
+      "rank": 2,
+      "reason": "vs selected BASE_LOGISTIC_WF: delta Brier (model minus selected) 0.000445, 95% hole-cluster interval [-0.013737, 0.013957]; unresolved: the interval includes zero",
+      "role": "COMPARATOR",
+      "selection_basis": "NOT_SELECTED"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": 0.012944827060142605,
+      "ci_low": -0.011402461103016908,
+      "coverage": 1.0,
+      "decision_id": 3,
+      "delta_brier": 0.0006458476975234606,
+      "discrimination_status": "NOT_WORSE",
+      "fold_consistency": null,
+      "improvement_status": "INCONCLUSIVE",
+      "model_id": "M2_HGB_WF",
+      "rank": 3,
+      "reason": "vs selected BASE_LOGISTIC_WF: delta Brier (model minus selected) 0.000646, 95% hole-cluster interval [-0.011402, 0.012945]; unresolved: the interval includes zero",
+      "role": "REJECTED",
+      "selection_basis": "NOT_SELECTED"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": 0.002703690480371004,
+      "ci_low": -0.0012466504308267564,
+      "coverage": 1.0,
+      "decision_id": 4,
+      "delta_brier": 0.000746955028081947,
+      "discrimination_status": "NOT_WORSE",
+      "fold_consistency": null,
+      "improvement_status": "INCONCLUSIVE",
+      "model_id": "BASE_LOGISTIC",
+      "rank": 4,
+      "reason": "vs selected BASE_LOGISTIC_WF: delta Brier (model minus selected) 0.000747, 95% hole-cluster interval [-0.001247, 0.002704]; unresolved: the interval includes zero",
+      "role": "REJECTED",
+      "selection_basis": "NOT_SELECTED"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": 0.016557511714348164,
+      "ci_low": -0.01257665753398682,
+      "coverage": 1.0,
+      "decision_id": 5,
+      "delta_brier": 0.0026472352175009595,
+      "discrimination_status": "NOT_WORSE",
+      "fold_consistency": null,
+      "improvement_status": "INCONCLUSIVE",
+      "model_id": "M2_RF_WF",
+      "rank": 5,
+      "reason": "vs selected BASE_LOGISTIC_WF: delta Brier (model minus selected) 0.002647, 95% hole-cluster interval [-0.012577, 0.016558]; unresolved: the interval includes zero",
+      "role": "REJECTED",
+      "selection_basis": "NOT_SELECTED"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": 0.020271906513859912,
+      "ci_low": -0.006869837408370076,
+      "coverage": 1.0,
+      "decision_id": 6,
+      "delta_brier": 0.006409697974758183,
+      "discrimination_status": "NOT_WORSE",
+      "fold_consistency": null,
+      "improvement_status": "INCONCLUSIVE",
+      "model_id": "M2_HGB",
+      "rank": 6,
+      "reason": "vs selected BASE_LOGISTIC_WF: delta Brier (model minus selected) 0.006410, 95% hole-cluster interval [-0.006870, 0.020272]; unresolved: the interval includes zero",
+      "role": "REJECTED",
+      "selection_basis": "NOT_SELECTED"
+    },
+    {
+      "calibration_status": "NOT_ACCEPTABLE",
+      "ci_high": 0.08492963975580431,
+      "ci_low": 0.024818080304236538,
+      "coverage": 1.0,
+      "decision_id": 7,
+      "delta_brier": 0.05430670480037411,
+      "discrimination_status": "WORSE",
+      "fold_consistency": null,
+      "improvement_status": "NO_IMPROVEMENT",
+      "model_id": "M1_IK",
+      "rank": 7,
+      "reason": "vs selected BASE_LOGISTIC_WF: delta Brier (model minus selected) 0.054307, 95% hole-cluster interval [0.024818, 0.084930]; resolved: the selected model has the lower Brier (interval above zero)",
+      "role": "REJECTED",
+      "selection_basis": "NOT_SELECTED"
+    },
+    {
+      "calibration_status": "NOT_ACCEPTABLE",
+      "ci_high": 0.08671662222546314,
+      "ci_low": 0.02668774441673786,
+      "coverage": 1.0,
+      "decision_id": 8,
+      "delta_brier": 0.05605500463452637,
+      "discrimination_status": "WORSE",
+      "fold_consistency": null,
+      "improvement_status": "NO_IMPROVEMENT",
+      "model_id": "BASE_PREVALENCE",
+      "rank": 8,
+      "reason": "vs selected BASE_LOGISTIC_WF: delta Brier (model minus selected) 0.056055, 95% hole-cluster interval [0.026688, 0.086717]; resolved: the selected model has the lower Brier (interval above zero)",
+      "role": "REJECTED",
+      "selection_basis": "NOT_SELECTED"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": null,
+      "ci_low": null,
+      "coverage": 1.0,
+      "decision_id": 9,
+      "delta_brier": null,
+      "discrimination_status": "IDENTICAL_TO_M2_RF",
+      "fold_consistency": null,
+      "improvement_status": "NOT_COMPARABLE",
+      "model_id": "M2_SEL",
+      "rank": null,
+      "reason": "identical to M2_RF on every common observation; reported, not ranked",
+      "role": "NOT_COMPARABLE",
+      "selection_basis": "NOT_RANKED"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": null,
+      "ci_low": null,
+      "coverage": 1.0,
+      "decision_id": 10,
+      "delta_brier": null,
+      "discrimination_status": "IDENTICAL_TO_M2_RF_WF",
+      "fold_consistency": null,
+      "improvement_status": "NOT_COMPARABLE",
+      "model_id": "M2_WF_SEL",
+      "rank": null,
+      "reason": "identical to M2_RF_WF on every common observation; reported, not ranked",
+      "role": "NOT_COMPARABLE",
+      "selection_basis": "NOT_RANKED"
+    },
+    {
+      "calibration_status": "ACCEPTABLE",
+      "ci_high": null,
+      "ci_low": null,
+      "coverage": 1.0,
+      "decision_id": 11,
+      "delta_brier": null,
+      "discrimination_status": "IDENTICAL_TO_M2_WF_SEL",
+      "fold_consistency": null,
+      "improvement_status": "NOT_COMPARABLE",
+      "model_id": "M3_HYBRID",
+      "rank": null,
+      "reason": "identical to M2_WF_SEL on every common observation; reported, not ranked",
+      "role": "NOT_COMPARABLE",
+      "selection_basis": "NOT_RANKED"
+    }
+  ],
+  "figures": [
+    {
+      "figure_id": "O4-F01",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Spatial holdout fold map and coverage"
+    },
+    {
+      "figure_id": "O4-F02",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Brier score by model and held-out line"
+    },
+    {
+      "figure_id": "O4-F03",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "ROC and PR curves"
+    },
+    {
+      "figure_id": "O4-F04",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Reliability diagrams"
+    },
+    {
+      "figure_id": "O4-F05",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Paired Brier differences with hole-cluster intervals and power labels"
+    },
+    {
+      "figure_id": "O4-F06",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Selected-model residuals on withheld observations"
+    },
+    {
+      "figure_id": "O4-F07",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Coverage and missing predictions"
+    }
+  ],
+  "handoff": {
+    "allowed_domain": "held-out intervals of a whole undrilled drill line predicted from the other drill lines; relative geometry only; not a distant prospect beyond the sampled lines and not an absolute-elevation volume",
+    "calibration_policy": "Objective 3 calibration only; Objective 4 diagnostics are not applied",
+    "caveats": "Internal spatially held-out validation on five drill lines: extrapolation to an unseen line, not an external prospective campaign. Only easting, northing and relative Z are predictors. No grade, tonnage or resource is estimated. M3_HYBRID is identical to M2_WF_SEL on every common observation, so its residual kriging adds no skill in this evaluation; no hybrid advantage is claimed.",
+    "claim": "skill when predicting a whole undrilled line from the other four lines",
+    "config_version": "O4-CFG-2026.11.06-2",
+    "created_utc": "2026-11-06T04:56:22Z",
+    "decision_id": 1,
+    "metric_reference": "pooled interval-weighted Brier is the primary endpoint; see the tier's O4-T01, O4-T02 and O4-T05 tables",
+    "receipt_id": 1,
+    "receipt_sha256": "f70649f970b35a8d8465d60cfd7570e62d443eeb733df825d1cc897df6cf916c",
+    "selected_model_id": "BASE_LOGISTIC_WF",
+    "split_plan_id": "O3-SPLIT-LODO-1",
+    "split_plan_sha256": "e1193a349fcd34264519672cb3de9854b19e984a21b21d784b011220e9888c1f",
+    "target_receipt_id": 1,
+    "tier": "TIER_1_EXTRAPOLATION"
+  },
+  "identities": [
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "BASE_LOGISTIC"
+    },
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "BASE_LOGISTIC_WF"
+    },
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "BASE_PREVALENCE"
+    },
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M1_IK"
+    },
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_HGB"
+    },
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_HGB_WF"
+    },
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_RF"
+    },
+    {
+      "identical_to": null,
+      "identity_status": "DISTINCT",
+      "model_id": "M2_RF_WF"
+    },
+    {
+      "identical_to": "M2_RF",
+      "identity_status": "IDENTICAL_TO",
+      "model_id": "M2_SEL"
+    },
+    {
+      "identical_to": "M2_RF_WF",
+      "identity_status": "IDENTICAL_TO",
+      "model_id": "M2_WF_SEL"
+    },
+    {
+      "identical_to": "M2_WF_SEL",
+      "identity_status": "IDENTICAL_TO",
+      "model_id": "M3_HYBRID"
+    }
+  ],
+  "objective": 4,
+  "output_hashes": [
+    {
+      "bytes": 135299,
+      "path": "figures/objective_4/O4_F01_holdout_coverage.svg",
+      "sha256": "61312668decf16cfec04c45d5f4f3ef462bbf59f564ca88474ec269055f0cd4b"
+    },
+    {
+      "bytes": 26999,
+      "path": "figures/objective_4/O4_F01_holdout_coverage.pdf",
+      "sha256": "f63d03753d4930214f982c8ad45efbd182a7c272f12ee1fd2bf166216863ac37"
+    },
+    {
+      "bytes": 185037,
+      "path": "figures/objective_4/O4_F01_holdout_coverage.png",
+      "sha256": "df8043e662c638ae13427ea2d19cacb554be95250875a9b14cc0d7418df2c809"
+    },
+    {
+      "bytes": 118624,
+      "path": "figures/objective_4/O4_F02_brier.svg",
+      "sha256": "9c7bbaa8ecd45d9bd2f6b02b74037c5aedc42fdde279fbd281fa05911f4f077e"
+    },
+    {
+      "bytes": 28879,
+      "path": "figures/objective_4/O4_F02_brier.pdf",
+      "sha256": "c3ad40c8e9df283033426c1c586b55e43aa66b8e123935272b69ef08c4a8fd7f"
+    },
+    {
+      "bytes": 194771,
+      "path": "figures/objective_4/O4_F02_brier.png",
+      "sha256": "e592db4805d166f734e485f1163d8da799ed232393e9e68bbf62c7728bd22cd6"
+    },
+    {
+      "bytes": 234382,
+      "path": "figures/objective_4/O4_F03_curves.svg",
+      "sha256": "3f1ec476152c95bcd0802374a900209ed0303a33da8ee7f7a9e52e4ab791bedc"
+    },
+    {
+      "bytes": 56409,
+      "path": "figures/objective_4/O4_F03_curves.pdf",
+      "sha256": "35c1518f0642f41eef3367d20451e15744d9ed3dddd1c6f1999a4aabe59ffb58"
+    },
+    {
+      "bytes": 378041,
+      "path": "figures/objective_4/O4_F03_curves.png",
+      "sha256": "697c0fbaabf3ad8bb8fd30ace9fcb3f14e72d43b20926511cb4f0ef37f9e1ac3"
+    },
+    {
+      "bytes": 193312,
+      "path": "figures/objective_4/O4_F04_reliability.svg",
+      "sha256": "b21124527b260194d71afae4935c3032b58f9384a4f05f661f183c550c59e0ae"
+    },
+    {
+      "bytes": 31485,
+      "path": "figures/objective_4/O4_F04_reliability.pdf",
+      "sha256": "320f3f0e37d94d3de2f53f812b298d2c25607daa3c73ef10acca0eb039d0e83f"
+    },
+    {
+      "bytes": 335969,
+      "path": "figures/objective_4/O4_F04_reliability.png",
+      "sha256": "9deab80cf48ded3f12251778fbf5edf9a4b92b079206b4dedc8cc6ae2380ae18"
+    },
+    {
+      "bytes": 124072,
+      "path": "figures/objective_4/O4_F05_paired.svg",
+      "sha256": "4bcf7a962102e9ccb40d5fe08dab8fbd90e4eead2c49cde6394d77d94be3bac3"
+    },
+    {
+      "bytes": 28579,
+      "path": "figures/objective_4/O4_F05_paired.pdf",
+      "sha256": "c5ff11d9e3906298a08f282b956df7bec13793200cc0a06545963f59d98c9dca"
+    },
+    {
+      "bytes": 185365,
+      "path": "figures/objective_4/O4_F05_paired.png",
+      "sha256": "cdbb662e5088acdfdd68e5a33ed43e742da129a109b92070cac218e060bdf1fc"
+    },
+    {
+      "bytes": 459563,
+      "path": "figures/objective_4/O4_F06_residuals.svg",
+      "sha256": "2f9d58138dece291f4c690086d267120ce01443823d8f0f08525e5ffeb557a2f"
+    },
+    {
+      "bytes": 49618,
+      "path": "figures/objective_4/O4_F06_residuals.pdf",
+      "sha256": "a346c14fee0d112b1c6ae6ed2a2033346b54c4e146934b15023d7e4a7f6575c9"
+    },
+    {
+      "bytes": 559857,
+      "path": "figures/objective_4/O4_F06_residuals.png",
+      "sha256": "893b2fece4a07dee22dc1d6afa349c0f2d1c79f05fa2e27a344b3bc04ecae5fb"
+    },
+    {
+      "bytes": 132567,
+      "path": "figures/objective_4/O4_F07_coverage.svg",
+      "sha256": "5b50155215c3df0dde032a89ebd1e8c6464033d84d2eee9e65f6144a7c960b75"
+    },
+    {
+      "bytes": 26652,
+      "path": "figures/objective_4/O4_F07_coverage.pdf",
+      "sha256": "b61b1039cb3117b466ab165f00248e197acbff6fbdd03bfdf3993a6b103e6d45"
+    },
+    {
+      "bytes": 191215,
+      "path": "figures/objective_4/O4_F07_coverage.png",
+      "sha256": "bd89da35614f16db207164c2d8c2f90271d7fce2ece97a5370ec2ab058199b22"
+    },
+    {
+      "bytes": 1954,
+      "path": "tables/objective_4/O4_T01_evaluation_summary.csv",
+      "sha256": "4f352e52ce6baf1c153d450ff9af403c8e1dc653c15ff38e5510768aef612b1d"
+    },
+    {
+      "bytes": 2989,
+      "path": "tables/objective_4/O4_T01_evaluation_summary.md",
+      "sha256": "840da8c9809420d30f36c69738b6d6bce4302246039e44a99a670f113ad507b0"
+    },
+    {
+      "bytes": 3063,
+      "path": "tables/objective_4/O4_T01_evaluation_summary.tex",
+      "sha256": "423b4bd1630c67a3fc2fb5e03560d8e1e9aed9974884f99615f8b7199999aa79"
+    },
+    {
+      "bytes": 4882,
+      "path": "tables/objective_4/O4_T02_fold_scores.csv",
+      "sha256": "c6aa83365e57b77cd6e2e8dd4a6d5febdb20c64ad2cbd0ab7e60c202d5eb7a07"
+    },
+    {
+      "bytes": 6708,
+      "path": "tables/objective_4/O4_T02_fold_scores.md",
+      "sha256": "dda2b06d9cede86323dd1a05b515e2726360521dc28316a3ab3da13c8078206c"
+    },
+    {
+      "bytes": 6842,
+      "path": "tables/objective_4/O4_T02_fold_scores.tex",
+      "sha256": "79df2932be502e93795367fbad290fab2ce0d3a27e0fe7f206464cd0b4f8fb73"
+    },
+    {
+      "bytes": 9104,
+      "path": "tables/objective_4/O4_T03_confusion.csv",
+      "sha256": "3bda3ea9b2837d9c1ccbdf0dceed0c4394461c1ac44396dd6a299be01e7ea421"
+    },
+    {
+      "bytes": 11852,
+      "path": "tables/objective_4/O4_T03_confusion.md",
+      "sha256": "79c7a01e14c4503fc27281a473f4e95628eadc87c0fad8e36309e831c38c2ca2"
+    },
+    {
+      "bytes": 12139,
+      "path": "tables/objective_4/O4_T03_confusion.tex",
+      "sha256": "ee0c72d6ad41b10833487059428ecc05f59995a4090e7b1476bc0396c8d1dff6"
+    },
+    {
+      "bytes": 2736,
+      "path": "tables/objective_4/O4_T04_paired_uncertainty.csv",
+      "sha256": "69f205e63f3c0b84cd9d075d5272325d2aac4954da6d2105640f02661d653383"
+    },
+    {
+      "bytes": 4001,
+      "path": "tables/objective_4/O4_T04_paired_uncertainty.md",
+      "sha256": "5b27634b8ce9bd43906d14eaca9fb99380c6238f0681b413286579cd6fb8d36d"
+    },
+    {
+      "bytes": 4159,
+      "path": "tables/objective_4/O4_T04_paired_uncertainty.tex",
+      "sha256": "38db9b662d78a06a4ee67cba53c6a4133762879290492ff79441bebbcd912c4c"
+    },
+    {
+      "bytes": 3341,
+      "path": "tables/objective_4/O4_T05_decision.csv",
+      "sha256": "69087aa21ed7dfc2af19c7a4f8218a88c78a110faf9b09b2df238aa45b3b79b7"
+    },
+    {
+      "bytes": 4321,
+      "path": "tables/objective_4/O4_T05_decision.md",
+      "sha256": "9bb3c63e4482b266baeab06f12f967971522791ffa0fe21dc0f75b7404b61264"
+    },
+    {
+      "bytes": 4468,
+      "path": "tables/objective_4/O4_T05_decision.tex",
+      "sha256": "d593bfb4a4e5915441c3e00598f3323c0028a1358f42df00705a3ebb2ea8971e"
+    }
+  ],
+  "paired": [
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": -0.031441191701812206,
+      "ci_high_line": -0.013304521822912585,
+      "ci_low": -0.0811473608078967,
+      "ci_low_line": -0.10600329919601872,
+      "delta_brier": -0.05561022630739501,
+      "delta_log_loss": -0.1387673541374651,
+      "delta_pr_auc": 0.34904895484700144,
+      "delta_roc_auc": 0.49381025416301494,
+      "detectable_half_width": null,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "BASE_PREVALENCE",
+      "model_b": "M2_SEL",
+      "n": 1829,
+      "pair_id": "PREV_vs_M2SEL",
+      "power_label": "RESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": 0.007828341581519696,
+      "ci_high_line": 0.008061537841850125,
+      "ci_low": -0.0035220659980876147,
+      "ci_low_line": -0.0030859240118767395,
+      "delta_brier": 0.002202456890369603,
+      "delta_log_loss": 0.018184972447954806,
+      "delta_pr_auc": 0.01626178092913655,
+      "delta_roc_auc": -0.011043675138767028,
+      "detectable_half_width": 0.005675203789803655,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "M2_SEL",
+      "model_b": "M2_WF_SEL",
+      "n": 1829,
+      "pair_id": "M2SEL_vs_M2WFSEL",
+      "power_label": "UNRESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "not applicable: identical predictions",
+      "ci_high": null,
+      "ci_high_line": null,
+      "ci_low": null,
+      "ci_low_line": null,
+      "delta_brier": 0.0,
+      "delta_log_loss": 0.0,
+      "delta_pr_auc": 0.0,
+      "delta_roc_auc": 0.0,
+      "detectable_half_width": null,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "M2_WF_SEL",
+      "model_b": "M3_HYBRID",
+      "n": 1829,
+      "pair_id": "M2WFSEL_vs_M3",
+      "power_label": "IDENTICAL",
+      "reason": "identical predictions on every common observation; no interval",
+      "scope": "POOLED",
+      "status": "IDENTICAL",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": -0.0009092076985089335,
+      "ci_high_line": -0.0005836021742180994,
+      "ci_low": -0.0025328952858351362,
+      "ci_low_line": -0.002790991533061199,
+      "delta_brier": -0.001748299834152256,
+      "delta_log_loss": -0.004102219906975124,
+      "delta_pr_auc": -0.014242032756755868,
+      "delta_roc_auc": 0.04544989775051128,
+      "detectable_half_width": null,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "BASE_PREVALENCE",
+      "model_b": "M1_IK",
+      "n": 1829,
+      "pair_id": "PREV_vs_M1",
+      "power_label": "RESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": 0.0012466504308267555,
+      "ci_high_line": 0.0019680338319349746,
+      "ci_low": -0.002703690480371004,
+      "ci_low_line": -0.003482204364862629,
+      "delta_brier": -0.000746955028081947,
+      "delta_log_loss": 0.0011088521722689704,
+      "delta_pr_auc": 0.004530315186162204,
+      "delta_roc_auc": -0.007503651767455488,
+      "detectable_half_width": 0.00197517045559888,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "BASE_LOGISTIC",
+      "model_b": "BASE_LOGISTIC_WF",
+      "n": 1829,
+      "pair_id": "LOG_vs_LOGWF",
+      "power_label": "UNRESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": 0.007828341581519696,
+      "ci_high_line": 0.008061537841850125,
+      "ci_low": -0.0035220659980876147,
+      "ci_low_line": -0.0030859240118767395,
+      "delta_brier": 0.002202456890369603,
+      "delta_log_loss": 0.018184972447954806,
+      "delta_pr_auc": 0.01626178092913655,
+      "delta_roc_auc": -0.011043675138767028,
+      "detectable_half_width": 0.005675203789803655,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "M2_RF",
+      "model_b": "M2_RF_WF",
+      "n": 1829,
+      "pair_id": "RF_vs_RFWF",
+      "power_label": "UNRESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": -0.003039371415200162,
+      "ci_high_line": -0.0014166221169074878,
+      "ci_low": -0.008715167728388398,
+      "ci_low_line": -0.01110398389433937,
+      "delta_brier": -0.005763850277234722,
+      "delta_log_loss": -0.015309738164102638,
+      "delta_pr_auc": 0.02180404150716908,
+      "delta_roc_auc": 0.012209319310546252,
+      "detectable_half_width": null,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "M2_HGB",
+      "model_b": "M2_HGB_WF",
+      "n": 1829,
+      "pair_id": "HGB_vs_HGBWF",
+      "power_label": "RESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": 0.011982969558436782,
+      "ci_high_line": 0.013110809338743312,
+      "ci_low": -0.013688272471190697,
+      "ci_low_line": -0.010218349461843051,
+      "delta_brier": -0.00030217670095059046,
+      "delta_log_loss": -0.005840409638873667,
+      "delta_pr_auc": -0.04144527095082473,
+      "delta_roc_auc": 0.025436751387671763,
+      "detectable_half_width": 0.012835621014813739,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "BASE_LOGISTIC",
+      "model_b": "M2_RF",
+      "n": 1829,
+      "pair_id": "LOG_vs_RF",
+      "power_label": "UNRESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    },
+    {
+      "ci_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+      "ci_high": 0.017427878336379127,
+      "ci_high_line": 0.01851076262376211,
+      "ci_low": -0.005874098111972417,
+      "ci_low_line": 0.00016071066244066553,
+      "delta_brier": 0.005964919647626826,
+      "delta_log_loss": 0.02358735979040283,
+      "delta_pr_auc": 0.0029727292147571083,
+      "delta_roc_auc": -0.03037832310838451,
+      "detectable_half_width": 0.011650988224175773,
+      "fold_id": 0,
+      "line_code": "",
+      "model_a": "M2_RF",
+      "model_b": "M2_HGB",
+      "n": 1829,
+      "pair_id": "RF_vs_HGB",
+      "power_label": "UNRESOLVED",
+      "reason": "both models defined on this subset",
+      "scope": "POOLED",
+      "status": "DEFINED",
+      "weighting": "INTERVAL"
+    }
+  ],
+  "plan": {
+    "bootstrap_design": "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity",
+    "calibration_policy": "O3 calibration only; O4 fits diagnostics and never recalibrates",
+    "cohort_definition": "intersection of the full-coverage feasible models on the held-out folds",
+    "decision_policy_json": "{\"comparator\": \"NEXT_LOWEST_POOLED_INTERVAL_BRIER\", \"improvement_rule\": \"SUPPORTED_IMPROVEMENT requires all of: the 95% hole-cluster bootstrap interval of (Brier_selected - Brier_comparator) lies entirely below zero; the selected model has the lower Brier in at least four of the five folds; the calibration slope is in [0.5, 2.0] and |intercept| <= 0.5; the selected model's ROC-AUC is not worse than the comparator's by more than 0.02; and coverage is at least 0.95. INCONCLUSIVE applies when the interval includes zero or fold consistency is below four of five. NO_IMPROVEMENT applies when the point estimate is non-negative or the interval lies entirely above zero. NOT_COMPARABLE applies to a model with coverage below 0.95, a missing metric, or an identity with another model.\\n\", \"select\": \"LOWEST_POOLED_INTERVAL_BRIER_AMONG_DISTINCT_FULL_COVERAGE_MODELS\", \"selection_basis_when_inconclusive\": \"POINT_ESTIMATE_WITH_CAVEAT\"}",
+    "frozen_utc": "2026-11-06T04:56:21Z",
+    "plan_id": "O4-CFG-2026.11.06-2-PLAN",
+    "plan_sha256": "d8da1cf9aaf738c88b98a31eedf716e822e67fe2fd816448d90d4c1842e9dda1",
+    "primary_endpoint": "BRIER",
+    "primary_weighting": "INTERVAL",
+    "secondary_weighting": "EQUAL_HOLE",
+    "unit_of_analysis": "logged interval; fold unit HELD_OUT_LINE; uncertainty resampled by hole (primary) and line (sensitivity)"
+  },
+  "pooled_metrics": [
+    {
+      "metric_id": "BRIER",
+      "model_id": "BASE_LOGISTIC",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.16581696630300466,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "BASE_LOGISTIC",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.059558077918544006,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "BASE_LOGISTIC",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.5074327144754969,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "BASE_LOGISTIC",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.6153187663315745,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "BASE_LOGISTIC",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7562109260882266,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "BASE_LOGISTIC_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.1650700112749227,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "BASE_LOGISTIC_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.056221683095685794,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "BASE_LOGISTIC_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.5085415666477658,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "BASE_LOGISTIC_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.6198490815177367,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "BASE_LOGISTIC_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7487072743207711,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "BASE_PREVALENCE",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.22112501590944908,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "BASE_PREVALENCE",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.16488618308203234,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "BASE_PREVALENCE",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.6403596589740883,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "BASE_PREVALENCE",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.22482454053374828,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "BASE_PREVALENCE",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.2878374233128834,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M1_IK",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.21937671607529682,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M1_IK",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.1277011063969704,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M1_IK",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.6362574390671132,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M1_IK",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.21058250777699242,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M1_IK",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.3332873210633947,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M2_HGB",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.1714797092496809,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M2_HGB",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.05082945482577691,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M2_HGB",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.525179664627026,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M2_HGB",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.5768462245955068,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M2_HGB",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7512693543675139,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M2_HGB_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.16571585897244617,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M2_HGB_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.049827495584623266,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M2_HGB_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.5098699264629234,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M2_HGB_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.5986502661026759,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M2_HGB_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7634786736780601,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M2_RF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.16551478960205407,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M2_RF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.060151225323649825,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M2_RF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.5015923048366232,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M2_RF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.5738734953807497,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M2_RF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7816476774758984,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M2_RF_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.16771724649242367,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M2_RF_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.053711942024557105,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M2_RF_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.519777277284578,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M2_RF_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.5901352763098863,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M2_RF_WF",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7706040023371313,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M2_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.16551478960205407,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M2_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.060151225323649825,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M2_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.5015923048366232,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M2_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.5738734953807497,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M2_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7816476774758984,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M2_WF_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.16771724649242367,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M2_WF_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.053711942024557105,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M2_WF_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.519777277284578,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M2_WF_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.5901352763098863,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M2_WF_SEL",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7706040023371313,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "BRIER",
+      "model_id": "M3_HYBRID",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted Brier score",
+      "status": "DEFINED",
+      "value": 0.16771724649242367,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ECE",
+      "model_id": "M3_HYBRID",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "ECE from merged reliability bins",
+      "status": "DEFINED",
+      "value": 0.053711942024557105,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "LOG_LOSS",
+      "model_id": "M3_HYBRID",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted log loss with epsilon 1e-06",
+      "status": "DEFINED",
+      "value": 0.519777277284578,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "PR_AUC",
+      "model_id": "M3_HYBRID",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted average precision",
+      "status": "DEFINED",
+      "value": 0.5901352763098863,
+      "weighting": "INTERVAL"
+    },
+    {
+      "metric_id": "ROC_AUC",
+      "model_id": "M3_HYBRID",
+      "n": 1829,
+      "n_positive": 525,
+      "reason": "weighted ROC-AUC",
+      "status": "DEFINED",
+      "value": 0.7706040023371313,
+      "weighting": "INTERVAL"
+    }
+  ],
+  "runs": {
+    "evaluate": 2,
+    "import": 1,
+    "verify": 5
+  },
+  "schema_version": "O4-SCHEMA-2026.11.06-1",
+  "tables": [
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 11,
+      "status": "GENERATED",
+      "table_id": "O4-T01",
+      "title": "Main evaluation summary"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 55,
+      "status": "GENERATED",
+      "table_id": "O4-T02",
+      "title": "Fold-by-fold scores"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 66,
+      "status": "GENERATED",
+      "table_id": "O4-T03",
+      "title": "Confusion matrices and threshold provenance"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 18,
+      "status": "GENERATED",
+      "table_id": "O4-T04",
+      "title": "Paired difference uncertainty and weighting sensitivity"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 11,
+      "status": "GENERATED",
+      "table_id": "O4-T05",
+      "title": "Final model-selection decision and handoff"
+    }
+  ],
+  "tier": "TIER_1_EXTRAPOLATION",
+  "upstream": {
+    "objective_1": {
+      "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",
+      "label_rule_definition_sha256": "d7a8043ed70dcc76e34a084c6b723dd428c98162ae451c53428d2f64e1a4d628",
+      "label_rule_id": "DESIGN_8_2_v1"
+    },
+    "objective_3": {
+      "config_version": "O3-CFG-2026.11.06-2",
+      "failures": 0,
+      "path": "C:/Users/ThinkPad P1 G4/Documents/Joseph_Thesis/database/kambale_obj3_models.sqlite",
+      "prediction_snapshot_sha256": "ae1093c78017fcc79f49bbf5bcd61f086fadd19c0566ade720ff6709c900efbb",
+      "predictions": 20119,
+      "receipt_id": 1,
+      "split_plan_id": "O3-SPLIT-LODO-1",
+      "split_plan_sha256": "e1193a349fcd34264519672cb3de9854b19e984a21b21d784b011220e9888c1f"
+    }
+  },
+  "working_tree_committed": false
+}

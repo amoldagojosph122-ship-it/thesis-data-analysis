@@ -1,0 +1,333 @@
+{
+  "code_commit": "7d83644",
+  "code_version": "2.1.0",
+  "configuration": {
+    "sha256": "bfc2962a9e8999472193ebb8ca7e17b3470c127d26cac90789b5675c51d5ce20",
+    "supersedes": "O2-CFG-2026.11.05-2",
+    "version": "O2-CFG-2026.11.05-4"
+  },
+  "generated_utc": "2026-11-06T04:33:48Z",
+  "geometry": {
+    "build_id": 10,
+    "coordinate_pair_status": "APPROVED",
+    "crs": "EPSG:32630",
+    "datum_status": "VERIFIED",
+    "drill_line_status": "APPROVED",
+    "status": "PROVISIONAL_RELATIVE",
+    "vertical_basis": "RELATIVE_TO_COLLAR"
+  },
+  "label_rule": {
+    "definition_sha256": "d7a8043ed70dcc76e34a084c6b723dd428c98162ae451c53428d2f64e1a4d628",
+    "id": "DESIGN_8_2_v1",
+    "status": "APPROVED"
+  },
+  "outputs": [
+    {
+      "id": "O2-F01",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F01_drill_hole_plan.svg",
+      "sha256": "6460bfb7fa70e20dc1237f33a24dd7d6977b00f37844213b93c9096a6446dc90"
+    },
+    {
+      "id": "O2-F01",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F01_drill_hole_plan.pdf",
+      "sha256": "06b0a2f4433af7f4b9302e33c94456bc78ce7d0039064fda0755553330a29abd"
+    },
+    {
+      "id": "O2-F01",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F01_drill_hole_plan.png",
+      "sha256": "e0a5f938501de0d53fd9bc5509f063504242ab6da564d1e3a57fb5a01cefea9d"
+    },
+    {
+      "id": "O2-F02",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F02_occurrence_hole_line.svg",
+      "sha256": "77c1f296e3ccae90b6ccf46fae281e8113cd7c34a5d0f205f2313e6fed64c0cf"
+    },
+    {
+      "id": "O2-F02",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F02_occurrence_hole_line.pdf",
+      "sha256": "b86327a5111fea5aed05163ad35d731642bc0d80b709b981cebfc1e061406653"
+    },
+    {
+      "id": "O2-F02",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F02_occurrence_hole_line.png",
+      "sha256": "94e4077d69da3449631ee3d6b92bf7741517826583a64fc709967fec43586672"
+    },
+    {
+      "id": "O2-F03",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F03_depth_weathering.svg",
+      "sha256": "eb2b6743208000e980c7e737fb8e18f87209456ec84371be5ffd12027032f481"
+    },
+    {
+      "id": "O2-F03",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F03_depth_weathering.pdf",
+      "sha256": "57dce41373706197f6573ad8cd2320dd3f94c4811e4d255ee2debf29cc58bb43"
+    },
+    {
+      "id": "O2-F03",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F03_depth_weathering.png",
+      "sha256": "f3b7363fb3278f0585304ed3eca5db32a2d19a0fcc92c5cd0892b138cabbc8e6"
+    },
+    {
+      "id": "O2-F04",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F04_hole_strips.svg",
+      "sha256": "391657bbfd47263ab28984766775cca60e0636f86b1b9a65bd4822de4071ec3a"
+    },
+    {
+      "id": "O2-F04",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F04_hole_strips.pdf",
+      "sha256": "66c2ea1a0bd0212b20f90a52b3cbe1b2418283228a90d88a113fb64cb427e5c0"
+    },
+    {
+      "id": "O2-F04",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F04_hole_strips.png",
+      "sha256": "432b3a1ac5943ee80cf6eb63287aedd7ccac121b4e93fc90c10a7bc443fc0ce5"
+    },
+    {
+      "id": "O2-F05",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F05_pair_support.svg",
+      "sha256": "930bd754f5ae42cb5382fef0e2fa8a37df3fd42930a512fe8cab2be4f5cf51a3"
+    },
+    {
+      "id": "O2-F05",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F05_pair_support.pdf",
+      "sha256": "e5bbe314a9d5e5b27931365b954f3b17b57b83dd4b62aef1bca084e1c3c47c69"
+    },
+    {
+      "id": "O2-F05",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F05_pair_support.png",
+      "sha256": "38f1cb17da6a096cbfdc64db14bc25cc09aabc899b1876737167cb6150669c45"
+    },
+    {
+      "id": "O2-F06",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F06_between_hole_variogram.svg",
+      "sha256": "630d83f5a671689fe79da6b47441f6d6c8924997bb646eabe01ea84b07aa014b"
+    },
+    {
+      "id": "O2-F06",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F06_between_hole_variogram.pdf",
+      "sha256": "0699f727f33eb6162ff7becc0bdee0265d6146c5e15698b2c1c70c7cf218d7bf"
+    },
+    {
+      "id": "O2-F06",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F06_between_hole_variogram.png",
+      "sha256": "6104b3e04122842834ac3dbc23fe0ba663e1028ce7be54ec2be47169d892e1d9"
+    },
+    {
+      "id": "O2-F07",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F07_azimuth_variograms.svg",
+      "sha256": "2a0d7a853360df97ea9abb0c9eb3eb89f59547a6981745332e5881296ce9c21d"
+    },
+    {
+      "id": "O2-F07",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F07_azimuth_variograms.pdf",
+      "sha256": "d12818ebd24ec56277c0ce146bd9f55a99c24cf4445a393b29f434728ca806f1"
+    },
+    {
+      "id": "O2-F07",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F07_azimuth_variograms.png",
+      "sha256": "b9a20648ccae99a304b370e0980104f24e120b15dc6fb10c87781dcd8e1a8a3f"
+    },
+    {
+      "id": "O2-F08",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F08_sensitivity.svg",
+      "sha256": "b214b642bd59f7c8f874de6979175b692463cb4852ffc112dc1e48b5bbf498e2"
+    },
+    {
+      "id": "O2-F08",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F08_sensitivity.pdf",
+      "sha256": "3caafba51a3c0a6f6cf8618af2bb5a8b5269801c576f42bc68a9ec8c23de94f0"
+    },
+    {
+      "id": "O2-F08",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F08_sensitivity.png",
+      "sha256": "f110a8397ab95235ebe02cfa6738ca501b07ff042399284c8b2cbd2a7f1671ef"
+    },
+    {
+      "id": "O2-F09",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F09_extension_strict.svg",
+      "sha256": "e7145df107a5ec6d46e046498abe37c23e65ac372da52ed0f3e7ddcd07613547"
+    },
+    {
+      "id": "O2-F09",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F09_extension_strict.pdf",
+      "sha256": "c8940e439002c3e6702f6df78ee10436f0fefd03b36b536fa1db6dd31a2970e8"
+    },
+    {
+      "id": "O2-F09",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F09_extension_strict.png",
+      "sha256": "17da1fce30c5a5aa246216a4750a73187b8aa4bba3487a8ab19b5fdbecf6b2ef"
+    },
+    {
+      "id": "O2-F10",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F10_weathering_fresh.svg",
+      "sha256": "e4d1264418141099bf7a2696a25fc3e7c35267967150b828b7c49306c93f0a35"
+    },
+    {
+      "id": "O2-F10",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F10_weathering_fresh.pdf",
+      "sha256": "6a0518e7110df3aa99016db4133b5099a80746d59709c01933774d690fb2cca7"
+    },
+    {
+      "id": "O2-F10",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F10_weathering_fresh.png",
+      "sha256": "502cc36d163e58be57298af5adc2c911690bc495bcddddbfdbdc9938295f7556"
+    },
+    {
+      "id": "O2-T01",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T01_hole_line_summary.csv",
+      "sha256": "6dbfbb4db24d8e5f983ee3672d2c39704dc6e4ef4cc2c05adccf6eb5eaa2cb1c"
+    },
+    {
+      "id": "O2-T01",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T01_hole_line_summary.md",
+      "sha256": "954eaff836781c14d940f2bce2ed384360a7206ae65d907831af578fbf884fec"
+    },
+    {
+      "id": "O2-T01",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T01_hole_line_summary.tex",
+      "sha256": "0a508730594ae1aae2166fa2e623c5983dec822b4e0ee1fe1f5cb1c894a8900f"
+    },
+    {
+      "id": "O2-T02",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T02_prevalence_by_line.csv",
+      "sha256": "2c34b1d546d0943634c87872be327504ac8892429a2c4a63e44f5a1ba671b009"
+    },
+    {
+      "id": "O2-T02",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T02_prevalence_by_line.md",
+      "sha256": "6eea8f8e81aad18172fb4c1f0b2a2770bf04905fd05e2702d5f370d755617565"
+    },
+    {
+      "id": "O2-T02",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T02_prevalence_by_line.tex",
+      "sha256": "44f18f13d3c3bfc512ab5d1e1d65b4cc75767e1cf6c80b188132b3ddf87c92cf"
+    },
+    {
+      "id": "O2-T03",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T03_variogram_fit_report.csv",
+      "sha256": "5f1193e6f226ea046115bcd7a4cd9008b31f3760bc4194b395f3132010fda6d4"
+    },
+    {
+      "id": "O2-T03",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T03_variogram_fit_report.md",
+      "sha256": "0fb9955633cf72eedded8e25a42da895e2d4e8062916d706fb7245d267031d63"
+    },
+    {
+      "id": "O2-T03",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T03_variogram_fit_report.tex",
+      "sha256": "8daf107ddf81c4c5602f5682cfe7ba22580d737abc120329655212c32506817f"
+    },
+    {
+      "id": "O2-T04",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T04_handoff_contract.csv",
+      "sha256": "e12d45e0f0f7b54c35e8d721bf65d4b5c29ef9837bd7653698a3e1cc0d5e21c2"
+    },
+    {
+      "id": "O2-T04",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T04_handoff_contract.md",
+      "sha256": "8fe2daff5ae49023b8db55d2d07f416fcde1245dfed6ef0c9f9af45259538eeb"
+    },
+    {
+      "id": "O2-T04",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T04_handoff_contract.tex",
+      "sha256": "3ddd0a3fd9e5ca4acee07e17f8ea6d03899d72b9181f8b2f9a9e7e261e13bd82"
+    },
+    {
+      "id": "O2-T05",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T05_weathering_continuity.csv",
+      "sha256": "81e62819ca111669d78146b481bb65f23e0722e385cff841339fbc2e8e544182"
+    },
+    {
+      "id": "O2-T05",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T05_weathering_continuity.md",
+      "sha256": "2198ea8b9838381e0c59171a74b483afab7fa86267710351da6304a7cb1c7b0f"
+    },
+    {
+      "id": "O2-T05",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T05_weathering_continuity.tex",
+      "sha256": "9949a1ffada762231887c2de94a2f644d90a4a9841834c12de35b7b5082e71df"
+    },
+    {
+      "id": "FIGURE_MANIFEST",
+      "kind": "MANIFEST",
+      "path": "reports/objective_2/FIGURE_MANIFEST.csv",
+      "sha256": "1d34d1ba14ed0fe9f6e1ece61463633a33ed0b3c57912e64b690b7984849e5d1"
+    },
+    {
+      "id": "RUN_REPORT",
+      "kind": "REPORT",
+      "path": "reports/objective_2/RUN_REPORT.md",
+      "sha256": "88cd8d4ab75c732098667e61ab9d8cf052b8950d4254c0b9af91055b5072b9cb"
+    },
+    {
+      "id": "BLOCKED_OR_DEFERRED",
+      "kind": "REPORT",
+      "path": "reports/objective_2/BLOCKED_OR_DEFERRED.md",
+      "sha256": "6ce1fe76aad985da2f7d3e55446a3ab3e1a193a13336eaba9515a8725bddc411"
+    }
+  ],
+  "runs": {
+    "analyse": 2,
+    "import": 1,
+    "verify": 12
+  },
+  "schema_version": "O2-SCHEMA-2026.11.06-5",
+  "stage": "Objective 2",
+  "upstream": {
+    "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",
+    "dataset_version_id": 10,
+    "dataset_version_key": "55dead7da64cac14b0d79569e460739f8b9a217b17425a3e3ff2610649940248",
+    "etl_version": "1.5.0",
+    "logical_name": "obj1_master",
+    "ordered_id_digest": "a94753f238d017f378b4b81fa61fcb061b63c62a687a68bafcdbbaf480027f55",
+    "path": "C:/Users/ThinkPad P1 G4/Documents/Joseph_Thesis/database/kambale_thesis.sqlite",
+    "read_only": true,
+    "row_count": 1910,
+    "selection_query_sha256": "677203494777ff7efc26c6e5286142522049c7112f95109ed366a2da3481a767"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "candidate_run_id": "M1_IK",
+  "covariance": {
+    "covariance": "EXPONENTIAL",
+    "model": "exponential",
+    "nugget_fraction": 0.75,
+    "range_m": 200.0
+  },
+  "covariance_label": "exponential range 200 m, nugget fraction 0.75",
+  "fold_id": 2,
+  "kriging": {
+    "covariance_selection": "INNER_CV_LOG_LOSS",
+    "depth_band_m": 3.0,
+    "estimator": "SIMPLE_KRIGING",
+    "grid": {
+      "nugget_fraction": [
+        0.25,
+        0.5,
+        0.75
+      ],
+      "range_m": [
+        25.0,
+        50.0,
+        100.0,
+        200.0,
+        400.0
+      ]
+    },
+    "include_pure_nugget": true,
+    "jitter_fraction_of_sill": 1e-08,
+    "m1": {
+      "candidate_run_id": "M1_IK",
+      "mean": "TRAINING_PREVALENCE",
+      "pure_nugget_meaning": "M1 reduces to the training prevalence; recorded as COMPLETED with covariance PURE_NUGGET",
+      "sill": "TRAINING_P_ONE_MINUS_P",
+      "threshold": "TRAINING_PREVALENCE"
+    },
+    "m3": {
+      "candidate_run_id": "M3_HYBRID",
+      "combine": "CLIP_TO_UNIT_INTERVAL(trend_calibrated + kriged_residual)",
+      "mean": 0.0,
+      "pure_nugget_meaning": "M3 equals the calibrated M2_WF_SEL probability. It is recorded as FALLBACK_ML_ONLY, and Objective 4 treats it as identical to M2_WF_SEL, not as a hybrid.\n",
+      "residual": "INDICATOR_MINUS_CALIBRATED_INNER_CROSS_FITTED_TREND",
+      "sill": "INNER_RESIDUAL_VARIANCE",
+      "threshold": "M2_WF_SEL_THRESHOLD",
+      "trend": "M2_WF_SEL"
+    },
+    "max_neighbours": 64,
+    "min_neighbours": 5,
+    "model": "exponential",
+    "tie_rule": "PREFER_PURE_NUGGET_THEN_LONGER_NUGGET_THEN_SHORTER_RANGE"
+  },
+  "mean": 0.23726346433770015,
+  "seed": 20261105,
+  "sill": 0.18096951282817303,
+  "software": {
+    "numpy": "2.4.6",
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.0"
+  },
+  "split_plan_id": "O3-SPLIT-HOLE-IL-2",
+  "training_id_digest": "f967dca278772de13c549b4e281de86942871af7a3b8f6354848c6b8608e448f",
+  "training_n": 1374,
+  "trials": 16
+}
