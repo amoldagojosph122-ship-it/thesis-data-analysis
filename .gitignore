@@ -273,3 +273,13 @@ Kambale_*.md
 !reports/objective_4/
 !figures/objective_4/
 !tables/objective_4/
+
+# Objective 5 code, configuration, SQL, tests, reports, figures and tables are tracked.
+# specs/ and the database stay ignored.
+!src/kambale/objective_5/
+!sql/objective_5/
+!config/objective_5/
+!tests/objective_5/
+!reports/objective_5/
+!figures/objective_5/
+!tables/objective_5/
