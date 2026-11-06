@@ -1,0 +1,164 @@
+# Objective 5 run report: model-based three-dimensional uncertainty (part 1)
+
+Configuration O5-CFG-2026.11.06-2 (supersedes O5-CFG-2026.11.06-1); SHA-256 of the configuration bytes 77227d3a23ceb6ba50d93994d83ca7a1a367ba36451cb28d6271409413169893. Generated 2026-11-06T10:43:27Z. Relative depth below collar throughout; absolute elevation is not used.
+
+Status: part 1 of the predeclared stage. Scenario simulation: part 2, not yet run.
+
+## 1. Inputs and receipts
+
+| role | path | bytes | SHA-256 |
+|---|---|---|---|
+| o2_database | database/kambale_obj2_spatial.sqlite | 1200128 | a24d81798ecdda1b78edf438763101462ba39b027c516f4259994c65512d2228 |
+| o3_config | config/objective_3/model_config.yaml | 7558 | 47569e360e552b442cef675ba0f709b44d036b783b8e230be0ee1762f98744f3 |
+| o3_database | database/kambale_obj3_models.sqlite | 26488832 | 7eede9c6a4ff94b3f9ddec915ce80d8b87380796b090354cc494c5d1f55d1319 |
+| o4_tier_1_extrapolation_database | database/kambale_obj4_validation.sqlite | 22753280 | 5c518d41c92178ba0e4dd94d8dc0a2f1d02241e70216524148831b3ce5f8deed |
+| o4_tier_2_interpolation_database | database/kambale_obj4_validation_tier2.sqlite | 23814144 | 97ae266adcc4492de554106b46c24aaa30ac9430f75eb0234937c89fefcfc1b3 |
+| o5_config | config/objective_5/uncertainty_config.yaml | 14117 | 77227d3a23ceb6ba50d93994d83ca7a1a367ba36451cb28d6271409413169893 |
+| thesis_database | database/kambale_thesis.sqlite | 10289152 | 645fb5538b7685da400086fdc88caca997ce37c82cbe041848dc26cc8bb75189 |
+
+Objective 3 receipt 1: 1910 logged intervals, 1829 binary intervals (DESIGN_8_2_v1), 71 holes, prevalence 0.2870.
+
+Locked handoffs (selected and runner-up read from the Objective 4 comparison_decisions rows with role SELECTED and COMPARATOR):
+
+| tier | selected | runner-up | match | improvement status | delta Brier (sel - ru) | 95% interval |
+|---|---|---|---|---|---|---|
+| TIER_1_EXTRAPOLATION | BASE_LOGISTIC_WF | M2_RF | MATCH | INCONCLUSIVE | -0.0004448 | [-0.01396, 0.01374] |
+| TIER_2_INTERPOLATION | M2_HGB_WF | M2_HGB | MATCH | INCONCLUSIVE | -0.001764 | [-0.00695, 0.00287] |
+
+Down-hole variogram (Objective 2 fit 16, exponential): nugget 0.012760, structured sill 0.213132, practical range 23.5297 m; maximum absolute difference from the predeclared values 1.85e-05 (status MATCH).
+
+## 2. Final refits
+
+Each selected and runner-up model was refitted once on all binary intervals with the Objective 3 rules. In-sample Brier and AUC are fit diagnostics only.
+
+| tier | role | model | hyperparameters | calibration | intercept | slope | in-sample Brier | in-sample AUC |
+|---|---|---|---|---|---|---|---|---|
+| TIER_1_EXTRAPOLATION | SELECTED | BASE_LOGISTIC_WF | {"C":0.1,"class_weight":null,"max_iter":2000} | SKIPPED |  |  | 0.1525 | 0.806 |
+| TIER_1_EXTRAPOLATION | RUNNER_UP | M2_RF | {"max_depth":8,"max_features":"sqrt","min_samples_leaf":20,"n_estimators":200} | FITTED | 0.02482 | 1.002 | 0.1017 | 0.934 |
+| TIER_2_INTERPOLATION | SELECTED | M2_HGB_WF | {"l2_regularization":1.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} | FITTED | -0.2215 | 0.6413 | 0.09784 | 0.9528 |
+| TIER_2_INTERPOLATION | RUNNER_UP | M2_HGB | {"l2_regularization":0.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} | FITTED | -0.1644 | 0.713 | 0.09804 | 0.9482 |
+
+Full-data hyperparameters against the most frequent Objective 3 per-fold choice:
+
+| tier | model | folds | O3 most frequent | count | tied modes | matches |
+|---|---|---|---|---|---|---|
+| TIER_1_EXTRAPOLATION | BASE_LOGISTIC_WF | 5 | {"C":0.1,"class_weight":null,"max_iter":2000} | 3 | 0 | yes |
+| TIER_1_EXTRAPOLATION | M2_RF | 5 | {"max_depth":4,"max_features":"sqrt","min_samples_leaf":5,"n_estimators":200} | 2 | 1 | no |
+| TIER_2_INTERPOLATION | M2_HGB_WF | 5 | {"l2_regularization":1.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} | 3 | 0 | yes |
+| TIER_2_INTERPOLATION | M2_HGB | 5 | {"l2_regularization":1.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} | 3 | 0 | no |
+
+## 3. Grid and zones
+
+Grid: 244 x 129 x 28 cells = 881328 cells; cell 10 x 10 x 2 m; cell volume 200 m3 (relative grid volume only). Origin E 548100, N 1.11182e+06; margin 100 m around the 71 collars.
+
+| zone | cells | relative volume (m3) | DEPTH_EXTRAPOLATED cells |
+|---|---|---|---|
+| EXTRAPOLATION | 829192 | 1.658e+08 | 460313 |
+| INTERPOLATION | 28000 | 5.6e+06 | 12777 |
+| NO_SUPPORT | 24136 | 4.827e+06 | 12924 |
+
+## 4. Classes
+
+| zone | class | cells | relative volume (m3) | cells above weathering front |
+|---|---|---|---|---|
+| EXTRAPOLATION | CONFIDENT_ABSENT | 221295 | 4.426e+07 | 106056 |
+| EXTRAPOLATION | CONFIDENT_PRESENT | 28868 | 5.774e+06 | 0 |
+| EXTRAPOLATION | UNCERTAIN | 579029 | 1.158e+08 | 4412 |
+| INTERPOLATION | CONFIDENT_ABSENT | 8977 | 1.795e+06 | 3435 |
+| INTERPOLATION | CONFIDENT_PRESENT | 972 | 1.944e+05 | 0 |
+| INTERPOLATION | UNCERTAIN | 18051 | 3.61e+06 | 292 |
+| NO_SUPPORT | NO_SUPPORT | 24136 | 4.827e+06 | 3543 |
+
+Sensitivity at the training prevalence 0.2870 (headline threshold 0.5):
+
+| zone | class at prevalence | cells |
+|---|---|---|
+| EXTRAPOLATION | CONFIDENT_ABSENT | 142425 |
+| EXTRAPOLATION | CONFIDENT_PRESENT | 79387 |
+| EXTRAPOLATION | UNCERTAIN | 607380 |
+| INTERPOLATION | CONFIDENT_ABSENT | 4827 |
+| INTERPOLATION | CONFIDENT_PRESENT | 3027 |
+| INTERPOLATION | UNCERTAIN | 20146 |
+| NO_SUPPORT | NO_SUPPORT | 24136 |
+
+## 5. Interval width and disagreement by zone
+
+Median and 90th percentile over the supported cells of each zone.
+
+| zone | width median | width P90 | disagreement median | disagreement P90 |
+|---|---|---|---|---|
+| INTERPOLATION | 0.3812 | 0.519 | 0.0311 | 0.09171 |
+| EXTRAPOLATION | 0.1806 | 0.3178 | 0.201 | 0.5248 |
+
+## 6. Carried validation (Objective 4, not recomputed)
+
+| tier | role | model | metric | pooled value (interval-weighted) | n |
+|---|---|---|---|---|---|
+| TIER_1_EXTRAPOLATION | RUNNER_UP | M2_RF | BRIER | 0.1655 | 1829 |
+| TIER_1_EXTRAPOLATION | RUNNER_UP | M2_RF | ROC_AUC | 0.7816 | 1829 |
+| TIER_1_EXTRAPOLATION | SELECTED | BASE_LOGISTIC_WF | BRIER | 0.1651 | 1829 |
+| TIER_1_EXTRAPOLATION | SELECTED | BASE_LOGISTIC_WF | ROC_AUC | 0.7487 | 1829 |
+| TIER_2_INTERPOLATION | RUNNER_UP | M2_HGB | BRIER | 0.1548 | 1829 |
+| TIER_2_INTERPOLATION | RUNNER_UP | M2_HGB | ROC_AUC | 0.8113 | 1829 |
+| TIER_2_INTERPOLATION | SELECTED | M2_HGB_WF | BRIER | 0.1531 | 1829 |
+| TIER_2_INTERPOLATION | SELECTED | M2_HGB_WF | ROC_AUC | 0.8142 | 1829 |
+
+## 7. Bootstrap
+
+| zone | model | replicates | successful | fraction | runtime (s) | status |
+|---|---|---|---|---|---|---|
+| EXTRAPOLATION | BASE_LOGISTIC_WF | 200 | 200 | 1 | 25.43 | PASS |
+| INTERPOLATION | M2_HGB_WF | 200 | 200 | 1 | 93.08 | PASS |
+
+## 8. Gates
+
+| gate | name | status | detail |
+|---|---|---|---|
+| G01 | Input file receipts | PASS | 0 input files differ from their receipts |
+| G02 | Locked handoff receipts match configuration | PASS | selected and runner-up models match for both tiers |
+| G03 | Down-hole variogram parameters | PASS | fit 16 exponential; maximum absolute difference 1.85e-05 |
+| G04 | No absolute elevation used | PASS | grid columns with elevation tokens: []; refits with other predictors: []; vertical axis is z_relative_m |
+| G05 | Probabilities in [0, 1] and present for every supported cell | PASS | 0 supported cells violate the rule |
+| G06 | Bootstrap success fraction | PASS | INTERPOLATION: 200/200; EXTRAPOLATION: 200/200 |
+| G07 | Weathering front on the grid recomputed from observed hole fronts | PASS | 71 observed fronts; 31476 horizontal cells; maximum absolute difference 0.00e+00 (tolerance 1e-09); front table matches recomputation: True |
+| G08 | NO_SUPPORT cells carry no probability or confident class | PASS | 0 NO_SUPPORT cells carry a probability or a class other than NO_SUPPORT |
+| G09 | Grid cell counts consistent | PASS | 881328 cells stored; 881328 expected from the axes; 881328 distinct; 28 layers |
+| G10 | Zones recomputed from collar coordinates | PASS | 71 collars (brute force, thesis database); 0 cells differ from the stored zone |
+| G11 | Depth support recomputed | PASS | 0 cells differ from the recomputed depth-support flag |
+| G12 | Final model artifacts match their SHA-256 records | PASS | 0 artifacts differ |
+| G13 | Classification recomputed from stored probabilities | PASS | 0 cells differ from the recomputed class |
+| G14 | Carried Objective 4 validation equals the source | PASS | 0 carried values differ from the Objective 4 pooled metrics |
+| G15 | uint8 quantisation round trip | PASS | maximum round-trip error 0.001961 (limit 1/510 = 0.001961) |
+| W01 | Full-data hyperparameters versus the most frequent Objective 3 fold choice | WARN | TIER_1_EXTRAPOLATION M2_RF: full {"max_depth":8,"max_features":"sqrt","min_samples_leaf":20,"n_estimators":200} vs O3 mode {"max_depth":4,"max_features":"sqrt","min_samples_leaf":5,"n_estimators":200} (5 folds); TIER_2_INTERPOLATION M2_HGB: full {"l2_regularization":0.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} vs O3 mode {"l2_regularization":1.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} (5 folds) |
+| W02 | Share of INTERPOLATION cells that are DEPTH_EXTRAPOLATED | PASS | 0.456 of 28000 interpolation cells |
+
+## 9. Figures and tables
+
+| id | title | status | detail |
+|---|---|---|---|
+| O5-F01 | Support zones in plan | GENERATED | rendered from O5-F01.sql; 31476 rows |
+| O5-F02 | Probability depth slices | GENERATED | rendered from O5-F02.sql; 157380 rows |
+| O5-F03 | Bootstrap interval width depth slices | GENERATED | rendered from O5-F03.sql; 157380 rows |
+| O5-F04 | Model disagreement depth slices | GENERATED | rendered from O5-F04.sql; 157380 rows |
+| O5-F05 | Class depth slices with weathering-front tag | GENERATED | rendered from O5-F05.sql; 157380 rows |
+| O5-F06 | Along-line sections | GENERATED | rendered from O5-F06.sql; 34160 rows |
+| O5-F07 | Three-dimensional view | GENERATED | rendered from O5-F07.sql; 19023 rows |
+
+| id | title | status | rows |
+|---|---|---|---|
+| O5-T01 | Cell counts and relative grid volume by class, zone and depth band | GENERATED | 33 |
+| O5-T02 | Sensitivity of the class counts to the decision threshold | GENERATED | 14 |
+| O5-T03 | Validated skill carried from Objective 4 beside the class counts | GENERATED | 2 |
+| O5-T04 | Final-refit record | GENERATED | 4 |
+
+Scenario simulation: part 2, not yet run.
+
+## 10. Claims not permitted
+
+- grade, tonnage, resource or reserve of any kind
+- a geostatistical uncertainty with an estimated lateral covariance; scenario results rest on an assumed lateral range
+- a single best-estimate graphitic volume pooled across scenarios
+- a claim that one model family is better than another
+- absence of graphite in cells above the weathering front
+- any probability beyond 560 m from the nearest drilled collar
+

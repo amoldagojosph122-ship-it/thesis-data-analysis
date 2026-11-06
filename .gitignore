@@ -283,3 +283,6 @@ Kambale_*.md
 !reports/objective_5/
 !figures/objective_5/
 !tables/objective_5/
+
+# Objective 5 fitted model files are derived from row-level data and stay local (hashes are in the database)
+reports/objective_5/artifacts/
