@@ -1,12 +1,12 @@
 {
-  "code_commit": "cb4be24",
+  "code_commit": "7d83644",
   "code_version": "2.1.0",
   "configuration": {
     "sha256": "bfc2962a9e8999472193ebb8ca7e17b3470c127d26cac90789b5675c51d5ce20",
     "supersedes": "O2-CFG-2026.11.05-2",
     "version": "O2-CFG-2026.11.05-4"
   },
-  "generated_utc": "2026-11-05T15:19:20Z",
+  "generated_utc": "2026-11-06T04:33:48Z",
   "geometry": {
     "build_id": 10,
     "coordinate_pair_status": "APPROVED",
@@ -185,6 +185,24 @@
       "sha256": "17da1fce30c5a5aa246216a4750a73187b8aa4bba3487a8ab19b5fdbecf6b2ef"
     },
     {
+      "id": "O2-F10",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F10_weathering_fresh.svg",
+      "sha256": "e4d1264418141099bf7a2696a25fc3e7c35267967150b828b7c49306c93f0a35"
+    },
+    {
+      "id": "O2-F10",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F10_weathering_fresh.pdf",
+      "sha256": "6a0518e7110df3aa99016db4133b5099a80746d59709c01933774d690fb2cca7"
+    },
+    {
+      "id": "O2-F10",
+      "kind": "FIGURE",
+      "path": "figures/objective_2/O2_F10_weathering_fresh.png",
+      "sha256": "502cc36d163e58be57298af5adc2c911690bc495bcddddbfdbdc9938295f7556"
+    },
+    {
       "id": "O2-T01",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T01_hole_line_summary.csv",
@@ -224,63 +242,81 @@
       "id": "O2-T03",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T03_variogram_fit_report.csv",
-      "sha256": "0539b48b5c2045b5ba1adf54f4f13bd36a2dcb0dba95f4d85b7417080c43d251"
+      "sha256": "5f1193e6f226ea046115bcd7a4cd9008b31f3760bc4194b395f3132010fda6d4"
     },
     {
       "id": "O2-T03",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T03_variogram_fit_report.md",
-      "sha256": "5b0af879334b9d53eb2570f56c2ecbb0a866f27db65ffa490c02b8b42de304c9"
+      "sha256": "0fb9955633cf72eedded8e25a42da895e2d4e8062916d706fb7245d267031d63"
     },
     {
       "id": "O2-T03",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T03_variogram_fit_report.tex",
-      "sha256": "79e5eefc75699b22d0d0d3969b068a414d46c9e655dc46fdeddfd6007640c614"
+      "sha256": "8daf107ddf81c4c5602f5682cfe7ba22580d737abc120329655212c32506817f"
     },
     {
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.csv",
-      "sha256": "15b21fe4a3ed732c37e3f3355f50ea31473d1efe853f8da6de9e5031e08a981d"
+      "sha256": "e12d45e0f0f7b54c35e8d721bf65d4b5c29ef9837bd7653698a3e1cc0d5e21c2"
     },
     {
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.md",
-      "sha256": "5a6c818a68ddaf604eda07fadb0c701750d3372362b0537a38525b9a57939890"
+      "sha256": "8fe2daff5ae49023b8db55d2d07f416fcde1245dfed6ef0c9f9af45259538eeb"
     },
     {
       "id": "O2-T04",
       "kind": "TABLE",
       "path": "tables/objective_2/O2_T04_handoff_contract.tex",
-      "sha256": "163fda70c2520399d4a53024fc0c393e1d92c13c0e507fd874ff84f9d9e28806"
+      "sha256": "3ddd0a3fd9e5ca4acee07e17f8ea6d03899d72b9181f8b2f9a9e7e261e13bd82"
+    },
+    {
+      "id": "O2-T05",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T05_weathering_continuity.csv",
+      "sha256": "81e62819ca111669d78146b481bb65f23e0722e385cff841339fbc2e8e544182"
+    },
+    {
+      "id": "O2-T05",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T05_weathering_continuity.md",
+      "sha256": "2198ea8b9838381e0c59171a74b483afab7fa86267710351da6304a7cb1c7b0f"
+    },
+    {
+      "id": "O2-T05",
+      "kind": "TABLE",
+      "path": "tables/objective_2/O2_T05_weathering_continuity.tex",
+      "sha256": "9949a1ffada762231887c2de94a2f644d90a4a9841834c12de35b7b5082e71df"
     },
     {
       "id": "FIGURE_MANIFEST",
       "kind": "MANIFEST",
       "path": "reports/objective_2/FIGURE_MANIFEST.csv",
-      "sha256": "56d36e2ea6756e02a9d7e3532ca3b3340578def771595c5739884f0eb675f68a"
+      "sha256": "1d34d1ba14ed0fe9f6e1ece61463633a33ed0b3c57912e64b690b7984849e5d1"
     },
     {
       "id": "RUN_REPORT",
       "kind": "REPORT",
       "path": "reports/objective_2/RUN_REPORT.md",
-      "sha256": "0765b85aac3e6c1d4b41d19ad54ca31bf0a0026099ffcf7728a3923d07addef5"
+      "sha256": "88cd8d4ab75c732098667e61ab9d8cf052b8950d4254c0b9af91055b5072b9cb"
     },
     {
       "id": "BLOCKED_OR_DEFERRED",
       "kind": "REPORT",
       "path": "reports/objective_2/BLOCKED_OR_DEFERRED.md",
-      "sha256": "06897e4f2516739cb31ccd0184383c10856c1fae4eb1545f65d22423c9646e06"
+      "sha256": "6ce1fe76aad985da2f7d3e55446a3ab3e1a193a13336eaba9515a8725bddc411"
     }
   ],
   "runs": {
     "analyse": 2,
     "import": 1,
-    "verify": 6
+    "verify": 12
   },
-  "schema_version": "O2-SCHEMA-2026.11.05-4",
+  "schema_version": "O2-SCHEMA-2026.11.06-5",
   "stage": "Objective 2",
   "upstream": {
     "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",

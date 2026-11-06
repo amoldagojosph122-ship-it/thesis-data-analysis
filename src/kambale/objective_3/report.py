@@ -15,6 +15,7 @@ import platform
 from pathlib import Path
 
 from kambale.objective_3 import O3_CODE_VERSION, O3_SCHEMA_VERSION
+from kambale.objective_3.features import predictor_sets
 from kambale.objective_3.config import (O3_CONFIG_PATH, O3_DB_PATH, O3_FIGURE_DIR, O3_REPORT_DIR, O3_TABLE_DIR,
                                         PROJECT_ROOT, StopError, code_commit, load_config, sha256_bytes, utc_now)
 from kambale.objective_3.db import connect_o3
@@ -22,8 +23,9 @@ from kambale.objective_3.figures import FIGURES
 from kambale.objective_3.tables import TABLES
 
 EXIT_GATES = ("G01", "G02", "G03", "G05", "G08", "G09", "G10", "G11", "G12", "G13", "G15", "G16", "G17", "G19",
-              "G20", "G25", "G26")
+              "G20", "G21", "G22", "G25", "G26", "G28")
 PYTEST_OUTPUT = O3_REPORT_DIR / "PYTEST_OUTPUT.txt"
+COMPOSITES = ("M2_SEL", "M2_WF_SEL")
 
 
 def _rows(conn, sql, params=()):
@@ -104,6 +106,56 @@ def _gate_table(gates: list[dict]) -> list[str]:
     return out
 
 
+def _tier_summary(conn, plan: dict, cfg: dict) -> dict:
+    """Everything the report states about one split plan, read from the database."""
+    pid = plan["split_plan_id"]
+    runs = _rows(conn, "SELECT * FROM training_runs WHERE split_plan_id = ? ORDER BY fold_id, family_id, candidate_run_id",
+                 (pid,))
+    composites = {(r["fold_id"], r["family_id"]): r for r in runs if r["family_id"] in COMPOSITES}
+    m1 = {r["fold_id"]: r for r in runs if r["family_id"] == "M1_IK"}
+    m3 = {r["fold_id"]: r for r in runs if r["family_id"] == "M3_HYBRID"}
+    trials_n = {r["training_run_id"]: r["n"] for r in _rows(
+        conn, "SELECT training_run_id, COUNT(*) n FROM hyperparameter_trials GROUP BY training_run_id")}
+    pure_folds = []
+    m1_lines = []
+    for f in sorted(m1):
+        hp = json.loads(m1[f]["hyperparameters_json"] or "{}")
+        label = hp.get("covariance_label", m1[f]["status"])
+        pure = (hp.get("covariance") or {}).get("covariance") == "PURE_NUGGET"
+        if pure:
+            pure_folds.append(f)
+        m1_lines.append({"fold_id": f, "status": m1[f]["status"], "label": label, "pure": pure,
+                         "inner": m1[f]["inner_cv_score"], "trials": trials_n.get(m1[f]["training_run_id"], 0)})
+    m3_lines = []
+    for f in sorted(m3):
+        hp = json.loads(m3[f]["hyperparameters_json"] or "{}")
+        m3_lines.append({"fold_id": f, "status": m3[f]["status"], "label": hp.get("residual_covariance_label", "n/a"),
+                         "fallback": hp.get("fallback", "n/a"), "trend": hp.get("trend_candidate", "n/a"),
+                         "trials": trials_n.get(m3[f]["training_run_id"], 0)})
+    sel_lines = []
+    for f in sorted({r["fold_id"] for r in runs}):
+        row = {"fold_id": f}
+        for name in COMPOSITES:
+            r = composites.get((f, name))
+            if r is None:
+                row[name] = "n/a"
+                row[name + "_score"] = None
+            else:
+                hp = json.loads(r["hyperparameters_json"] or "{}")
+                row[name] = f"{hp.get('selected_candidate', 'none')} ({r['status']})"
+                row[name + "_score"] = r["inner_cv_score"]
+        sel_lines.append(row)
+    fam_counts = _rows(conn, "SELECT family_id, COUNT(*) n, SUM(clipped_calibrated) clipped FROM predictions_oof "
+                             "WHERE split_plan_id = ? GROUP BY family_id ORDER BY family_id", (pid,))
+    fails = _rows(conn, "SELECT family_id, COUNT(*) n FROM prediction_failures WHERE split_plan_id = ? "
+                        "GROUP BY family_id ORDER BY family_id", (pid,))
+    return {"split_plan_id": pid, "method": plan["method"], "primary": int(plan["primary_plan"]) == 1,
+            "n_folds": plan["n_folds"], "plan_sha256": plan["plan_sha256"], "selected": sel_lines,
+            "m1": m1_lines, "m3": m3_lines, "pure_m1_folds": pure_folds,
+            "m3_fallback_folds": [r["fold_id"] for r in m3_lines if r["status"] == "FALLBACK"],
+            "fam_counts": fam_counts, "fails": fails}
+
+
 def write_all(o3_path=O3_DB_PATH) -> dict:
     cfg, cfg_sha = load_config(O3_CONFIG_PATH)
     conn = connect_o3(o3_path)
@@ -112,7 +164,9 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
         if not rc:
             raise StopError("no receipt: run the import first")
         rid = rc["receipt_id"]
-        plan = cfg["splits"]["primary"]["split_plan_id"]
+        plans = _rows(conn, "SELECT * FROM spatial_split_plans ORDER BY primary_plan DESC, split_plan_id")
+        primary_plan = next(p for p in plans if int(p["primary_plan"]) == 1)
+        plan = primary_plan["split_plan_id"]
         vr = _one(conn, "SELECT * FROM stage_runs WHERE run_kind = 'VERIFY' ORDER BY run_id DESC LIMIT 1")
         if not vr:
             raise StopError("no VERIFY run: run verify before report")
@@ -124,34 +178,9 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
         target = _one(conn, "SELECT * FROM target_registries WHERE receipt_id = ? ORDER BY target_id LIMIT 1", (rid,))
         label = _one(conn, "SELECT * FROM label_versions WHERE receipt_id = ? LIMIT 1", (rid,))
         geom = _one(conn, "SELECT * FROM geometry_versions WHERE receipt_id = ? LIMIT 1", (rid,))
-        split = _one(conn, "SELECT * FROM spatial_split_plans WHERE split_plan_id = ?", (plan,))
-        audits = _rows(conn, "SELECT * FROM split_audit WHERE split_plan_id = ? ORDER BY fold_id", (plan,))
-        runs = _rows(conn, "SELECT * FROM training_runs WHERE split_plan_id = ? ORDER BY fold_id, family_id, candidate_run_id",
-                     (plan,))
-        selected = {r["fold_id"]: r for r in runs if r["selected"] == 1}
-        by_family = {r["family_id"]: [x for x in runs if x["family_id"] == r["family_id"]] for r in runs}
-        m1 = by_family.get("M1_IK", [])
-        m3 = by_family.get("M3_HYBRID", [])
-        m1_status = {r["fold_id"]: r["status"] for r in m1}
-        m3_status = {r["fold_id"]: r["status"] for r in m3}
-        m3_fallback = {r["fold_id"]: "FALLBACK_ML_ONLY" if r["status"] == "FALLBACK" else "HYBRID_USED" for r in m3}
-        residual_rows = _rows(conn, "SELECT t.fold_id, v.model, v.fit_status, v.stability_status, v.fallback_status, v.reason "
-                                     "FROM hybrid_residual_variogram v JOIN training_runs t ON t.training_run_id = v.training_run_id "
-                                     "WHERE t.split_plan_id = ? ORDER BY t.fold_id, v.model", (plan,))
-        ind_rows = _rows(conn, "SELECT t.fold_id, v.model, v.fit_status, v.stability_status, v.reason "
-                               "FROM variogram_training_fits v JOIN training_runs t ON t.training_run_id = v.training_run_id "
-                               "WHERE t.split_plan_id = ? ORDER BY t.fold_id, v.model", (plan,))
-        pred = _rows(conn, "SELECT family_id, COUNT(*) n, SUM(clipped_calibrated) clipped, MIN(p_calibrated) pmin, "
-                           "MAX(p_calibrated) pmax FROM predictions_oof WHERE split_plan_id = ? GROUP BY family_id "
-                           "ORDER BY family_id", (plan,))
-        fails = _rows(conn, "SELECT family_id, COUNT(*) n FROM prediction_failures WHERE split_plan_id = ? GROUP BY family_id "
-                            "ORDER BY family_id", (plan,))
-        figures = _rows(conn, "SELECT figure_id, title, status, reason FROM figure_registry ORDER BY figure_id")
-        tables = _rows(conn, "SELECT table_id, title, status, row_count, reason FROM table_registry ORDER BY table_id")
-        artifacts = _one(conn, "SELECT COUNT(*) n, SUM(bytes) b FROM model_artifacts")
+        tiers = [_tier_summary(conn, p, cfg) for p in plans]
         leakage = _rows(conn, "SELECT check_name, status, detail FROM leakage_audit_log ORDER BY audit_id")
-        table_names = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")]
-        counts = [{"name": n, "n": conn.execute(f'SELECT COUNT(*) FROM "{n}"').fetchone()[0]} for n in table_names]
+        artifacts = _one(conn, "SELECT COUNT(*) n, SUM(bytes) b FROM model_artifacts")
         pytest_text = PYTEST_OUTPUT.read_text(encoding="utf-8").strip() if PYTEST_OUTPUT.exists() else (
             "Not recorded. Run pytest with its output written to reports/objective_3/PYTEST_OUTPUT.txt and run report again.")
         created = utc_now()
@@ -161,10 +190,11 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
                                "ORDER BY run_id DESC LIMIT 1", (rid,))
         train_run = _one(conn, "SELECT * FROM stage_runs WHERE run_kind = 'TRAIN' AND receipt_id = ? "
                                "ORDER BY run_id DESC LIMIT 1", (rid,))
-        n_obs = sum(1 for _ in conn.execute("SELECT 1 FROM analysis_observations WHERE receipt_id = ?", (rid,)))
+        n_obs = conn.execute("SELECT COUNT(*) FROM analysis_observations WHERE receipt_id = ?", (rid,)).fetchone()[0]
         holes = conn.execute("SELECT COUNT(DISTINCT hole_id) FROM analysis_observations WHERE receipt_id = ?", (rid,)).fetchone()[0]
         lines = conn.execute("SELECT COUNT(DISTINCT line_code) FROM analysis_observations WHERE receipt_id = ?", (rid,)).fetchone()[0]
         trials = conn.execute("SELECT COUNT(*) FROM hyperparameter_trials").fetchone()[0]
+        tier_names = ", ".join(f"{t['split_plan_id']} ({t['method']})" for t in tiers)
 
         # Tables are written before the manifest, so their hashes can be listed.
         from kambale.objective_3 import tables as tables_mod
@@ -177,7 +207,7 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
             "Objective 1 (geology, labels, geometry) and Objective 2 (support and the continuity handoff) read-only and "
             "writes database/kambale_obj3_models.sqlite.", "",
             f"Current status: {'STOPPED' if stopped else ('exit conditions met' if not exit_failed else 'exit conditions not met')}.",
-            f"Handoff to Objective 4: {'blocked by a STOP gate' if stopped else 'out-of-fold predictions and failure masks frozen'}.",
+            f"Handoff to Objective 4: {'blocked by a STOP gate' if stopped else 'out-of-fold predictions and failure masks frozen for both split plans'}.",
             f"Objective 2 continuity handoff: {rc['o2_handoff_status']} (candidate family {rc['o2_candidate_family']}).", "",
             "Contents:", "",
             "- RUN_REPORT.md: the run, its models, gates, limitations and the Objective 4 handoff.",
@@ -201,131 +231,125 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
                   ("Every required exit gate is PASS." if not exit_failed else
                    "Exit gates not met: " + ", ".join(exit_failed) + ".")),
                  f"Objective 2 continuity handoff: **{rc['o2_handoff_status']}**, candidate family "
-                 f"**{rc['o2_candidate_family']}**. Accordingly, M1 indicator kriging is estimated only where a training-only "
-                 f"variogram is identified and stable, and M3 is labelled an ML-only fallback where the residual covariance "
-                 f"is unsupported. Neither is claimed as a successful spatial model.", ""]
+                 f"**{rc['o2_candidate_family']}**. Because no continuity model is identified, every M1 and M3 covariance "
+                 "below is chosen by inner cross-validation from a predeclared grid, and a pure-nugget choice is reported "
+                 "as such.", ""]
         body += ["## 2. Inputs and receipt", "",
                  f"- Objective 1 snapshot: {rc['upstream_path']} (read-only; dataset version "
                  f"{rc['upstream_dataset_version_id']}, ETL {rc['upstream_etl_version']}, content SHA-256 "
                  f"{rc['content_sha256'][:12]}).",
                  f"- Objective 2 receipt {rc['o2_receipt_id']} at {rc['o2_path']}, content SHA-256 "
                  f"{rc['o2_content_sha256'][:12]}, handoff {rc['o2_handoff_id']} ({rc['o2_handoff_status']}).",
-                 f"- Intervals imported: {n_obs} (each 1 m); holes {holes}; approved drill lines {lines}.",
+                 f"- Intervals imported: {n_obs}; holes {holes}; approved drill lines {lines}.",
                  f"- Label rule {rc['label_rule_id']} {rc['label_rule_status']}; binary target {target.get('binary_n')} "
                  f"({target.get('positive_n')} POSITIVE, {target.get('negative_n')} NEGATIVE); excluded "
                  f"{target.get('ambiguous_n')} AMBIGUOUS and {target.get('unresolved_n')} UNRESOLVED.",
                  f"- Geometry {geom.get('geometry_status')}, vertical basis {geom.get('vertical_basis')}; z_absolute_used="
                  f"{geom.get('z_absolute_used')}. Coordinates {geom.get('crs_key')}, datum {geom.get('datum_status')}.", ""]
+        sets = predictor_sets(cfg)
         body += ["## 3. Configuration", "",
-                 f"Predeclared version {cfg['config_version']}. Predictors are restricted to {', '.join(cfg['features']['predictors'])}.",
-                 f"The outer split is {split.get('method')} with {split.get('n_folds')} folds and plan hash "
-                 f"{split.get('plan_sha256')}. Inner tuning is {cfg['inner_cv']['method']} with "
-                 f"{cfg['inner_cv']['n_folds']} folds, selecting the lowest mean log loss. The decision threshold is the "
-                 f"inner-CV Youden-J maximum; ties go to the threshold closest to 0.5.",
-                 f"Random forest and {cfg['models']['gradient_boosting']['implementation']} are the two M2 candidates. "
-                 "XGBoost is not installed in the verified environment; the histogram gradient-boosting fallback is "
-                 "declared in the configuration. Logistic regression and the training prevalence are the baselines.", ""]
-        body += ["## 4. Frozen spatial split", "",
-                 "| fold | test line | test intervals | test positive | train intervals | min collar distance (m) | audit |",
-                 "|---|---|---|---|---|---|---|"]
-        for a in audits:
-            line = conn.execute("SELECT line_code FROM split_membership WHERE split_plan_id = ? AND fold_id = ? "
-                                "AND role = 'TEST' LIMIT 1", (plan, a["fold_id"])).fetchone()[0]
-            body.append(f"| {a['fold_id']} | {line} | {a['n_test']} | {a['test_positive']} | {a['n_train']} | "
-                        f"{_f(a['min_train_test_collar_distance_m'], 1)} | {a['status']} |")
-        body += ["", "The secondary whole-hole split plan is registered and audited but does not produce the predictions "
-                     "handed to Objective 4. No random split is used.", ""]
-        body += ["## 5. Models and training-only diagnostics", "",
-                 "### 5.1 Selected M2 trend by fold", "",
-                 "| fold | selected candidate | inner CV log loss | threshold | training n | training positive |",
-                 "|---|---|---|---|---|---|"]
-        for f in sorted(selected):
-            r = selected[f]
-            body.append(f"| {f} | {r['candidate_run_id']} | {_f(r['inner_cv_score'], 4)} | {_f(r['threshold'], 2)} | "
-                        f"{r['training_n']} | {r['training_positive']} |")
-        body += ["", f"The inner scores are whole-hole cross-validation log losses on the outer training fold. They are "
-                     f"selection diagnostics, not held-out performance; Objective 4 performs the comparative evaluation. "
-                     f"{trials} hyperparameter trials were recorded.", "",
-                 "### 5.2 M1 indicator kriging", ""]
-        if all(s == "NOT_ESTIMABLE" for s in m1_status.values()):
-            body.append("M1 is **NOT_ESTIMABLE in every outer fold**. No training-only lateral indicator variogram was both "
-                        "identified and stable, so no kriging prediction was written and no parameter was invented. "
-                        "Failure rows record every held-out interval. The reasons by fold are:")
+                 f"Predeclared version {cfg['config_version']} (supersedes {cfg.get('supersedes')}). Predictor sets: "
+                 + "; ".join(f"{k} = {', '.join(v)}" for k, v in sets.items()) + ". The depth below the weathering front "
+                 "is a fold-safe inverse-distance surface built from training holes only (see section 5).",
+                 f"Two validation tiers are run: {tier_names}. The primary tier is {plan}; the second tier is an "
+                 "interpolation check at one hole spacing. Both are reported; neither is pooled with the other.",
+                 f"Inner tuning is {cfg['inner_cv']['method']} with {cfg['inner_cv']['n_folds']} folds, selecting the lowest mean "
+                 "log loss. The decision threshold is the inner-CV Youden-J maximum; ties go to the threshold closest to 0.5. "
+                 "M2_SEL and M2_WF_SEL copy the inner-selected member of their pair. M1 and M3 covariances come from the "
+                 f"grid of range {cfg['kriging']['grid']['range_m']} m by nugget fraction {cfg['kriging']['grid']['nugget_fraction']}, "
+                 "plus PURE_NUGGET.",
+                 f"Random forest and {cfg['models']['gradient_boosting']['implementation']} are the two M2 estimators; "
+                 "XGBoost is not installed in the verified environment. Logistic regression and training prevalence are "
+                 "the baselines.", ""]
+        body += ["## 4. Frozen spatial splits", ""]
+        for i, t in enumerate(tiers, start=1):
+            audits = _rows(conn, "SELECT * FROM split_audit WHERE split_plan_id = ? ORDER BY fold_id", (t["split_plan_id"],))
+            body += [f"### 4.{i} {t['split_plan_id']} ({t['method']}{', primary' if t['primary'] else ', second tier'})",
+                     "", f"Plan hash {t['plan_sha256']}.", "",
+                     "| fold | test lines | test holes | test intervals | test positive | train intervals | min collar distance (m) | audit |",
+                     "|---|---|---|---|---|---|---|---|"]
+            for a in audits:
+                test_lines = conn.execute("SELECT GROUP_CONCAT(DISTINCT line_code) FROM split_membership WHERE "
+                                          "split_plan_id = ? AND fold_id = ? AND role = 'TEST'",
+                                          (t["split_plan_id"], a["fold_id"])).fetchone()[0]
+                body.append(f"| {a['fold_id']} | {test_lines} | {a['test_holes']} | {a['n_test']} | {a['test_positive']} | "
+                            f"{a['n_train']} | {_f(a['min_train_test_collar_distance_m'], 1)} | {a['status']} |")
             body.append("")
-            for r in m1:
-                body.append(f"- Fold {r['fold_id']}: {r['reason']}")
-        else:
-            body.append("M1 produced predictions in at least one fold. Fit status by fold:")
+        body += ["## 5. Models and training-only diagnostics", ""]
+        for i, t in enumerate(tiers, start=1):
+            body += [f"### 5.{i} {t['split_plan_id']}", "",
+                     "Selected trend candidates by inner-CV log loss (the composites are the selection records):", "",
+                     "| fold | M2_SEL (from plain pair) | inner CV | M2_WF_SEL (from weathering-front pair) | inner CV |",
+                     "|---|---|---|---|---|"]
+            for s in t["selected"]:
+                body.append(f"| {s['fold_id']} | {s['M2_SEL']} | {_f(s['M2_SEL_score'], 4)} | {s['M2_WF_SEL']} | "
+                            f"{_f(s['M2_WF_SEL_score'], 4)} |")
+            body += ["", "M1 indicator kriging: covariance chosen by inner CV per fold.", "",
+                     "| fold | status | chosen covariance | inner-CV log loss | trials recorded |", "|---|---|---|---|---|"]
+            for m in t["m1"]:
+                body.append(f"| {m['fold_id']} | {m['status']} | {m['label']} | {_f(m['inner'], 4)} | {m['trials']} |")
+            body += ["", "M3 hybrid on the calibrated M2_WF_SEL trend: residual covariance and status per fold.", "",
+                     "| fold | trend | status | residual covariance | fallback | trials recorded |", "|---|---|---|---|---|---|"]
+            for m in t["m3"]:
+                body.append(f"| {m['fold_id']} | {m['trend']} | {m['status']} | {m['label']} | {m['fallback']} | {m['trials']} |")
+            pure = t["pure_m1_folds"]
+            body += ["", (f"Pure-nugget M1 (equal to the training prevalence) in folds {pure}." if pure else
+                          "M1 selected a spatial covariance in every fold."),
+                     (f"M3 is recorded as FALLBACK_ML_ONLY in folds {t['m3_fallback_folds']}; there it is identical to "
+                      "M2_WF_SEL and is not a hybrid result." if t["m3_fallback_folds"] else
+                      "M3 used a kriged residual in every fold (HYBRID_USED)."), "",
+                     "Out-of-fold prediction counts for this tier (no outer performance is computed here; Objective 4 "
+                     "evaluates):", "", "| family | predictions | clipped (calibrated) | failures |", "|---|---|---|---|"]
+            fails = {f["family_id"]: f["n"] for f in t["fails"]}
+            for p in t["fam_counts"]:
+                body.append(f"| {p['family_id']} | {p['n']} | {p['clipped'] or 0} | {fails.get(p['family_id'], 0)} |")
             body.append("")
-            for r in m1:
-                body.append(f"- Fold {r['fold_id']}: {r['status']} ({r['reason']})")
-        body += ["", "### 5.3 M3 hybrid", "",
-                 "| fold | status | residual variogram | fallback |", "|---|---|---|---|"]
-        for r in m3:
-            resid = [x for x in residual_rows if x["fold_id"] == r["fold_id"]]
-            rsum = "; ".join(f"{x['model']} {x['fit_status']}/{x['stability_status']}" for x in resid)
-            body.append(f"| {r['fold_id']} | {r['status']} | {rsum} | {m3_fallback[r['fold_id']]} |")
-        body += ["", "The residual variogram is fitted on inner cross-fitted residuals of the outer training fold only. "
-                     "Where it was not identified and stable, M3 is recorded as `FALLBACK_ML_ONLY` and is not described as "
-                     "a successful hybrid. M3 never uses a test label.", "",
-                 "### 5.4 Out-of-fold predictions", "",
-                 "| family | predictions | failures | clipped (calibrated) | min p | max p |", "|---|---|---|---|---|---|"]
-        for p in pred:
-            body.append(f"| {p['family_id']} | {p['n']} | 0 | {p['clipped'] or 0} | {_f(p['pmin'], 3)} | "
-                        f"{_f(p['pmax'], 3)} |")
-        for f in fails:
-            if not any(p["family_id"] == f["family_id"] for p in pred):
-                body.append(f"| {f['family_id']} | 0 | {f['n']} | 0 | n/a | n/a |")
-        body += ["", "A failure row is written for every held-out interval a family could not predict; it is never silently "
-                     "dropped. Clipping to [0,1] is counted per prediction. Probabilities are out-of-fold by construction.", ""]
+        body += ["Inner scores are whole-hole cross-validation log losses on the outer training folds. They are selection "
+                 f"diagnostics, not held-out performance. {trials} hyperparameter trials were recorded across both tiers.", ""]
         body += ["## 6. Gate results", ""]
         body += _gate_table(gates)
         body += ["", f"Exit gates: {', '.join(EXIT_GATES)}. {'All exit gates PASS.' if not exit_failed else 'Failing exit gates: ' + ', '.join(exit_failed) + '.'}", ""]
         body += ["## 7. Tables", ""]
-        for t in tables:
-            body.append(f"- {t['table_id']}: {t['status']}, {t['row_count']} rows; {t['title']}.")
+        for tb in tables:
+            body.append(f"- {tb['table_id']}: {tb['status']}, {tb['row_count']} rows; {tb['title']}.")
         body += ["", "The rendered tables are in tables/objective_3 as CSV, Markdown and LaTeX.", ""]
-        body += ["## 8. Figures", ""]
+        body += ["## 8. Figures", "",
+                 f"Figures F01 to F05 show the primary tier {plan}. F06 shows the covariance selection of both tiers' "
+                 "M1 and M3 fits per fold.", ""]
+        figures = _rows(conn, "SELECT figure_id, title, status, reason FROM figure_registry ORDER BY figure_id")
         for f in figures:
             body.append(f"- {f['figure_id']} ({f['status']}): {f['title']}. {f['reason']}.")
-        body += ["", "M1 is registered NOT_SUPPORTED when no fold produced a kriging prediction; the reason is recorded in "
-                     "the figure registry and in section 5.2.", ""]
-        body += ["## 9. Tests", "", "```text", pytest_text, "```", ""]
+        body += ["", "", "## 9. Tests", "", "```text", pytest_text, "```", ""]
         body += ["## 10. Deviations, warnings and limitations", "",
-                 "- M1 is not estimable at this support: the Objective 2 handoff found no between-hole continuity, and no "
-                 "outer training fold identified a stable lateral indicator variogram.",
-                 "- M3 is an ML-only fallback in every fold where the residual variogram was unsupported; it is not a "
-                 "validated hybrid result.",
-                 "- Only three predictors (easting, northing, relative Z) exist at every held-out interval. Weathering, "
-                 "lithology and label evidence are logged-only or target-derived and are forbidden as predictors. The "
-                 "models are therefore spatial-trend models, not geological-covariate models.",
-                 "- Relative Z is used; no collar elevation or DEM is used, so no absolute-elevation claim is made.",
-                 "- Five drill lines, one with only three holes, carry the outer split. A held-out line is an extrapolation "
-                 "in northing for the models.",
-                 "- The secondary whole-hole split plan is registered and audited but not used for the Objective 4 "
-                 "predictions; a change of plan needs a new predeclared configuration.",
+                 "- The fold-safe weathering-front predictor is an inverse-distance surface of the front heights of the "
+                 "training holes. It is a modelled, not an observed, front at a grid cell; it is not a geological "
+                 "covariate measured at the prediction location.",
+                 "- The front is defined only where the log records a mw or sw interval; every hole in this snapshot carries one.",
+                 "- The covariance grid is predeclared; the chosen covariance is per fold and can differ between folds.",
                  "- XGBoost is not installed; scikit-learn's histogram gradient boosting is the declared fallback.",
                  "- The final full-data refit is PENDING_O4. Objective 3 does not fit on all observations and does not call "
                  "that fit spatially validated.",
                  "- The code commit is the last committed revision; the Objective 3 working tree is deliberately not "
                  "committed. The configuration hash, SQL hashes and artifact hashes identify the exact run.",
                  ""]
-        body += ["## 11. Objective 4 handoff contract", "",
-                 f"- Split plan: `{plan}`, hash `{split.get('plan_sha256')}`, {split.get('n_folds')} line folds.",
-                 f"- Target: `{target.get('target_id')}`, rule {target.get('label_rule_id')} {target.get('label_rule_status')}, "
+        body += ["## 11. Objective 4 handoff contract", ""]
+        for t in tiers:
+            body.append(f"- Split plan `{t['split_plan_id']}` ({t['method']}, primary={int(t['primary'])}), hash "
+                        f"`{t['plan_sha256']}`, {t['n_folds']} folds.")
+        body += [f"- Target: `{target.get('target_id')}`, rule {target.get('label_rule_id')} {target.get('label_rule_status')}, "
                  f"{target.get('binary_n')} binary intervals.",
                  f"- Geometry: `{geom.get('geometry_version_id')}`, {geom.get('geometry_status')}, vertical basis "
                  f"{geom.get('vertical_basis')}, z_absolute_used=0.",
                  "- Predictions: `predictions_oof`, one row per (training run, held-out interval), with `p_raw`, "
-                 "`p_calibrated`, clipping flags, training-selected threshold and predicted class.",
-                 "- Failures: `prediction_failures`, one row per (fold, held-out interval, family) that could not be predicted.",
-                 "- Fits and diagnostics: `training_runs`, `hyperparameter_trials`, `variogram_training_fits`, "
-                 "`hybrid_residual_variogram`, `training_lag_bins`, `calibration_fits`, `residual_diagnostics`.",
+                 "`p_calibrated`, clipping flags, training-selected threshold and predicted class. The composites M2_SEL and "
+                 "M2_WF_SEL and the hybrid M3_HYBRID are written as their own runs.",
+                 "- Failures: `prediction_failures`, one row per (plan, fold, held-out interval, family) that could not be predicted.",
+                 "- Fits and diagnostics: `training_runs`, `hyperparameter_trials` (every covariance grid point for M1 and M3), "
+                 "`variogram_training_fits` and `hybrid_residual_variogram` (the chosen covariance per fold), `calibration_fits`, "
+                 "`residual_diagnostics`.",
                  "- Artifacts: `model_artifacts`, parameter and provenance records with SHA-256.",
-                 "- Selection policy: inner whole-hole CV log loss; no outer test result was used to select a model or a "
-                 "threshold. O4 may evaluate and rank, but must not refit models or change the split.",
-                 f"- M1 status by fold: {', '.join(f'F{f}={s}' for f, s in sorted(m1_status.items()))}.",
-                 f"- M3 status by fold: {', '.join(f'F{f}={s}' for f, s in sorted(m3_status.items()))}.",
+                 "- Selection policy: inner whole-hole CV log loss; no outer test result was used to select a model, a "
+                 "covariance or a threshold. O4 may evaluate and rank, but must not refit models or change the splits.",
                  "- Final refit: `final_refits` row PENDING_O4. After O4 locks selection, Objective 3 must refit the selected "
                  "pipeline on all eligible approved observations and hash the artifact; that fit is not spatially validated.",
                  ""]
@@ -338,8 +362,9 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
                  "step ends the run before the next write.", "",
                  f"Python {platform.python_version()} on {platform.platform()}; " + "; ".join(_versions()) + ".", ""]
         body += ["## 13. Database row counts and receipts", "", "| table | rows |", "|---|---|"]
-        for c in counts:
-            body.append(f"| {c['name']} | {c['n']} |")
+        table_names = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")]
+        for n in table_names:
+            body.append(f"| {n} | {conn.execute('SELECT COUNT(*) FROM \"' + n + '\"').fetchone()[0]} |")
         body += ["", "Counts are taken when this report is written. The post-report VERIFY run adds one `stage_runs` row and "
                      "one gate set; that run is the authoritative final check and its gate rows are in the database.",
                  "", f"O1 receipt content SHA-256: {rc['content_sha256']}. O2 receipt {rc['o2_receipt_id']} content SHA-256: "
@@ -355,30 +380,29 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
         if flagged:
             blocked += ["| gate | status | detail |", "|---|---|---|"]
             for g in flagged:
-                blocked.append(f"| {g['gate_id']} {g['gate_name']} | {g['status']} | {g['detail'].replace('|', '\\|')} |")
+                blocked.append(f"| {g['gate_id']} {g['gate_name']} | {g['status']} | {g['detail'].replace('|', chr(92) + '|')} |")
         else:
             blocked.append("- none")
         blocked += ["", "## Model failures and fallbacks", ""]
-        for r in m1:
-            if r["status"] != "COMPLETED":
-                blocked.append(f"- M1 fold {r['fold_id']}: {r['status']}: {r['reason']}")
-        for r in m3:
-            if r["status"] != "COMPLETED":
-                blocked.append(f"- M3 fold {r['fold_id']}: {r['status']}: {r['reason']}")
+        fallback_rows = _rows(conn, "SELECT split_plan_id, fold_id, family_id, candidate_run_id, status, reason FROM "
+                                    "training_runs WHERE status <> 'COMPLETED' ORDER BY split_plan_id, fold_id, family_id")
+        for r in fallback_rows:
+            blocked.append(f"- {r['split_plan_id']} fold {r['fold_id']} {r['candidate_run_id']}: {r['status']}: {r['reason']}")
         blocked += ["", "## Leakage audit", ""]
         for c in leakage:
             blocked.append(f"- {c['status']} {c['check_name']}: {c['detail']}")
-        blocked += ["", "## Deferred work (not performed in this stage)", "",
-                    "- M1 indicator kriging at this support: no stable between-hole variogram was identified in any outer "
-                    "training fold. A future stage may re-test M1 only if the support or label basis changes.",
-                    "- M3 hybrid: the residual covariance is unsupported in every fold, so the recorded result is the "
-                    "declared ML-only fallback. It is not a validated hybrid.",
-                    "- Secondary whole-hole cross-validation: the fold plan and audit are stored, but its predictions are "
-                    "not handed to Objective 4.",
-                    "- Geological covariates: none exist in the source at prediction locations. Weathering, lithology and "
-                    "comment evidence are logged-only or target-derived.",
-                    "- Absolute elevation: no collar RL; no DEM and no absolute-Z product.",
+        blocked += ["", "## Deferred work (not performed in this stage)", ""]
+        for t in tiers:
+            if t["pure_m1_folds"]:
+                blocked.append(f"- {t['split_plan_id']}: M1 is the training prevalence in folds {t['pure_m1_folds']} "
+                               "(pure-nugget covariance selected by inner CV).")
+            if t["m3_fallback_folds"]:
+                blocked.append(f"- {t['split_plan_id']}: M3 is the ML-only fallback in folds {t['m3_fallback_folds']}; it is "
+                               "not a validated hybrid.")
+        blocked += ["- Outer-test evaluation and model ranking: Objective 4.",
                     "- Final full-data refit: PENDING_O4.",
+                    "- Geological covariates: none exist at prediction locations beyond the fold-safe front surface.",
+                    "- Absolute elevation: no collar RL; no DEM and no absolute-Z product.",
                     "- XGBoost: not installed; sklearn histogram gradient boosting is the declared fallback.",
                     "- Commit and push: not done; this waits for the user's instruction.", ""]
         blocked_path = O3_REPORT_DIR / "BLOCKED_OR_DEFERRED.md"
@@ -404,15 +428,16 @@ def write_all(o3_path=O3_DB_PATH) -> dict:
             "runs": {"import": import_run.get("run_id"), "splits": split_run.get("run_id"),
                      "train": train_run.get("run_id"), "verify": vr["run_id"]},
             "target": target, "label_version": label, "geometry_version": geom,
-            "split_plan": split, "split_audit": audits,
-            "predictions": pred, "failures": fails,
+            "split_plans": plans,
+            "tiers": [{k: v for k, v in t.items() if k not in ("fam_counts", "fails")} for t in tiers],
             "model_artifacts": {"count": artifacts.get("n"), "bytes": artifacts.get("b")},
             "figures": figures, "tables": tables,
             "output_hashes": [{"path": r["artifact_path"], "sha256": r["sha256"], "bytes": r["bytes"]}
                               for r in _manifest_rows(conn, rid, [])],
         }
         lineage_path = O3_REPORT_DIR / "DATA_LINEAGE.json"
-        lineage_path.write_text(json.dumps(lineage, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+        lineage_path.write_text(json.dumps(lineage, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8",
+                                newline="\n")
 
         report_paths = [readme_path, run_path, blocked_path, lineage_path]
         rows = _manifest_rows(conn, rid, report_paths)

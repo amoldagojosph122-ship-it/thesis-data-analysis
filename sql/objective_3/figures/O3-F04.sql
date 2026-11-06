@@ -13,7 +13,7 @@ FROM split_membership
 WHERE split_plan_id = :split_plan_id AND role = 'TEST'
 ORDER BY fold_id, line_code;
 -- name: selected_m2
-SELECT fold_id, candidate_run_id, inner_cv_score
+SELECT fold_id, json_extract(hyperparameters_json, '$.selected_candidate') AS candidate_run_id, inner_cv_score
 FROM training_runs
-WHERE split_plan_id = :split_plan_id AND selected = 1
+WHERE split_plan_id = :split_plan_id AND family_id = 'M2_SEL'
 ORDER BY fold_id;

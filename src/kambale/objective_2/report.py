@@ -332,6 +332,7 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
             *[f"- {a['direction_a']} against {a['direction_b']}: {a['support_status']}, decision {a['decision']}; {a['reason']}."
               for a in aniso], "",
             *_extension_section(conn, rid),
+            *_weathering_section(conn, rid),
             "## 6. Gate results (VERIFY run " + str(vr["run_id"]) + ")", "",
             "| gate | name | status | detail |", "|---|---|---|---|",
             *[f"| {g['gate_id']} | {g['gate_name']} | {g['status']} | {g['detail']} |" for g in gates], "",
@@ -366,8 +367,8 @@ def write_all(o2_path=O2_DB_PATH) -> dict:
             "./.venv/Scripts/python.exe -I -m pytest -o addopts= -q tests/objective_2 > reports/objective_2/PYTEST_OUTPUT.txt",
             "./.venv/Scripts/python.exe -I -m kambale.objective_2 report",
             "./.venv/Scripts/python.exe -I -m kambale.objective_2 verify", "```", "",
-            "`all` runs import, analyse, extension, verify, figures, tables, verify, report and verify. The stages can also be run "
-            "one at a time with `import`, `analyse`, `extension`, `figures`, `tables`, `report` and `verify`. The report reads "
+            "`all` runs import, analyse, extension, weathering, verify, figures, tables, verify, report and verify. The stages can also be run "
+            "one at a time with `import`, `analyse`, `extension`, `weathering`, `figures`, `tables`, `report` and `verify`. The report reads "
             "PYTEST_OUTPUT.txt, so the test run comes before the second report.", "",
             f"Python {platform.python_version()} on {platform.system()} {platform.release()}; " + ", ".join(_versions()) + ".",
             f"Independent check: {_independent_check_status()}. It is run from a scratch directory outside the project environment: "
@@ -485,6 +486,84 @@ def _extension_section(conn, rid: int) -> list[str]:
         + ", ".join(f"{n} {s}" for s, n in sorted(excluded.items())) + ".",
         f"Neither result changes the configuration-2 handoff ({handoff.get('decision_status', 'none')}), which stands as recorded.",
         ""]
+
+
+def _weathering_section(conn, rid: int) -> list[str]:
+    """Section 5.8 of the run report: the configuration-5 weathering front and fresh-rock variography, read from the database."""
+    from kambale.objective_2.weathering import WEATHERING_CONFIG_PATH
+    w_cfg, _ = load_config(WEATHERING_CONFIG_PATH)
+    version = w_cfg["config_version"]
+    head = ["### 5.8 Configuration 5: weathering front and fresh-rock variography", ""]
+    run = _one(conn, "SELECT run_id, config_sha256, note FROM stage_runs WHERE run_kind = 'SENSITIVITY' AND config_version = ? "
+                     "ORDER BY run_id DESC LIMIT 1", (version,))
+    if not run:
+        return head + ["Not run.", ""]
+    diag = _rows(conn, "SELECT stat_group, stat_name, stat_value, n_basis FROM weathering_front_diagnostics "
+                       "WHERE receipt_id = ? AND config_version = ?", (rid, version))
+    stat = {(d["stat_group"], d["stat_name"]): d["stat_value"] for d in diag}
+    schemes = sorted({d["stat_group"] for d in diag if d["stat_group"].startswith("INTERPOLATION_")})
+    fv = _rows(conn, "SELECT bin_index, lag_from_m, lag_to_m, n_hole_pairs, gamma, supported FROM weathering_front_variogram "
+                     "WHERE receipt_id = ? AND config_version = ? ORDER BY bin_index", (rid, version))
+    fresh = _rows(conn, "SELECT e.experiment_id, e.direction_id, "
+                        "(SELECT COUNT(*) FROM variogram_lag_bins b WHERE b.experiment_id = e.experiment_id AND b.supported = 1) AS supported, "
+                        "(SELECT f.fit_status FROM variogram_fits f WHERE f.experiment_id = e.experiment_id AND f.model = 'spherical') AS sph, "
+                        "(SELECT f.fit_status FROM variogram_fits f WHERE f.experiment_id = e.experiment_id AND f.model = 'exponential') AS expo, "
+                        "(SELECT f.stability_status FROM variogram_fits f WHERE f.experiment_id = e.experiment_id AND f.model = 'spherical') AS sph_stab, "
+                        "(SELECT f.stability_status FROM variogram_fits f WHERE f.experiment_id = e.experiment_id AND f.model = 'exponential') AS expo_stab "
+                        "FROM variogram_experiments e WHERE e.receipt_id = ? AND e.config_version = ? "
+                        "AND NOT EXISTS (SELECT 1 FROM sensitivity_runs s WHERE s.experiment_id = e.experiment_id "
+                        "AND s.changed_factor = 'excluded_line') ORDER BY e.direction_id", (rid, version))
+    decisions = _rows(conn, "SELECT variant_name, reason FROM sensitivity_runs WHERE run_id = ? "
+                            "AND changed_factor = 'sample_and_vertical_pairing' ORDER BY sensitivity_id", (run["run_id"],))
+    loo = _rows(conn, "SELECT variant_name, reason FROM sensitivity_runs WHERE run_id = ? AND changed_factor = 'excluded_line' "
+                      "ORDER BY sensitivity_id", (run["run_id"],))
+    weath = _rows(conn, "SELECT weathering_code, label_state, n_intervals FROM weathering_cross_tabs WHERE receipt_id = ? "
+                        "AND weathering_code IN ('cw','hw')", (rid,))
+    logged = sum(w["n_intervals"] for w in weath)
+    positive = sum(w["n_intervals"] for w in weath if w["label_state"] == "POSITIVE")
+    handoff = _one(conn, "SELECT decision_status FROM continuity_handoff_decisions WHERE receipt_id = ? "
+                         "ORDER BY handoff_id DESC LIMIT 1", (rid,))
+    scheme_lines = []
+    for sg in schemes:
+        name = sg.replace("INTERPOLATION_", "").replace("_", " ").lower()
+        flag = stat.get((sg, "interpolable"))
+        scheme_lines.append(f"| {name} | {_f(stat.get((sg, 'rmse_idw_m')), 2)} | "
+                            f"{_f(stat.get((sg, 'rmse_training_mean_m')), 2)} | {_f(stat.get((sg, 'skill_ratio')), 3)} | "
+                            f"{'INTERPOLABLE' if flag == 1.0 else 'NOT INTERPOLABLE'} |")
+    supported_lags = [f"{b['lag_from_m']:g} to {b['lag_to_m']:g}" for b in fv if b["supported"]]
+    dec_text = "; ".join(f"{d['variant_name'].split(':')[-1]} {d['reason'].rsplit('decision ', 1)[-1]}" for d in decisions)
+    return head + [
+        f"Configuration {version} (SHA-256 {run['config_sha256'][:12]}), stage run {run['run_id']}: {run['note']}.", "",
+        "Front definition: the shallowest interval with weathering code mw or sw in each hole, at its relative depth on the "
+        "straight hole. Holes with a cw or hw interval below the front are reported, not redefined.", "",
+        f"Holes with a front: {_f(stat.get(('FRONT_SUMMARY', 'n_holes')), 0)}; without: "
+        f"{_f(stat.get(('FRONT_SUMMARY', 'n_holes_without_front')), 0)}. Front relative elevation mean "
+        f"{_f(stat.get(('FRONT_SUMMARY', 'mean_front_z_relative_m')), 2)} m, sd "
+        f"{_f(stat.get(('FRONT_SUMMARY', 'sd_front_z_relative_m')), 2)} m, range "
+        f"{_f(stat.get(('FRONT_SUMMARY', 'min_front_z_relative_m')), 2)} to "
+        f"{_f(stat.get(('FRONT_SUMMARY', 'max_front_z_relative_m')), 2)} m. Holes with a cw or hw interval below the front: "
+        f"{_f(stat.get(('FRONT_SUMMARY', 'n_holes_with_reversals')), 0)}.", "",
+        f"Along-line adjacent holes ({_f(stat.get(('ALONG_LINE_ADJACENT', 'n_adjacent_pairs')), 0)} pairs): median absolute "
+        f"front difference {_f(stat.get(('ALONG_LINE_ADJACENT', 'median_abs_front_difference_m')), 2)} m, 90th percentile "
+        f"{_f(stat.get(('ALONG_LINE_ADJACENT', 'p90_abs_front_difference_m')), 2)} m, maximum "
+        f"{_f(stat.get(('ALONG_LINE_ADJACENT', 'max_abs_front_difference_m')), 2)} m; median collar distance "
+        f"{_f(stat.get(('ALONG_LINE_ADJACENT', 'median_collar_distance_m')), 0)} m.", "",
+        "| scheme | IDW RMSE (m) | training-mean RMSE (m) | skill ratio | decision (threshold 0.8) |", "|---|---|---|---|---|",
+        *scheme_lines, "",
+        f"Front semivariogram (between holes, 25 m bins to 500 m): {len(supported_lags)} of {len(fv)} bins supported "
+        "(at least 10 hole pairs)" + (f"; supported lags (m): {', '.join(supported_lags)}." if supported_lags else "."), "",
+        "| experiment | supported bins | spherical | exponential | stability (spherical / exponential) |",
+        "|---|---|---|---|---|",
+        *[f"| {r['direction_id']} | {r['supported']} | {r['sph']} | {r['expo']} | {r['sph_stab']} / {r['expo_stab']} |"
+          for r in fresh], "",
+        f"Leave-one-line-out refits of the fresh-rock experiments: {len(loo)} refit rows, "
+        f"{sum(1 for r in loo if r['reason'].startswith('FITTED'))} FITTED.", "",
+        f"Decisions (fresh rock): {dec_text}.", "",
+        f"Observability: {positive} of {logged} intervals logged cw or hw carry a POSITIVE DESIGN label. This is a limit of "
+        "logging in strongly weathered material; it is not a finding that weathered rock is non-graphitic, and no interval is "
+        "relabelled.", "",
+        f"Configuration 5 writes no handoff row; the configuration-2 handoff ({handoff.get('decision_status', 'none')}) stands "
+        "as recorded.", ""]
 
 
 def p_one_minus_p(conn, rid: int) -> float:

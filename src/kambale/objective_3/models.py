@@ -33,8 +33,42 @@ class PrevalenceModel:
         return np.column_stack([np.full(X.shape[0], 1.0 - self.p), np.full(X.shape[0], self.p)])
 
 
+PARENT_KEYS = ("prevalence", "logistic", "random_forest", "gradient_boosting")
+
+MODEL_CLASS = {
+    "BASE_PREVALENCE": "TrainingPrevalence",
+    "BASE_LOGISTIC": "LogisticRegression",
+    "M2_RF": "RandomForestClassifier",
+    "M2_HGB": "HistGradientBoostingClassifier",
+}
+
+
+def base_candidate(candidate_run_id: str, config: dict) -> str:
+    """The parent estimator of a weathering variant (same estimator and grid); other candidates map to themselves."""
+    for variant in config["models"].get("weathering_variants", []):
+        if variant["candidate_run_id"] == candidate_run_id:
+            return variant["parent"]
+    return candidate_run_id
+
+
+def model_class(candidate_run_id: str, config: dict) -> str:
+    return MODEL_CLASS[base_candidate(candidate_run_id, config)]
+
+
+def predictor_set(candidate_run_id: str, config: dict) -> str:
+    """Name of the predictor set (TREND or TREND_WF) a candidate is fitted on, from the configuration."""
+    for variant in config["models"].get("weathering_variants", []):
+        if variant["candidate_run_id"] == candidate_run_id:
+            return variant["predictor_set"]
+    for key in PARENT_KEYS:
+        if config["models"][key]["candidate_run_id"] == candidate_run_id:
+            return config["models"][key]["predictor_set"]
+    raise ValueError(f"unknown candidate {candidate_run_id}")
+
+
 def grid(candidate_run_id: str, config: dict) -> list[dict]:
     """Full Cartesian grid for one candidate, taken only from the predeclared configuration."""
+    candidate_run_id = base_candidate(candidate_run_id, config)
     models = config["models"]
     if candidate_run_id == models["prevalence"]["candidate_run_id"]:
         return [{}]
@@ -51,6 +85,7 @@ def grid(candidate_run_id: str, config: dict) -> list[dict]:
 
 
 def make_estimator(candidate_run_id: str, params: dict, config: dict, seed: int):
+    candidate_run_id = base_candidate(candidate_run_id, config)
     models = config["models"]
     if candidate_run_id == models["prevalence"]["candidate_run_id"]:
         return PrevalenceModel()

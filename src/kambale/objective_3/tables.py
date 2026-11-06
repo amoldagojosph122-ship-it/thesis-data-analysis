@@ -21,13 +21,14 @@ TABLES = OrderedDict([
     ("O3-T01", ("Model definitions, predictors, target version and sample support", "O3_T01_model_support", "O3-T01.sql",
                 "Predictors are restricted to the three safe coordinates; target-derived and logged-only fields are listed "
                 "as non-predictors. Sample support is the outer training fold, never the held-out line.")),
-    ("O3-T02", ("Split-by-split hyperparameters, variogram and calibration diagnostics", "O3_T02_fit_diagnostics",
-                "O3-T02.sql",
-                "Inner scores are whole-hole cross-validation log losses. Indicator and residual variograms are fitted on "
-                "the outer training fold only. A non-identified model carries no fitted parameter.")),
-    ("O3-T03", ("Out-of-fold completeness and leakage audit", "O3_T03_completeness_leakage", "O3-T03.sql",
-                "Expected rows are the held-out intervals of each fold. A completed candidate has a prediction or an "
-                "explicit failure record for every held-out interval. Leakage rows are the audit log written by training.")),
+    ("O3-T02", ("Split-plan, fold and family hyperparameters, covariance selection and calibration diagnostics",
+                "O3_T02_fit_diagnostics", "O3-T02.sql",
+                "Both validation tiers are shown. Inner scores are whole-hole cross-validation log losses. The M1 and M3 "
+                "covariance rows give the covariance chosen by inner CV; a pure-nugget choice carries no fitted parameter.")),
+    ("O3-T03", ("Out-of-fold completeness and leakage audit, both split plans", "O3_T03_completeness_leakage",
+                "O3-T03.sql",
+                "Expected rows are the held-out intervals of each fold of each split plan. A completed candidate has a "
+                "prediction or an explicit failure record for every held-out interval. Leakage rows are the audit log.")),
     ("O3-T04", ("Model artifact and reproducibility registry", "O3_T04_artifact_registry", "O3-T04.sql",
                 "Artifacts are parameter and provenance records with a SHA-256 hash. The final full-data refit remains "
                 "PENDING_O4 until Objective 4 locks model selection.")),

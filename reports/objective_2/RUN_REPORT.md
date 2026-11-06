@@ -1,6 +1,6 @@
 # Objective 2 run report: spatial distribution, geological controls and indicator variography
 
-Configuration O2-CFG-2026.11.05-4 (SHA-256 bfc2962a9e89), code 2.1.0, schema O2-SCHEMA-2026.11.05-4, commit cb4be24. Import run 1, analysis run 2, gate run 6. Report written 2026-11-05T15:19:20Z.
+Configuration O2-CFG-2026.11.05-4 (SHA-256 bfc2962a9e89), code 2.1.0, schema O2-SCHEMA-2026.11.06-5, commit 7d83644. Import run 1, analysis run 2, gate run 12. Report written 2026-11-06T04:33:48Z.
 
 ## 1. Status
 
@@ -86,7 +86,37 @@ Reading: no DESIGN model is FITTED in the extension. The fits run to the window 
 The STRICT comparator disagrees with DESIGN on 0 of the DESIGN binary intervals. On the 81 intervals that DESIGN leaves ambiguous, STRICT gives 76 NEGATIVE, 5 POSITIVE.
 Neither result changes the configuration-2 handoff (NOT_IDENTIFIABLE), which stands as recorded.
 
-## 6. Gate results (VERIFY run 6)
+### 5.8 Configuration 5: weathering front and fresh-rock variography
+
+Configuration O2-CFG-2026.11.06-5 (SHA-256 29ebcf7d3327), stage run 4: configuration 5: weathering front and fresh-rock variography; fresh-rock decisions: LATERAL_FRESH_COLLAR NOT_IDENTIFIABLE (fresh rock); LATERAL_FRESH_FRONT NOT_IDENTIFIABLE (fresh rock); no handoff row written.
+
+Front definition: the shallowest interval with weathering code mw or sw in each hole, at its relative depth on the straight hole. Holes with a cw or hw interval below the front are reported, not redefined.
+
+Holes with a front: 71; without: 0. Front relative elevation mean -7.39 m, sd 4.46 m, range -19.92 to 0.00 m. Holes with a cw or hw interval below the front: 9.
+
+Along-line adjacent holes (66 pairs): median absolute front difference 2.60 m, 90th percentile 7.79 m, maximum 18.19 m; median collar distance 33 m.
+
+| scheme | IDW RMSE (m) | training-mean RMSE (m) | skill ratio | decision (threshold 0.8) |
+|---|---|---|---|---|
+| leave one hole out | 4.85 | 4.49 | 1.079 | NOT INTERPOLABLE |
+| leave one line out | 5.56 | 4.73 | 1.175 | NOT INTERPOLABLE |
+
+Front semivariogram (between holes, 25 m bins to 500 m): 20 of 20 bins supported (at least 10 hole pairs); supported lags (m): 0 to 25, 25 to 50, 50 to 75, 75 to 100, 100 to 125, 125 to 150, 150 to 175, 175 to 200, 200 to 225, 225 to 250, 250 to 275, 275 to 300, 300 to 325, 325 to 350, 350 to 375, 375 to 400, 400 to 425, 425 to 450, 450 to 475, 475 to 500.
+
+| experiment | supported bins | spherical | exponential | stability (spherical / exponential) |
+|---|---|---|---|---|
+| LATERAL_FRESH_COLLAR | 25 | NOT_IDENTIFIABLE | NOT_IDENTIFIABLE | NOT_ASSESSED / NOT_ASSESSED |
+| LATERAL_FRESH_FRONT | 25 | FITTED | FITTED | UNSTABLE / UNSTABLE |
+
+Leave-one-line-out refits of the fresh-rock experiments: 20 refit rows, 8 FITTED.
+
+Decisions (fresh rock): LATERAL_FRESH_COLLAR NOT_IDENTIFIABLE (fresh rock); LATERAL_FRESH_FRONT NOT_IDENTIFIABLE (fresh rock).
+
+Observability: 3 of 647 intervals logged cw or hw carry a POSITIVE DESIGN label. This is a limit of logging in strongly weathered material; it is not a finding that weathered rock is non-graphitic, and no interval is relabelled.
+
+Configuration 5 writes no handoff row; the configuration-2 handoff (NOT_IDENTIFIABLE) stands as recorded.
+
+## 6. Gate results (VERIFY run 12)
 
 | gate | name | status | detail |
 |---|---|---|---|
@@ -105,7 +135,7 @@ Neither result changes the configuration-2 handoff (NOT_IDENTIFIABLE), which sta
 | G13 | No parameters for unidentified fits | PASS | 0 unidentified fits carry parameters |
 | G14 | Fit admissibility | PASS | 0 inadmissible fitted parameters |
 | G15 | Identifiability | PASS | 0 FITTED range or sill values on a bound; 0 FITTED lateral fits without a leave-one-line-out envelope |
-| G16 | Leave-one-line-out stability | PASS | 0 fits are unstable; 10 refit rows for 5 lines (two models each) |
+| G16 | Leave-one-line-out stability | WARN | 2 fits are unstable; 10 refit rows for 5 lines (two models each); of which configuration 5 (fresh rock): 2 (see RUN_REPORT 5.8) |
 | G17 | Marginal variance departure | PASS | 0 fits depart from p(1-p) by more than 50 per cent |
 | G18 | Anisotropy claims | PASS | anisotropy decisions: NOT_EVALUATED 2 |
 | G19 | Base excludes within-hole pairs | PASS | 0 base between-hole experiments include within-hole pairs; lateral handoff base present: True |
@@ -120,19 +150,21 @@ Neither result changes the configuration-2 handoff (NOT_IDENTIFIABLE), which sta
 | G28 | Query provenance | PASS | 0 figures and 0 tables without registered queries; 0 SQL files differ from their registered hash |
 | G29 | NOT_SUPPORTED entries carry a reason | PASS | 0 NOT_SUPPORTED figures without a stated reason |
 | G30 | Export hashes | PASS | 0 manifest entries differ from the file on disk |
+| G31 | Configuration-5 stage writes no handoff | PASS | 0 handoff rows created at or after the start of configuration-5 run 4 |
 
 ## 7. Tables
 
 - O2-T01: GENERATED, 76 rows; Hole and line geological summary with support.
 - O2-T02: GENERATED, 6 rows; Indicator prevalence, ambiguity and missingness by line.
-- O2-T03: GENERATED, 36 rows; Variogram fitting report.
-- O2-T04: GENERATED, 13 rows; Handoff contract and open items.
+- O2-T03: GENERATED, 40 rows; Variogram fitting report.
+- O2-T04: GENERATED, 14 rows; Handoff contract and open items.
+- O2-T05: GENERATED, 20 rows; Weathering front continuity and interpolation check.
 
 ### O2-T03 variogram fitting report
 
 
 Leave-one-line-out refits are summarised by the envelope columns. Ranges are metres; nugget and sill are indicator units; p(1 - p) is the marginal variance.
-Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 36 rows.
+Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 40 rows.
 
 | role | direction_id | variant | model | fit_status | stability_status | n_bins_used | objective | admissible | marginal_departure | nugget | structured_sill | range_m | range_loo_min_m | range_loo_max_m | handoff_status | reason |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -162,6 +194,10 @@ Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 36 rows.
 | SENSITIVITY | LATERAL_BETWEEN | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 40 | 2381.604 | 1 | -0.146 |  |  |  |  |  | not a handoff basis | range at the upper bound: not identified inside the supported lags; stability: base fit is not FITTED |
 | SENSITIVITY | LATERAL_BETWEEN | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 25 | 1416.44 | 1 | -0.289 |  |  |  |  |  | not a handoff basis | structured sill below 5% of p(1-p): no structure beyond the nugget; stability: leave-one-line-out not run for this comparison |
 | SENSITIVITY | LATERAL_BETWEEN | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 40 | 2381.604 | 1 | -0.146 |  |  |  |  |  | not a handoff basis | range at the upper bound: not identified inside the supported lags; stability: leave-one-line-out not run for this comparison |
+| SENSITIVITY | LATERAL_FRESH_COLLAR | SENSITIVITY | exponential | NOT_IDENTIFIABLE | NOT_ASSESSED | 25 | 1175.159 | 1 | -0.212 |  |  |  |  |  | not a handoff basis | structured sill below 5% of p(1-p): no structure beyond the nugget; stability: base fit is not FITTED |
+| SENSITIVITY | LATERAL_FRESH_COLLAR | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 25 | 1175.159 | 1 | -0.212 |  |  |  |  |  | not a handoff basis | range at the upper bound: not identified inside the supported lags; structured sill below 5% of p(1-p): no structure beyond the nugget; stability: base fit is not FITTED |
+| SENSITIVITY | LATERAL_FRESH_FRONT | SENSITIVITY | exponential | FITTED | UNSTABLE | 25 | 1625.719 | 1 | -0.213 | 0 | 0.1945 | 10.47 |  |  | not a handoff basis | converged inside bounds; stability: a leave-one-line-out refit was NOT_IDENTIFIABLE |
+| SENSITIVITY | LATERAL_FRESH_FRONT | SENSITIVITY | spherical | FITTED | UNSTABLE | 25 | 1625.664 | 1 | -0.213 | 0.1726 | 0.0219 | 29.62 |  |  | not a handoff basis | converged inside bounds; stability: a leave-one-line-out refit was NOT_IDENTIFIABLE |
 | SENSITIVITY | LAT_AZ_000 | SENSITIVITY | exponential | NOT_IDENTIFIABLE | NOT_ASSESSED | 3 |  |  |  |  |  |  |  |  | not a handoff basis | 3 supported bins; 5 required; stability: sensitivity fit: stability not tested |
 | SENSITIVITY | LAT_AZ_000 | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 3 |  |  |  |  |  |  |  |  | not a handoff basis | 3 supported bins; 5 required; stability: sensitivity fit: stability not tested |
 | SENSITIVITY | LAT_AZ_045 | SENSITIVITY | exponential | NOT_IDENTIFIABLE | NOT_ASSESSED | 1 |  |  |  |  |  |  |  |  | not a handoff basis | 1 supported bins; 5 required; stability: sensitivity fit: stability not tested |
@@ -177,7 +213,7 @@ Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 36 rows.
 
 
 The handoff is for Objective 3 only. Full-data parameters are never supplied for test folds, and every open item is listed with its status.
-Source: sql/objective_2/tables/O2-T04.sql, receipt 1, 13 rows.
+Source: sql/objective_2/tables/O2-T04.sql, receipt 1, 14 rows.
 
 | item_type | item_id | status | detail |
 |---|---|---|---|
@@ -187,6 +223,7 @@ Source: sql/objective_2/tables/O2-T04.sql, receipt 1, 13 rows.
 | GATE | G09 | WARN | Declared orientation: survey orientations [(-60.0, 90.0)]; declared (-60.0, 90.0); uniform across holes = True |
 | GATE | G10 | WARN | Class imbalance: lines below 10 per cent positive: NOM_N1113000 0.041 |
 | GATE | G12 | WARN | Directional support: skipped directions: LAT_AZ_000, LAT_AZ_045, LAT_AZ_135 |
+| GATE | G21 | WARN | Relative depth only: 5 of 5 sections labelled RELATIVE_DEPTH; no collar elevation is available, so the relative-depth limitation is always reported |
 | HANDOFF | O3-HANDOFF-1 | NOT_IDENTIFIABLE | candidate_family=NONE; full_data_parameters_for_test_folds=0; No lateral model is both FITTED and stable under leave-one-line-out: spherical NOT_IDENTIFIABLE (structured sill below 5% of p(1-p): no structure beyond the nugget); exponential NOT_IDENTIFIABLE (range at the smallest supported lag: no spatial dependence beyond the nugget; structured sill below 5% of p(1-p): no structure beyond the nugget). Lateral continuity is not identified at this support. Objective 3 must not use a between-hole continuity model whose parameters come from these fits; models without a geostatistical continuity term may proceed without a continuity claim. |
 | QUESTION | COLLAR_RL | OPEN | no collar elevation (RL) is available; depth is relative to collar and absolute elevation is not used |
 | QUESTION | LAG_WINDOW | OPEN | collar pairs have a median separation of 921.0 m, while the lateral lag window ends at 500.0 m; longer-range structure is not assessed |
@@ -208,6 +245,7 @@ Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are i
 - O2-F07 (GENERATED): Horizontal azimuth semivariograms (exploratory). Horizontal azimuth semivariograms (exploratory) at 0, 45, 90 and 135 degrees clockwise from grid north, tolerance ±22.5°. Dashed line: p(1 - p) = 0.205. Under-powered bins are marked with their pair counts; a direction with no supported bin is SKIPPED. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 - O2-F08 (GENERATED): Sensitivity of supported bins and fit status. Supported lag bins and fit status (spherical and exponential) for 8 completed sensitivity experiments and their base experiments; 3 configured entries were skipped, with reasons shown in the figure. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 - O2-F09 (GENERATED): Configuration-3 lateral extension with the STRICT comparator (exploratory). Configuration-3 exploratory lateral extension: experimental indicator semivariograms with 50 m bins to 2000 m and a relative-depth difference of at most 3 m, for DESIGN_8_2_v1 (approved, primary) and STRICT_SGS_v1 (comparator, authorised for this run only). Dashed line: the DESIGN marginal variance; dotted line, where it differs: the STRICT marginal variance; no model is FITTED, so no curve is drawn. The two samples give identical semivariances at every lag, because the comparator reproduces the DESIGN indicator on every DESIGN binary interval; the series coincide, so the comparator is drawn as hollow markers. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
+- O2-F10 (GENERATED): Weathering front and fresh-rock indicator semivariograms. Left: weathering front (shallowest interval with weathering mw or sw) of 71 holes by collar easting, one marker per drill line (vertical: relative depth of the front, m). Right: supported experimental indicator semivariograms of the fresh-rock sample (1163 binary intervals) for pairs at equal relative depth and for pairs at equal depth below their own front, 20 m bins to 500 m, with 95 per cent hole-bootstrap bands. Dashed line: p(1 - p) = 0.247; 2 fitted curve(s) drawn. Support: 1 m logged intervals. Geometry PROVISIONAL_RELATIVE: straight holes, collar elevation absent, depth relative to collar; absolute elevation is not used. No cross-validation folds exist in this stage.
 
 ## 9. Tests
 
@@ -262,7 +300,7 @@ Table O2-T01 (hole and line summary) and table O2-T02 (prevalence by line) are i
 ./.venv/Scripts/python.exe -I -m kambale.objective_2 verify
 ```
 
-`all` runs import, analyse, extension, verify, figures, tables, verify, report and verify. The stages can also be run one at a time with `import`, `analyse`, `extension`, `figures`, `tables`, `report` and `verify`. The report reads PYTEST_OUTPUT.txt, so the test run comes before the second report.
+`all` runs import, analyse, extension, weathering, verify, figures, tables, verify, report and verify. The stages can also be run one at a time with `import`, `analyse`, `extension`, `weathering`, `figures`, `tables`, `report` and `verify`. The report reads PYTEST_OUTPUT.txt, so the test run comes before the second report.
 
 Python 3.14.6 on Windows 11; numpy 2.4.6, scipy 1.18.0, matplotlib 3.11.1, PyYAML 6.0.3, pytest 9.1.1.
 Independent check: scikit-gstat was installed with uv into a scratch directory outside the project environment, because installing it into the project environment would downgrade scipy from 1.18.0 to 1.16.3. The comparison ran after the user approved it in chat, on the three-dimensional omnidirectional experiment with within-hole pairs included, which scikit-gstat's Matheron estimator also uses. Maximum absolute difference in semivariance: 2.776e-17 (tolerance 1e-09). Result: PASS. The lateral basis is not compared directly, because scikit-gstat cannot restrict pairs to a relative-depth band. Both use the same estimator, so the agreement is evidence for the pair counting and the binning. It is run from a scratch directory outside the project environment: `./.venv/Scripts/python.exe -I -m kambale.objective_2.independent_check --site <scratch-directory>`.
@@ -273,30 +311,34 @@ Independent check: scikit-gstat was installed with uv into a scratch directory o
 |---|---|
 | analysis_observations | 1910 |
 | anisotropy_diagnostics | 2 |
+| bootstrap_gamma_bands | 50 |
 | collar_locations | 71 |
 | comparator_observations | 1910 |
 | continuity_handoff_decisions | 1 |
 | depth_lithology_summaries | 28 |
-| direction_registry | 7 |
-| export_manifests | 46 |
-| figure_query_registry | 23 |
-| figure_registry | 9 |
-| gate_results | 90 |
+| direction_registry | 9 |
+| export_manifests | 52 |
+| figure_query_registry | 28 |
+| figure_registry | 10 |
+| gate_results | 248 |
 | geological_section_registry | 5 |
 | hole_occurrence_summaries | 71 |
 | line_occurrence_summaries | 5 |
 | pair_sampling_diagnostics | 180 |
 | schema_version | 1 |
-| sensitivity_runs | 34 |
+| sensitivity_runs | 56 |
 | source_receipts | 1 |
 | spatial_support_statistics | 17 |
-| stage_runs | 6 |
-| table_query_registry | 4 |
-| table_registry | 4 |
-| variogram_experiments | 28 |
-| variogram_fit_parameters | 12 |
-| variogram_fits | 56 |
-| variogram_lag_bins | 835 |
+| stage_runs | 12 |
+| table_query_registry | 5 |
+| table_registry | 5 |
+| variogram_experiments | 40 |
+| variogram_fit_parameters | 42 |
+| variogram_fits | 80 |
+| variogram_lag_bins | 1135 |
 | weathering_cross_tabs | 12 |
+| weathering_front_diagnostics | 20 |
+| weathering_front_observations | 71 |
+| weathering_front_variogram | 20 |
 
 Receipt 1: content SHA-256 abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22; ordered identifier digest a94753f238d017f378b4b81fa61fcb061b63c62a687a68bafcdbbaf480027f55; selection query SHA-256 677203494777ff7efc26c6e5286142522049c7112f95109ed366a2da3481a767. Counts are taken when this report is written.

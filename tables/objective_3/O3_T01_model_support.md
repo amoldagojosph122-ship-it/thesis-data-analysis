@@ -1,7 +1,7 @@
 # O3-T01. Model definitions, predictors, target version and sample support
 
 Predictors are restricted to the three safe coordinates; target-derived and logged-only fields are listed as non-predictors. Sample support is the outer training fold, never the held-out line.
-Source: sql/objective_3/tables/O3-T01.sql, receipt 1, 39 rows.
+Source: sql/objective_3/tables/O3-T01.sql, receipt 1, 61 rows.
 
 | item_type | item_id | item | category | detail | units | status | n |
 |---|---|---|---|---|---|---|---|
@@ -11,6 +11,7 @@ Source: sql/objective_3/tables/O3-T01.sql, receipt 1, 39 rows.
 | FEATURE | F_DEPTHTO | depth_to_m | LOG_ONLY | Redundant with z_relative_m and tied to sampling geometry. | m | NOT_AVAILABLE | 0 |
 | FEATURE | F_DESIGNLABEL | design_label | TARGET_DERIVED | Direct target. |  | NOT_AVAILABLE | 0 |
 | FEATURE | F_EASTING | easting_m | SAFE | Planar coordinate; not derived from the target. | m | AVAILABLE_AT_PREDICTION | 0 |
+| FEATURE | F_FRONT | depth_below_weathering_front_m | SAFE | Derived from the front of other training holes and the row's relative Z; the test label and the test holes' weathering codes never enter it. | m | AVAILABLE_AT_PREDICTION | 0 |
 | FEATURE | F_GRMIN | has_gr_mineral | TARGET_DERIVED | Label evidence. |  | NOT_AVAILABLE | 0 |
 | FEATURE | F_HOLE | hole_id | IDENTIFIER | Using it would memorise holes and leak the spatial split. |  | NOT_AVAILABLE | 0 |
 | FEATURE | F_INDICATOR | indicator | TARGET_DERIVED | Direct target. |  | NOT_AVAILABLE | 0 |
@@ -32,15 +33,36 @@ Source: sql/objective_3/tables/O3-T01.sql, receipt 1, 39 rows.
 | FEATURE | F_ZREL | z_relative_m | SAFE | Relative vertical position; z_absolute_m is never used. | m | AVAILABLE_AT_PREDICTION | 0 |
 | GEOMETRY | GEOM-10-1 | 10 | PROVISIONAL_RELATIVE | CRS EPSG:32630; datum VERIFIED; vertical RELATIVE_TO_COLLAR; z_absolute_used=0 |  | VERIFIED | 0 |
 | MODEL | BASE_LOGISTIC | Logistic regression | BASELINE | L2 logistic regression on the three safe coordinates, with standardisation refitted inside each fold. |  |  | 0 |
+| MODEL | BASE_LOGISTIC_WF | Logistic regression with weathering front | BASELINE | Logistic regression of the same grid on the TREND_WF predictor set; the front column is rebuilt per outer fold. |  |  | 0 |
 | MODEL | BASE_PREVALENCE | Training prevalence | BASELINE | Constant probability equal to the training-fold prevalence. Sanity baseline for every fold. |  |  | 0 |
-| MODEL | M1_IK | Indicator kriging | M1 | Simple indicator kriging with a variogram and kriging neighbourhood fitted on the outer training fold only. |  |  | 0 |
+| MODEL | M1_IK | Indicator kriging | M1 | Simple indicator kriging with an exponential covariance (or pure nugget) chosen by inner whole-hole CV log loss from a predeclared grid. Pure nugget reduces to the training prevalence. |  |  | 0 |
 | MODEL | M2_HGB | Gradient boosting | M2 | Histogram gradient boosting on the three safe coordinates. Audited fallback for XGBoost, which is not installed. |  |  | 0 |
+| MODEL | M2_HGB_WF | Gradient boosting with weathering front | M2 | Histogram gradient boosting of the same grid on the TREND_WF predictor set. |  |  | 0 |
 | MODEL | M2_RF | Random forest | M2 | Random forest on the three safe coordinates. Hyperparameters selected by inner whole-hole CV. |  |  | 0 |
-| MODEL | M3_HYBRID | Hybrid residual model | M3 | ML trend from the selected M2 candidate plus a kriged residual from an inner cross-fitted residual variogram. When the residual variogram is not supported, the run is recorded as an ML-only fallback, not a hybrid success. |  |  | 0 |
-| SAMPLE | BASE_LOGISTIC | BASE_LOGISTIC | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
-| SAMPLE | BASE_PREVALENCE | BASE_PREVALENCE | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
-| SAMPLE | M1_IK | M1_IK | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
-| SAMPLE | M2_HGB | M2_HGB | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
-| SAMPLE | M2_RF | M2_RF | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
-| SAMPLE | M3_HYBRID | M3_HYBRID | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| MODEL | M2_RF_WF | Random forest with weathering front | M2 | Random forest of the same grid on the TREND_WF predictor set. |  |  | 0 |
+| MODEL | M2_SEL | Inner-selected plain M2 | M2 | Copy of the candidate among M2_RF and M2_HGB with the lower inner-CV log loss in the fold. |  |  | 0 |
+| MODEL | M2_WF_SEL | Inner-selected M2 with weathering front | M2 | Copy of the candidate among M2_RF_WF and M2_HGB_WF with the lower inner-CV log loss; the trend of M3. |  |  | 0 |
+| MODEL | M3_HYBRID | Hybrid residual model | M3 | Calibrated trend from M2_WF_SEL plus a simple-kriged residual with covariance chosen by inner CV. A pure-nugget choice is recorded as FALLBACK_ML_ONLY (identical to M2_WF_SEL), not as a hybrid success. |  |  | 0 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:BASE_LOGISTIC | BASE_LOGISTIC | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:BASE_LOGISTIC_WF | BASE_LOGISTIC_WF | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:BASE_PREVALENCE | BASE_PREVALENCE | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M1_IK | M1_IK | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M2_HGB | M2_HGB | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M2_HGB_WF | M2_HGB_WF | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M2_RF | M2_RF | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M2_RF_WF | M2_RF_WF | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M2_SEL | M2_SEL | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M2_WF_SEL | M2_WF_SEL | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-HOLE-IL-2:M3_HYBRID | M3_HYBRID | FOLD_SUMMARY | training rows 1374 to 1526; training positive 326 to 471; test rows 303 to 455; test positive 54 to 199; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:BASE_LOGISTIC | BASE_LOGISTIC | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:BASE_LOGISTIC_WF | BASE_LOGISTIC_WF | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:BASE_PREVALENCE | BASE_PREVALENCE | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M1_IK | M1_IK | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M2_HGB | M2_HGB | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M2_HGB_WF | M2_HGB_WF | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M2_RF | M2_RF | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M2_RF_WF | M2_RF_WF | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M2_SEL | M2_SEL | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M2_WF_SEL | M2_WF_SEL | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
+| SAMPLE | O3-SPLIT-LODO-1:M3_HYBRID | M3_HYBRID | FOLD_SUMMARY | training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 | rows | OBSERVED | 7316 |
 | TARGET | TARGET-DESIGN_8_2_v1-1 | DESIGN_8_2_v1 | APPROVED | positive=POSITIVE; negative=NEGATIVE; excluded=["AMBIGUOUS", "UNRESOLVED"] | intervals | APPROVED | 1829 |

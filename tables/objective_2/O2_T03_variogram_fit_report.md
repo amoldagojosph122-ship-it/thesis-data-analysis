@@ -1,7 +1,7 @@
 # O2-T03. Variogram fitting report
 
 Leave-one-line-out refits are summarised by the envelope columns. Ranges are metres; nugget and sill are indicator units; p(1 - p) is the marginal variance.
-Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 36 rows.
+Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 40 rows.
 
 | role | direction_id | variant | model | fit_status | stability_status | n_bins_used | objective | admissible | marginal_departure | nugget | structured_sill | range_m | range_loo_min_m | range_loo_max_m | handoff_status | reason |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -31,6 +31,10 @@ Source: sql/objective_2/tables/O2-T03.sql, receipt 1, 36 rows.
 | SENSITIVITY | LATERAL_BETWEEN | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 40 | 2381.604 | 1 | -0.146 |  |  |  |  |  | not a handoff basis | range at the upper bound: not identified inside the supported lags; stability: base fit is not FITTED |
 | SENSITIVITY | LATERAL_BETWEEN | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 25 | 1416.44 | 1 | -0.289 |  |  |  |  |  | not a handoff basis | structured sill below 5% of p(1-p): no structure beyond the nugget; stability: leave-one-line-out not run for this comparison |
 | SENSITIVITY | LATERAL_BETWEEN | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 40 | 2381.604 | 1 | -0.146 |  |  |  |  |  | not a handoff basis | range at the upper bound: not identified inside the supported lags; stability: leave-one-line-out not run for this comparison |
+| SENSITIVITY | LATERAL_FRESH_COLLAR | SENSITIVITY | exponential | NOT_IDENTIFIABLE | NOT_ASSESSED | 25 | 1175.159 | 1 | -0.212 |  |  |  |  |  | not a handoff basis | structured sill below 5% of p(1-p): no structure beyond the nugget; stability: base fit is not FITTED |
+| SENSITIVITY | LATERAL_FRESH_COLLAR | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 25 | 1175.159 | 1 | -0.212 |  |  |  |  |  | not a handoff basis | range at the upper bound: not identified inside the supported lags; structured sill below 5% of p(1-p): no structure beyond the nugget; stability: base fit is not FITTED |
+| SENSITIVITY | LATERAL_FRESH_FRONT | SENSITIVITY | exponential | FITTED | UNSTABLE | 25 | 1625.719 | 1 | -0.213 | 0 | 0.1945 | 10.47 |  |  | not a handoff basis | converged inside bounds; stability: a leave-one-line-out refit was NOT_IDENTIFIABLE |
+| SENSITIVITY | LATERAL_FRESH_FRONT | SENSITIVITY | spherical | FITTED | UNSTABLE | 25 | 1625.664 | 1 | -0.213 | 0.1726 | 0.0219 | 29.62 |  |  | not a handoff basis | converged inside bounds; stability: a leave-one-line-out refit was NOT_IDENTIFIABLE |
 | SENSITIVITY | LAT_AZ_000 | SENSITIVITY | exponential | NOT_IDENTIFIABLE | NOT_ASSESSED | 3 |  |  |  |  |  |  |  |  | not a handoff basis | 3 supported bins; 5 required; stability: sensitivity fit: stability not tested |
 | SENSITIVITY | LAT_AZ_000 | SENSITIVITY | spherical | NOT_IDENTIFIABLE | NOT_ASSESSED | 3 |  |  |  |  |  |  |  |  | not a handoff basis | 3 supported bins; 5 required; stability: sensitivity fit: stability not tested |
 | SENSITIVITY | LAT_AZ_045 | SENSITIVITY | exponential | NOT_IDENTIFIABLE | NOT_ASSESSED | 1 |  |  |  |  |  |  |  |  | not a handoff basis | 1 supported bins; 5 required; stability: sensitivity fit: stability not tested |

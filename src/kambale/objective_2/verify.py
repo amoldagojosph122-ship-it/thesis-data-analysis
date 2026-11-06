@@ -19,6 +19,7 @@ from kambale.objective_2.config import (O2_CONFIG_PATH, O2_DB_PATH, PROJECT_ROOT
 from kambale.objective_2.db import connect_o2, connect_upstream_readonly
 from kambale.objective_2.importer import IMPORT_QUERY
 from kambale.objective_2.pairs import bin_edges
+from kambale.objective_2.weathering import WEATHERING_CONFIG_PATH
 
 PAIR_CHECK_SEED = 20261105
 PAIR_CHECK_SIZE = 160
@@ -172,8 +173,13 @@ def run(o2_path=O2_DB_PATH, upstream=UPSTREAM_DB_PATH, config_path=O2_CONFIG_PAT
     g.append(_result("G15", "Identifiability", "PASS" if bound_hits == 0 and untested == 0 else "STOP", "analysis",
                      f"{bound_hits} FITTED range or sill values on a bound; {untested} FITTED lateral fits without a "
                      "leave-one-line-out envelope"))
+    # Every unstable fit counts toward the WARN, configuration-5 fits included; the configuration-5 share is shown in the detail.
+    w5_version = load_config(WEATHERING_CONFIG_PATH)[0]["config_version"]
     unstable = conn.execute("SELECT COUNT(*) FROM variogram_fits f JOIN variogram_experiments e ON e.experiment_id = f.experiment_id "
                             "WHERE e.receipt_id = ? AND f.stability_status = 'UNSTABLE'", (rid,)).fetchone()[0]
+    unstable_w5 = conn.execute("SELECT COUNT(*) FROM variogram_fits f JOIN variogram_experiments e ON e.experiment_id = f.experiment_id "
+                               "WHERE e.receipt_id = ? AND f.stability_status = 'UNSTABLE' AND e.config_version = ?",
+                               (rid, w5_version)).fetchone()[0]
     lines_bin = conn.execute("SELECT COUNT(DISTINCT line_code) FROM analysis_observations WHERE receipt_id = ? "
                              "AND in_binary_target = 1", (rid,)).fetchone()[0]
     loo_rows = conn.execute("SELECT COUNT(*) FROM sensitivity_runs WHERE run_id = (SELECT MAX(run_id) FROM stage_runs "
@@ -181,7 +187,8 @@ def run(o2_path=O2_DB_PATH, upstream=UPSTREAM_DB_PATH, config_path=O2_CONFIG_PAT
                             "('LEAVE_ONE_LINE_OUT:spherical', 'LEAVE_ONE_LINE_OUT:exponential')", (rid,)).fetchone()[0]
     complete = loo_rows == 2 * lines_bin
     g.append(_result("G16", "Leave-one-line-out stability", "STOP" if not complete else ("WARN" if unstable else "PASS"),
-                     "analysis", f"{unstable} fits are unstable; {loo_rows} refit rows for {lines_bin} lines (two models each)"))
+                     "analysis", f"{unstable} fits are unstable; {loo_rows} refit rows for {lines_bin} lines (two models each); "
+                                 f"of which configuration 5 (fresh rock): {unstable_w5} (see RUN_REPORT 5.8)"))
     dep = conn.execute("SELECT COUNT(*) FROM variogram_fits f JOIN variogram_experiments e ON e.experiment_id = f.experiment_id "
                        "WHERE e.receipt_id = ? AND ABS(f.marginal_departure) > 0.5", (rid,)).fetchone()[0]
     g.append(_result("G17", "Marginal variance departure", "WARN" if dep else "PASS", "analysis",
@@ -258,6 +265,20 @@ def run(o2_path=O2_DB_PATH, upstream=UPSTREAM_DB_PATH, config_path=O2_CONFIG_PAT
             bad_hash.append(row["artifact_path"])
     g.append(_result("G30", "Export hashes", "PASS" if not bad_hash else "STOP", "exports",
                      f"{len(bad_hash)} manifest entries differ from the file on disk"))
+
+    # G31 (configuration 5): the weathering stage writes no handoff. continuity_handoff_decisions has no config column, so
+    # the check is on time: any handoff row created at or after the start of the latest configuration-5 stage run is a STOP.
+    w5_version = load_config(WEATHERING_CONFIG_PATH)[0]["config_version"]
+    w5 = conn.execute("SELECT run_id, started_utc FROM stage_runs WHERE run_kind = 'SENSITIVITY' AND config_version = ? "
+                      "AND receipt_id = ? ORDER BY run_id DESC LIMIT 1", (w5_version, rid)).fetchone()
+    if w5 is None:
+        g.append(_result("G31", "Configuration-5 stage writes no handoff", "SKIP", "handoff",
+                         f"no {w5_version} stage run on receipt {rid}"))
+    else:
+        later = conn.execute("SELECT COUNT(*) FROM continuity_handoff_decisions WHERE receipt_id = ? AND created_utc >= ?",
+                             (rid, w5["started_utc"])).fetchone()[0]
+        g.append(_result("G31", "Configuration-5 stage writes no handoff", "PASS" if later == 0 else "STOP", "handoff",
+                         f"{later} handoff rows created at or after the start of configuration-5 run {w5['run_id']}"))
 
     for row in g:
         conn.execute("INSERT INTO gate_results (run_id, gate_id, gate_name, status, scope, detail, created_utc) "

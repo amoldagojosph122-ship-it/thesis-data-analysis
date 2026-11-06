@@ -519,6 +519,83 @@ def _extension(rows: dict, receipt: dict):
                                   f"{fit_text}.{coincide}")
 
 
+FRESH_LABELS = {"LATERAL_FRESH_COLLAR": "fresh rock, pairs at equal relative depth (collar)",
+                "LATERAL_FRESH_FRONT": "fresh rock, pairs at equal depth below own front"}
+FRESH_COLOURS = {"LATERAL_FRESH_COLLAR": BLUE, "LATERAL_FRESH_FRONT": GREEN}
+FRESH_MARKERS = {"LATERAL_FRESH_COLLAR": "o", "LATERAL_FRESH_FRONT": "s"}
+
+
+def _weathering(rows: dict, receipt: dict):
+    fronts = rows["front_points"]
+    bins = [b for b in rows["fresh_bins"] if b["supported"]]
+    if not fronts:
+        raise NotSupported("no weathering front rows for configuration 5")
+    if not bins:
+        raise NotSupported("no supported bins for the configuration-5 fresh-rock experiments")
+    marg = rows["fresh_marginal"][0]
+    if not marg["n"]:
+        raise NotSupported("no binary interval in the front codes")
+    pq = float(marg["p_one_minus_p"])
+    fig, (ax_f, ax_v) = plt.subplots(1, 2, figsize=(7.6, 3.9), gridspec_kw={"width_ratios": [1.0, 1.15]})
+    fig.subplots_adjust(left=0.09, right=0.93, top=0.80, bottom=0.2, wspace=0.3)
+    markers = ("o", "s", "^", "D", "v", "P")
+    lines = sorted({f["line_code"] for f in fronts})
+    for k, line in enumerate(lines):
+        pts = sorted((f for f in fronts if f["line_code"] == line), key=lambda f: f["easting_m"])
+        ax_f.plot([f["easting_m"] for f in pts], [f["front_z_relative_m"] for f in pts], ls="none",
+                  marker=markers[k % len(markers)], ms=4.0, mfc="white", mec=POINT_GREY, mew=0.8,
+                  label=line.replace("NOM_", ""))
+    ax_f.ticklabel_format(style="plain", useOffset=False, axis="x")
+    ax_f.set_xlabel("UTM 30N easting of collar (m)")
+    ax_f.set_ylabel("Front position, z relative to collar (m)")
+    ax_f.set_title("Weathering front by easting and line", loc="left", fontsize=7)
+    ax_f.legend(loc="lower right", fontsize=5.8, ncol=2, title="Drill line", title_fontsize=5.8)
+    ymax = max(max(b["gamma"] for b in bins), max((b["gamma_upper"] or 0.0) for b in bins), pq)
+    for direction in ("LATERAL_FRESH_COLLAR", "LATERAL_FRESH_FRONT"):
+        rr = [b for b in bins if b["direction_id"] == direction]
+        if not rr:
+            continue
+        colour = FRESH_COLOURS[direction]
+        banded = [b for b in rr if b["gamma_lower"] is not None]
+        if banded:
+            ax_v.fill_between([b["lag_centre_m"] for b in banded], [b["gamma_lower"] for b in banded],
+                              [b["gamma_upper"] for b in banded], color=colour, alpha=0.18, linewidth=0)
+        ax_v.plot([b["lag_centre_m"] for b in rr], [b["gamma"] for b in rr], marker=FRESH_MARKERS[direction], ms=3.4,
+                  lw=0.6, color=colour, label=FRESH_LABELS[direction])
+    fitted = {}
+    for r in rows["fitted_parameters"]:
+        fitted.setdefault((r["direction_id"], r["model"]), {})[r["parameter"]] = r["estimate"]
+    xmax = max(b["lag_centre_m"] for b in bins)
+    h = np.linspace(0.0, xmax + 10.0, 300)
+    for (direction, model), par in sorted(fitted.items()):
+        curve = gamma_model(h, model, par["nugget"], par["structured_sill"], par["range_m"])
+        ymax = max(ymax, float(np.max(curve)))
+        ax_v.plot(h, curve, ls="-" if model == "spherical" else "-.", lw=1.1, color=FRESH_COLOURS[direction],
+                  label=f"Fitted {model} ({'collar' if direction.endswith('COLLAR') else 'front'})")
+    ax_v.axhline(pq, ls="--", lw=0.8, color=NEUTRAL)
+    ax_v.set_xlim(0.0, xmax + 10.0)
+    ax_v.set_ylim(0.0, max(0.27, 1.12 * ymax))
+    ax_v.text(xmax + 8.0, pq + 0.004, f"p(1 - p) = {pq:.3f}", ha="right", va="bottom", fontsize=6.2, color=INK)
+    ax_v.set_xlabel("Lag centre (m), horizontal")
+    ax_v.set_ylabel("Semivariance γ(h) (indicator units)")
+    ax_v.set_title("Fresh-rock indicator semivariograms (95 % hole bootstrap)", loc="left", fontsize=7)
+    status = {(r["direction_id"], r["model"]): r["fit_status"] for r in rows["fit_status"]}
+    if not fitted:
+        note = "No model drawn; fit status: " + "; ".join(
+            f"{'collar' if d.endswith('COLLAR') else 'front'} {m}: {s.lower().replace('_', ' ')}"
+            for (d, m), s in sorted(status.items()))
+        ax_v.text(0.02, 0.03, textwrap.fill(note, 80), transform=ax_v.transAxes, fontsize=5.8, color=INK, va="bottom")
+    ax_v.legend(loc="upper left", fontsize=5.8)
+    _footer(fig, receipt, "fresh rock = binary intervals with weathering mw or sw; front = shallowest mw or sw interval")
+    fit_text = (f"{len(fitted)} fitted curve(s) drawn" if fitted else "no model is FITTED, so no curve is drawn")
+    return fig, _caption(receipt, f"Left: weathering front (shallowest interval with weathering mw or sw) of {len(fronts)} holes by "
+                                  "collar easting, one marker per drill line (vertical: relative depth of the front, m). Right: "
+                                  f"supported experimental indicator semivariograms of the fresh-rock sample ({int(marg['n'])} "
+                                  "binary intervals) for pairs at equal relative depth and for pairs at equal depth below their "
+                                  "own front, 20 m bins to 500 m, with 95 per cent hole-bootstrap bands. Dashed line: "
+                                  f"p(1 - p) = {pq:.3f}; {fit_text}.")
+
+
 FIGURES = OrderedDict([
     ("O2-F01", ("Drill-hole plan view by approved line", "O2_F01_drill_hole_plan", _plan, "O2-F01.sql")),
     ("O2-F02", ("Positive metres and graphitic fraction by hole and line", "O2_F02_occurrence_hole_line", _occurrence,
@@ -532,6 +609,8 @@ FIGURES = OrderedDict([
     ("O2-F08", ("Sensitivity of supported bins and fit status", "O2_F08_sensitivity", _sensitivity, "O2-F08.sql")),
     ("O2-F09", ("Configuration-3 lateral extension with the STRICT comparator (exploratory)", "O2_F09_extension_strict",
                 _extension, "O2-F09.sql")),
+    ("O2-F10", ("Weathering front and fresh-rock indicator semivariograms", "O2_F10_weathering_fresh", _weathering,
+                "O2-F10.sql")),
 ])
 
 

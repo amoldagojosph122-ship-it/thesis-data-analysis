@@ -22,7 +22,7 @@ SELECT 'GEOMETRY' AS item_type, geometry_version_id AS item_id, CAST(geometry_bu
 FROM geometry_versions
 WHERE receipt_id = :receipt_id
 UNION ALL
-SELECT 'SAMPLE' AS item_type, family_id AS item_id, candidate_run_id AS item, 'FOLD_SUMMARY' AS category,
+SELECT 'SAMPLE' AS item_type, split_plan_id || ':' || family_id AS item_id, candidate_run_id AS item, 'FOLD_SUMMARY' AS category,
        'training rows ' || MIN(training_n) || ' to ' || MAX(training_n) ||
        '; training positive ' || MIN(training_positive) || ' to ' || MAX(training_positive) ||
        '; test rows ' || MIN(test_n) || ' to ' || MAX(test_n) ||
@@ -30,6 +30,6 @@ SELECT 'SAMPLE' AS item_type, family_id AS item_id, candidate_run_id AS item, 'F
        '; folds ' || COUNT(*) AS detail,
        'rows' AS units, 'OBSERVED' AS status, SUM(training_n) AS n
 FROM training_runs
-WHERE split_plan_id = :split_plan_id
-GROUP BY family_id, candidate_run_id
+WHERE split_plan_id IN (SELECT split_plan_id FROM spatial_split_plans)
+GROUP BY split_plan_id, family_id, candidate_run_id
 ORDER BY item_type, item_id, item;

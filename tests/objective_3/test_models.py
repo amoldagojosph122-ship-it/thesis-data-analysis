@@ -81,3 +81,17 @@ def test_platt_fit_is_bounded_and_monotone(config):
 def test_platt_skips_single_class(config):
     fit = models.platt_fit(np.zeros(50, dtype=int), np.full(50, 0.2), config)
     assert fit["status"] == "SKIPPED"
+
+
+def test_weathering_variants_map_to_their_parent_estimator_and_grid(config):
+    assert models.base_candidate("M2_RF_WF", config) == "M2_RF"
+    assert models.base_candidate("M2_HGB_WF", config) == "M2_HGB"
+    assert models.base_candidate("BASE_LOGISTIC_WF", config) == "BASE_LOGISTIC"
+    assert models.grid("M2_RF_WF", config) == models.grid("M2_RF", config)
+    assert models.grid("M2_HGB_WF", config) == models.grid("M2_HGB", config)
+    assert models.predictor_set("M2_RF_WF", config) == "TREND_WF"
+    assert models.predictor_set("M2_RF", config) == "TREND"
+    assert models.model_class("M2_HGB_WF", config) == "HistGradientBoostingClassifier"
+    est = models.make_estimator("M2_RF_WF", {"n_estimators": 10, "max_depth": 4, "min_samples_leaf": 5,
+                                             "max_features": "sqrt"}, config, 1)
+    assert type(est).__name__ == "RandomForestClassifier"

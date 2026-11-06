@@ -376,3 +376,60 @@ CREATE TABLE IF NOT EXISTS gate_results (
     created_utc     TEXT    NOT NULL,
     PRIMARY KEY (run_id, gate_id)
 );
+
+-- Configuration 5 (weathering front, fresh-rock variography). One front per hole: the shallowest interval whose weathering
+-- code is in front_codes. front_z_relative_m is the relative depth of that interval's from-depth on the straight hole.
+CREATE TABLE IF NOT EXISTS weathering_front_observations (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    hole_id                 TEXT    NOT NULL,
+    line_code               TEXT    NOT NULL,
+    easting_m               REAL    NOT NULL,
+    northing_m              REAL    NOT NULL,
+    front_depth_m           REAL    NOT NULL CHECK (front_depth_m >= 0),
+    front_z_relative_m      REAL    NOT NULL CHECK (front_z_relative_m <= 0),
+    n_reversal_intervals    INTEGER NOT NULL CHECK (n_reversal_intervals >= 0),
+    config_version          TEXT    NOT NULL,
+    PRIMARY KEY (receipt_id, hole_id, config_version)
+);
+
+-- Continuity diagnostics of the weathering front. stat_group: ALONG_LINE_ADJACENT, FRONT_SUMMARY,
+-- INTERPOLATION_LEAVE_ONE_HOLE_OUT, INTERPOLATION_LEAVE_ONE_LINE_OUT. The interpolable flag is a decision row (0 or 1).
+CREATE TABLE IF NOT EXISTS weathering_front_diagnostics (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    stat_group              TEXT    NOT NULL CHECK (stat_group IN ('ALONG_LINE_ADJACENT','FRONT_SUMMARY',
+                                                                  'INTERPOLATION_LEAVE_ONE_HOLE_OUT',
+                                                                  'INTERPOLATION_LEAVE_ONE_LINE_OUT')),
+    stat_name               TEXT    NOT NULL,
+    stat_value              REAL,
+    unit                    TEXT    NOT NULL,
+    n_basis                 INTEGER NOT NULL CHECK (n_basis >= 0),
+    PRIMARY KEY (receipt_id, config_version, stat_group, stat_name)
+);
+
+-- Experimental semivariogram of the front between distinct holes (horizontal lag). gamma is withheld in unsupported bins.
+CREATE TABLE IF NOT EXISTS weathering_front_variogram (
+    receipt_id              INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
+    config_version          TEXT    NOT NULL,
+    bin_index               INTEGER NOT NULL CHECK (bin_index >= 0),
+    lag_from_m              REAL    NOT NULL,
+    lag_to_m                REAL    NOT NULL CHECK (lag_to_m > lag_from_m),
+    n_hole_pairs            INTEGER NOT NULL CHECK (n_hole_pairs >= 0),
+    gamma                   REAL    CHECK (gamma IS NULL OR gamma >= 0),
+    supported               INTEGER NOT NULL CHECK (supported IN (0,1)),
+    PRIMARY KEY (receipt_id, config_version, bin_index),
+    CHECK (supported = 0 OR gamma IS NOT NULL)
+);
+
+-- Hole-bootstrap percentile band of the bin semivariance of one experiment. n_replicates counts the replicates in which
+-- the bin had positive weight; the other replicates are skipped for that bin.
+CREATE TABLE IF NOT EXISTS bootstrap_gamma_bands (
+    experiment_id           INTEGER NOT NULL REFERENCES variogram_experiments (experiment_id),
+    bin_index               INTEGER NOT NULL CHECK (bin_index >= 0),
+    n_replicates            INTEGER NOT NULL CHECK (n_replicates >= 0),
+    gamma_lower             REAL,
+    gamma_upper             REAL,
+    gamma_median            REAL,
+    PRIMARY KEY (experiment_id, bin_index),
+    CHECK (gamma_lower IS NULL OR gamma_upper IS NULL OR gamma_lower <= gamma_upper)
+);

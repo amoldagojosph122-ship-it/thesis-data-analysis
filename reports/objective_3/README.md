@@ -3,7 +3,7 @@
 Indicator geostatistics, machine learning and hybrid occurrence models at the Kambale deposit. The stage reads Objective 1 (geology, labels, geometry) and Objective 2 (support and the continuity handoff) read-only and writes database/kambale_obj3_models.sqlite.
 
 Current status: exit conditions met.
-Handoff to Objective 4: out-of-fold predictions and failure masks frozen.
+Handoff to Objective 4: out-of-fold predictions and failure masks frozen for both split plans.
 Objective 2 continuity handoff: NOT_IDENTIFIABLE (candidate family NONE).
 
 Contents:

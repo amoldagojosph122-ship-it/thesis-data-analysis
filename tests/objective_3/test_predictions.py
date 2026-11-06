@@ -3,12 +3,11 @@
 import pytest
 
 
-def test_every_completed_run_covers_every_test_interval(o3_ro, split_plan_id):  # G09
-    for r in o3_ro.execute("SELECT training_run_id, fold_id FROM training_runs WHERE split_plan_id = ?",
-                           (split_plan_id,)).fetchall():
+def test_every_completed_run_covers_every_test_interval(o3_ro):  # G09
+    for r in o3_ro.execute("SELECT training_run_id, split_plan_id, fold_id FROM training_runs").fetchall():
         test_ids = {x[0] for x in o3_ro.execute(
             "SELECT observation_id FROM split_membership WHERE split_plan_id = ? AND fold_id = ? AND role = 'TEST'",
-            (split_plan_id, r["fold_id"]))}
+            (r["split_plan_id"], r["fold_id"]))}
         pred = {x[0] for x in o3_ro.execute(
             "SELECT observation_id FROM predictions_oof WHERE training_run_id = ?", (r["training_run_id"],))}
         fail = {x[0] for x in o3_ro.execute(
@@ -34,12 +33,25 @@ def test_predicted_class_follows_the_recorded_threshold(o3_ro):
     assert bad == 0
 
 
-def test_selected_m2_is_one_run_per_fold(o3_ro, split_plan_id):
-    for (fold,) in o3_ro.execute("SELECT DISTINCT fold_id FROM training_runs WHERE split_plan_id = ?",
-                                 (split_plan_id,)):
-        n = o3_ro.execute("SELECT COUNT(*) FROM training_runs WHERE split_plan_id = ? AND fold_id = ? AND selected = 1",
-                          (split_plan_id, fold)).fetchone()[0]
-        assert n == 1
+def test_selection_records_per_fold_for_both_tiers(o3_ro):
+    """Per split plan and fold: both composites are selected, and one underlying member of each pair is selected."""
+    plans = [r[0] for r in o3_ro.execute("SELECT split_plan_id FROM spatial_split_plans")]
+    assert len(plans) == 2
+    for plan in plans:
+        folds = [r[0] for r in o3_ro.execute("SELECT DISTINCT fold_id FROM training_runs WHERE split_plan_id = ?", (plan,))]
+        assert folds
+        for fold in folds:
+            composites = [r[0] for r in o3_ro.execute(
+                "SELECT candidate_run_id FROM training_runs WHERE split_plan_id = ? AND fold_id = ? AND selected = 1 "
+                "AND family_id IN ('M2_SEL','M2_WF_SEL') ORDER BY candidate_run_id", (plan, fold)).fetchall()]
+            assert composites == ["M2_SEL", "M2_WF_SEL"]
+            plain = o3_ro.execute(
+                "SELECT COUNT(*) FROM training_runs WHERE split_plan_id = ? AND fold_id = ? AND selected = 1 "
+                "AND candidate_run_id IN ('M2_RF','M2_HGB')", (plan, fold)).fetchone()[0]
+            weathered = o3_ro.execute(
+                "SELECT COUNT(*) FROM training_runs WHERE split_plan_id = ? AND fold_id = ? AND selected = 1 "
+                "AND candidate_run_id IN ('M2_RF_WF','M2_HGB_WF')", (plan, fold)).fetchone()[0]
+            assert plain == 1 and weathered == 1
 
 
 def test_no_outer_performance_column_is_stored(o3_ro):

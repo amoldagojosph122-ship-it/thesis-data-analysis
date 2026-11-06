@@ -1,6 +1,6 @@
 # Objective 2: blocked, skipped and deferred items
 
-Gate results are from VERIFY run 6. Every WARN, SKIP, DOWNGRADE and STOP is listed.
+Gate results are from VERIFY run 12. Every WARN, SKIP, DOWNGRADE and STOP is listed.
 
 ## Gates with a warning or a skip
 
@@ -9,6 +9,7 @@ Gate results are from VERIFY run 6. Every WARN, SKIP, DOWNGRADE and STOP is list
 | G09 Declared orientation | WARN | survey orientations [(-60.0, 90.0)]; declared (-60.0, 90.0); uniform across holes = True |
 | G10 Class imbalance | WARN | lines below 10 per cent positive: NOM_N1113000 0.041 |
 | G12 Directional support | WARN | skipped directions: LAT_AZ_000, LAT_AZ_045, LAT_AZ_135 |
+| G16 Leave-one-line-out stability | WARN | 2 fits are unstable; 10 refit rows for 5 lines (two models each); of which configuration 5 (fresh rock): 2 (see RUN_REPORT 5.8) |
 | G21 Relative depth only | WARN | 5 of 5 sections labelled RELATIVE_DEPTH; no collar elevation is available, so the relative-depth limitation is always reported |
 
 ## Sensitivity entries not run

@@ -6,4 +6,4 @@ gate results and the Objective 4 handoff to database/kambale_obj3_models.sqlite.
 """
 
 O3_CODE_VERSION = "3.0.0"
-O3_SCHEMA_VERSION = "O3-SCHEMA-2026.11.05-1"
+O3_SCHEMA_VERSION = "O3-SCHEMA-2026.11.06-2"

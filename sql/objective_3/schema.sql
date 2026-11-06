@@ -1,5 +1,5 @@
 -- Objective 3 schema: indicator geostatistics, machine learning and hybrid occurrence models.
--- O3-SCHEMA-2026.11.05-1. Objective 3 reads Objective 1 and Objective 2 read-only and writes only this database.
+-- O3-SCHEMA-2026.11.06-2. Objective 3 reads Objective 1 and Objective 2 read-only and writes only this database.
 -- Cross-database foreign keys cannot be enforced by SQLite; receipts and gates carry the cross-file checks.
 
 PRAGMA foreign_keys = ON;
@@ -144,7 +144,8 @@ CREATE TABLE IF NOT EXISTS feature_registry (
 CREATE TABLE IF NOT EXISTS spatial_split_plans (
     split_plan_id  TEXT    PRIMARY KEY,
     receipt_id     INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
-    method         TEXT    NOT NULL CHECK (method IN ('LEAVE_ONE_DRILL_LINE_OUT','GROUP_K_FOLD_BY_HOLE')),
+    method         TEXT    NOT NULL CHECK (method IN ('LEAVE_ONE_DRILL_LINE_OUT','GROUP_K_FOLD_BY_HOLE',
+                                                   'INTERLEAVED_HOLES_WITHIN_LINE')),
     n_folds        INTEGER NOT NULL CHECK (n_folds >= 2),
     primary_plan   INTEGER NOT NULL CHECK (primary_plan IN (0,1)),
     seed           INTEGER NOT NULL,

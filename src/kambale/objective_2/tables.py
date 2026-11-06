@@ -29,6 +29,10 @@ TABLES = OrderedDict([
     ("O2-T04", ("Handoff contract and open items", "O2_T04_handoff_contract", "O2-T04.sql",
                 "The handoff is for Objective 3 only. Full-data parameters are never supplied for test folds, and "
                 "every open item is listed with its status.")),
+    ("O2-T05", ("Weathering front continuity and interpolation check", "O2_T05_weathering_continuity", "O2-T05.sql",
+                "Front = shallowest interval with weathering code mw or sw, depth in metres relative to collar. Interpolation "
+                "is inverse-distance (power 2, 8 nearest holes); skill ratio = IDW RMSE / training-mean RMSE; interpolable when "
+                "the ratio is at most 0.8. Configuration 5 is a sensitivity stage and writes no handoff.")),
 ])
 WIDE_TEXT = {"detail", "reason", "rationale", "projection_basis"}
 TEX_SPECIAL = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_", "{": r"\{",

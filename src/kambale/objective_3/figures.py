@@ -11,6 +11,7 @@ cividis colormap.
 
 from __future__ import annotations
 
+import json
 import textwrap
 from collections import OrderedDict
 from pathlib import Path
@@ -28,7 +29,6 @@ from matplotlib.ticker import MaxNLocator  # noqa: E402
 from kambale.objective_3.config import (O3_DB_PATH, O3_FIGURE_DIR, O3_SQL_DIR, PROJECT_ROOT, StopError, sha256_bytes,
                                         utc_now)  # noqa: E402
 from kambale.objective_3.db import connect_o3  # noqa: E402
-from kambale.objective_2.fitting import gamma_model  # noqa: E402
 
 BLUE = "#0072B2"
 GREEN = "#009E73"
@@ -182,8 +182,7 @@ def _m1(rows: dict, receipt: dict):
     preds, status = rows["m1_predictions"], rows["m1_status"]
     if not preds:
         reasons = "; ".join(f"F{s['fold_id']}: {s['status']} ({s['reason']})" for s in status) or "no M1 training rows"
-        raise NotSupported("M1 indicator kriging produced no out-of-fold prediction because no training-only variogram "
-                           "was both identified and stable: " + reasons)
+        raise NotSupported("M1 indicator kriging produced no out-of-fold prediction: " + reasons)
     folds = sorted({p["fold_id"] for p in preds})
     fig, axes = plt.subplots(1, len(folds), figsize=(7.6, 3.9), sharey=True)
     fig.subplots_adjust(left=0.08, right=0.9, top=0.84, bottom=0.2, wspace=0.12)
@@ -203,10 +202,10 @@ def _m1(rows: dict, receipt: dict):
     if sc is not None:
         cax = fig.add_axes([0.92, 0.2, 0.012, 0.64])
         fig.colorbar(sc, cax=cax, label="P(I=1) out-of-fold")
-    _footer(fig, receipt, "simple indicator kriging; training-only variogram in each fold; clipped values marked")
+    _footer(fig, receipt, "simple indicator kriging; covariance chosen by inner CV in each fold; clipped values marked")
     return fig, _caption(receipt, "M1 simple indicator kriging out-of-fold probabilities at held-out intervals. "
-                                  "The variogram and kriging neighbourhood are estimated inside each outer training fold. "
-                                  "A clipped value was forced into [0,1] and is counted in O3-T03.")
+                                  "The covariance is chosen by whole-hole inner cross-validation inside each outer training "
+                                  "fold; a pure-nugget choice gives the training prevalence. Clipped values are counted in O3-T03.")
 
 
 def _section_scatter(ax, sub, title, vmin=0.0, vmax=1.0):
@@ -293,49 +292,39 @@ def _m3_sections(rows: dict, receipt: dict):
                                   "variogram is supported; otherwise the panel is the explicit ML-only fallback.")
 
 
-def _residual_variograms(rows: dict, receipt: dict):
-    bins, fits, status = rows["residual_bins"], rows["residual_fits"], rows["fold_status"]
-    if not bins:
-        raise NotSupported("no residual variogram bins were stored")
-    folds = sorted({b["fold_id"] for b in bins})
-    fig, axes = plt.subplots(1, len(folds), figsize=(7.8, 3.8), sharey=False)
-    fig.subplots_adjust(left=0.09, right=0.98, top=0.8, bottom=0.2, wspace=0.3)
-    axes = np.atleast_1d(axes)
-    for ax, fold in zip(axes, folds):
-        bb = [b for b in bins if b["fold_id"] == fold]
-        supp = [b for b in bb if b["supported"]]
-        under = [b for b in bb if not b["supported"] and b["n_pairs"] > 0]
-        ff = [f for f in fits if f["fold_id"] == fold]
-        variance = ff[0]["residual_variance"] if ff else 0.0
-        if supp:
-            ax.plot([b["lag_centre_m"] for b in supp], [b["gamma"] for b in supp], "o", ms=3.2, color=BLUE)
-        if under:
-            ax.plot([b["lag_centre_m"] for b in under], [0.0] * len(under), "x", ms=3.6, color=NEUTRAL, mew=0.8,
-                    ls="none")
-        ax.axhline(variance, ls="--", lw=0.8, color=NEUTRAL)
-        h = np.linspace(0.0, max(b["lag_centre_m"] for b in bb) * 1.02, 200)
-        drawn = 0
-        for f in ff:
-            if f["fit_status"] == "FITTED":
-                curve = gamma_model(h, f["model"], f["nugget"], f["structured_sill"], f["range_m"])
-                ax.plot(h, curve, ls="-" if f["model"] == "spherical" else ":", lw=1.0,
-                        color=GREEN if f["model"] == "spherical" else ORANGE, label=f"{f['model']} fitted")
-                drawn += 1
-        st = next((s for s in status if s["fold_id"] == fold), None)
-        ax.set_title(f"Fold {fold} · {'fallback' if st and st['status'] == 'FALLBACK' else 'hybrid'}", loc="left",
-                     fontsize=6.6)
-        ax.set_xlabel("Lag (m)")
-        if drawn:
-            ax.legend(loc="upper right", fontsize=5.6)
-    axes[0].set_ylabel("Residual semivariance γ(h)")
-    note = "dashed line is the residual variance of that fold; crosses are under-powered bins"
-    if not any(f["fit_status"] == "FITTED" for f in fits):
-        note += "; no residual variogram model is fitted in any fold"
-    _footer(fig, receipt, note)
-    return fig, _caption(receipt, "Training-only residual variogram diagnostics for the hybrid model, one panel per outer "
-                                  "fold. The residuals are the approved indicator minus the inner cross-fitted M2 trend. "
-                                  "No test label enters the residual variogram; when no model is fitted the hybrid is "
-                                  "recorded as an ML-only fallback.")
+def _covariance_trials(rows: dict, receipt: dict):
+    trials = rows["covariance_trials"]
+    if not trials:
+        raise NotSupported("no covariance trials were stored for M1 or M3")
+    fams = [("M1_IK", "M1 indicator kriging"), ("M3_HYBRID", "M3 residual kriging")]
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.7))
+    fig.subplots_adjust(left=0.09, right=0.98, top=0.8, bottom=0.2, wspace=0.28)
+    nugget_colors = {0.25: BLUE, 0.5: GREEN, 0.75: VERMILLION}
+    for ax, (fam, name) in zip(axes, fams):
+        sub = [t for t in trials if t["family_id"] == fam]
+        for t in sub:
+            cov = json.loads(t["hyperparameters_json"])
+            fold = int(t["fold_id"])
+            marker = FOLD_MARKERS[(fold - 1) % len(FOLD_MARKERS)]
+            if cov.get("covariance") == "PURE_NUGGET":
+                ax.axhline(t["inner_cv_score"], color=FOLD_COLORS[(fold - 1) % len(FOLD_COLORS)], ls="--", lw=0.7)
+                continue
+            ax.scatter(cov["range_m"], t["inner_cv_score"], s=34 if t["selected"] else 14, marker=marker,
+                       color=nugget_colors.get(float(cov["nugget_fraction"]), NEUTRAL),
+                       edgecolors=INK if t["selected"] else "none", linewidths=0.8, zorder=3)
+        ax.set_xscale("log")
+        ax.set_xlabel("Practical range (m, log scale)")
+        ax.set_title(name, loc="left", fontsize=7.2)
+    axes[0].set_ylabel("Inner-CV mean log loss")
+    handles = [Line2D([0], [0], marker="o", ls="none", color=c, label=f"nugget fraction {k:g}")
+               for k, c in nugget_colors.items()]
+    handles += [Line2D([0], [0], ls="--", color=FOLD_COLORS[k], label=f"PURE_NUGGET fold {k + 1}")
+                for k in range(len(FOLD_COLORS))]
+    axes[1].legend(handles=handles, loc="upper right", fontsize=5.2, ncol=2)
+    _footer(fig, receipt, "covariance grid chosen by whole-hole inner CV; outlined points are the selected covariances")
+    return fig, _caption(receipt, "Covariance selection for M1 and M3 by whole-hole inner cross-validation, one marker per "
+                                  "grid point and outer fold. Dashed lines are the pure-nugget score of each fold; a "
+                                  "pure-nugget choice means no spatial covariance was supported.")
 
 
 FIGURES = OrderedDict([
@@ -345,7 +334,7 @@ FIGURES = OrderedDict([
     ("O3-F03", ("M1 indicator-kriging out-of-fold probabilities", "O3_F03_m1_probabilities", _m1, "O3-F03.sql")),
     ("O3-F04", ("M2 out-of-fold probability sections", "O3_F04_m2_sections", _m2_sections, "O3-F04.sql")),
     ("O3-F05", ("M3 hybrid or fallback probability section", "O3_F05_m3_sections", _m3_sections, "O3-F05.sql")),
-    ("O3-F06", ("Training-only residual variogram diagnostics", "O3_F06_residual_variograms", _residual_variograms,
+    ("O3-F06", ("Inner-CV covariance selection for M1 and M3", "O3_F06_covariance_selection", _covariance_trials,
                 "O3-F06.sql")),
 ])
 
