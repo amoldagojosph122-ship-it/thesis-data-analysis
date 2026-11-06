@@ -1,16 +1,18 @@
-# Results notebook: how to run
+# Thesis notebooks: how to run
 
-This folder holds the supervisor-facing results notebook for the Kambale thesis.
+This folder holds the notebooks that present the Kambale thesis results.
 
 | File | What it is |
 |---|---|
-| `build_notebook.py` | The source. All markdown and code cells, and the mathematical notes, are defined here so that they can be reviewed in git. |
-| `Kambale_Thesis_Results.ipynb` | The generated notebook. It is committed **without outputs**. |
-| `MATH_NOTES.md` | The mathematical notes as a standalone document, generated from the same strings as the notebook. |
-| `_check_queries.py` | Runs every SQL query and code cell of the notebook against the databases (read-only), without the helper package. Use it after changing any query. |
-| `.gitignore` | Ignores `output/`. |
+| `Kambale_Thesis_Results.ipynb` | The results notebook for supervisors. Five objectives, each with the research question, the methods and settings, live results, key figures and a summary. All numbers are read from the databases when the notebook runs. |
+| `Kambale_Technical_Appendix.ipynb` | The companion technical appendix. It documents how the results were checked (software environment, settings and input checksums, automated checks) and how to rerun the full analysis. |
+| `MATH_NOTES.md` | The full mathematical notes, generated from the same strings as the results notebook. Each formula is tied to the module that implements it. |
+| `build_notebook.py` | The source of the two notebooks and `MATH_NOTES.md`. All markdown and code cells are defined here so that they can be reviewed in git. |
+| `_check_queries.py` | Runs every SQL query and code cell of both notebooks against the databases (read-only), without the helper package. Use it after changing any query. |
+| `prep/` | Local only and gitignored. The author's private preparation notebook (`prep/Presentation_Prep.ipynb`), built by `prep/build_prep.py` from an earlier version of the builder. It holds the full detail and the likely questions. It is not for distribution. |
+| `.gitignore` | Ignores `output/` and `prep/`. |
 
-Do not edit `Kambale_Thesis_Results.ipynb` or `MATH_NOTES.md` by hand. Change `build_notebook.py` and regenerate.
+Do not edit the generated `.ipynb` files or `MATH_NOTES.md` by hand. Change `build_notebook.py` and regenerate.
 
 ## 1. Install
 
@@ -20,68 +22,66 @@ pip install -e ".[notebook]"
 
 The `notebook` extra supplies Jupyter, nbformat, nbclient, papermill and ipykernel.
 
-## 2. Regenerate the notebook and the mathematical notes
+## 2. Regenerate the notebooks and the mathematical notes
 
 ```bash
 python notebooks/build_notebook.py
 ```
 
-This overwrites `Kambale_Thesis_Results.ipynb` and `MATH_NOTES.md`. It needs nbformat only for the notebook; the
-mathematical notes are written from the same strings.
+This overwrites `Kambale_Thesis_Results.ipynb`, `Kambale_Technical_Appendix.ipynb` and `MATH_NOTES.md`. The notebooks are
+written without outputs.
 
-To test every query without running the notebook:
+To test every query and code cell of both notebooks without running them:
 
 ```bash
 python notebooks/_check_queries.py
 ```
 
-## 3. Mode A: stored results (`MODE = "present"`)
-
-Mode A shows the results stored in the databases. It queries the databases read-only, reads the configurations and
-run reports, and checks the gates on a copy of the repository. It takes a few minutes.
+## 3. Run the results notebook
 
 ```bash
 mkdir -p notebooks/output
-papermill notebooks/Kambale_Thesis_Results.ipynb notebooks/output/Results_present.ipynb -p MODE present
-jupyter nbconvert --to html notebooks/output/Results_present.ipynb --no-input
+python -m papermill notebooks/Kambale_Thesis_Results.ipynb notebooks/output/Kambale_Thesis_Results.ipynb
+python -m nbconvert --to html notebooks/output/Kambale_Thesis_Results.ipynb
 ```
 
-The first command executes the notebook and writes the executed copy to `notebooks/output/`. The second writes an HTML
-page **without code cells**, which is the version to show a supervisor.
+The first command executes the notebook and writes the executed copy to `notebooks/output/`. It takes under a minute.
+The second writes an HTML page with the code visible. To show a supervisor a page without code, add `--no-input` to the
+`nbconvert` command.
 
-For a version with the code visible, omit `--no-input`:
+## 4. Run the technical appendix
 
 ```bash
-jupyter nbconvert --to html notebooks/output/Results_present.ipynb
+python -m papermill notebooks/Kambale_Technical_Appendix.ipynb notebooks/output/Kambale_Technical_Appendix.ipynb
+python -m nbconvert --to html notebooks/output/Kambale_Technical_Appendix.ipynb
 ```
 
-## 4. Mode B: reproduction (`MODE = "reproduce"`)
+By default the appendix runs the automated checks (`RUN_CHECKS = True`) on a copy of the repository and does not rerun
+the analysis. The checks take a few minutes.
 
-Mode B re-runs the Objective 1 to 5 pipelines on a copy of the repository and compares the regenerated tables and figures
-with the registered ones. It takes **about 15 minutes**. It works on a copy and never changes the real databases.
+## 5. Rerun the full analysis
 
 ```bash
-papermill notebooks/Kambale_Thesis_Results.ipynb notebooks/output/Results_reproduce.ipynb -p MODE reproduce
+python -m papermill notebooks/Kambale_Technical_Appendix.ipynb notebooks/output/Kambale_Technical_Appendix_rerun.ipynb -p RUN_RERUN True
 ```
 
-The notebook reports the reproduction verdict and its scope in a highlighted box. Mode B does not change the committed
-notebook or the results in `database/`.
+This reruns every stage of Objectives 1 to 5 on a copy of the repository and compares the regenerated tables and figures
+with the stored ones. It takes **about 15 minutes**. It works on a copy and never changes the stored databases. The
+appendix reports the verdict and its scope in a highlighted box.
 
-To skip the gate run inside Mode A or Mode B (for quick test runs), add `-p RUN_GATES False`.
-
-## 5. Data privacy
+## 6. Data privacy
 
 - The databases hold row-level drill-hole data and are not in the repository (see the root `.gitignore`).
-- **The committed notebook has no outputs.** It contains code and text only.
+- **The committed notebooks have no outputs.** They contain code and text only.
 - **`notebooks/output/` holds executed copies, and those contain query results** (counts, metrics, scenario tables and
   figure paths). The folder is listed in `notebooks/.gitignore`, so it is not committed. Do not copy executed notebooks or
   HTML pages out of the project without checking them first.
-- The notebook reads specification and report files at run time. It does not copy them into the notebook source, so the
-  committed notebook does not contain the text of the specifications.
+- `notebooks/prep/` holds the author's private preparation notes. It is gitignored and must not be shared.
+- The notebooks read specification and report files at run time. They do not copy them into the notebook source.
 
-## 6. Conventions
+## 7. Conventions
 
-- Numbers in the notebook come from queries or from files read when it runs. They are not typed in.
+- Numbers in the notebooks come from queries or from files read when they run. They are not typed in.
 - Every formula is in `build_notebook.py` next to the module and function that implements it. The same formulas appear in
-  `MATH_NOTES.md`.
-- Relative links to the run reports (`../reports/...`) work when the notebook is opened from the `notebooks/` folder.
+  `MATH_NOTES.md`, with the implementation references. The results notebook shows the formulas without those references.
+- Relative links to the run reports (`../reports/...`) work when the notebooks are opened from the `notebooks/` folder.

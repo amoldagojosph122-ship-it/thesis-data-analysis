@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """Test every SQL query and every code cell of the results notebook without the helper package.
 
-The check imports the cell list from build_notebook.py, then executes the code cells in order against the real
-databases. Queries run through a local read-only wrapper (sqlite3 with uri mode=ro). The helper functions of
+The check imports the two cell lists from build_notebook.py (results notebook and technical appendix), then executes
+the code cells of each notebook in order, each in its own fresh namespace, against the real databases. Queries run through a local read-only wrapper (sqlite3 with uri mode=ro). The helper functions of
 kambale.notebook (environment, gates, receipts, reproduce) are replaced by stubs, so this check does not depend on
 their implementation; they are tested when the notebook itself is executed.
 
@@ -29,7 +29,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 sys.path.insert(0, str(HERE))
 
-import build_notebook  # noqa: E402  (the cell list is defined at import time; nothing is written)
+import build_notebook  # noqa: E402  (the cell lists are defined at import time; nothing is written)
 
 DB = {
     "o1": REPO / "database" / "kambale_thesis.sqlite",
@@ -101,6 +101,7 @@ def build_stub_package(real_helpers: bool = False) -> None:
     paths.DB_PATHS = {k: v for k, v in DB.items()}
     paths.OUTPUT_DIRS = {k: {"figures": v, "tables": v, "reports": v} for k, v in FIGURES.items()}
     paths.CONFIG_FILES = {}
+    paths.O1_FIGURE_FOLDERS = (REPO / "figures" / "objective_1", REPO / "figures" / "objective_2")
     readonly = types.ModuleType("kambale.notebook.readonly")
     readonly.query = ro_query
     readonly.list_tables = lambda key: []
@@ -130,6 +131,31 @@ def build_stub_package(real_helpers: bool = False) -> None:
         sys.modules[name] = module
 
 
+def run_cells(label: str, cells, log_rows_label: str, failures: list[str]) -> int:
+    """Execute the code cells of one notebook in a fresh namespace. Returns the number of code cells run."""
+    namespace: dict = {"__name__": "__notebook_check__"}
+    count = 0
+    LOG_ROWS.append(f"######## {label} ########")
+    for index, (kind, source, tags) in enumerate(cells):
+        if kind != "code":
+            continue
+        count += 1
+        if "parameters" in tags:
+            exec(compile(source, f"<{label} cell {index}>", "exec"), namespace)
+            # the slow steps are not run here; the full run is done when the notebook is executed
+            namespace["RUN_CHECKS"] = False
+            namespace["RUN_RERUN"] = False
+            continue
+        first = source.strip().splitlines()[0][:70]
+        try:
+            exec(compile(source, f"<{label} cell {index}>", "exec"), namespace)
+        except Exception as exc:  # report every failing cell, then continue with the next
+            failures.append(f"{label} cell {index} ({first}): {type(exc).__name__}: {exc}")
+            LOG_ROWS.append(f"!! {label} cell {index} failed: {exc}")
+            LOG_ROWS.append(traceback.format_exc(limit=3))
+    return count
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     default_log = Path(tempfile.gettempdir()) / "kambale_check_queries.log"
@@ -144,27 +170,15 @@ def main() -> int:
         return 1
     build_stub_package(real_helpers=args.real_helpers)
 
-    namespace: dict = {"__name__": "__notebook_check__"}
     failures: list[str] = []
-    for index, (kind, source, tags) in enumerate(build_notebook.CELLS):
-        if kind != "code":
-            continue
-        if "parameters" in tags:
-            exec(compile(source, f"<cell {index}>", "exec"), namespace)
-            namespace["RUN_GATES"] = False  # gates are slow; the full run is done when the notebook is executed
-            namespace["MODE"] = "present"
-            continue
-        first = source.strip().splitlines()[0][:70]
-        try:
-            exec(compile(source, f"<cell {index}>", "exec"), namespace)
-        except Exception as exc:  # report every failing cell, then continue with the next
-            failures.append(f"cell {index} ({first}): {type(exc).__name__}: {exc}")
-            LOG_ROWS.append(f"!! cell {index} failed: {exc}")
-            LOG_ROWS.append(traceback.format_exc(limit=3))
-
+    counts = {
+        "results notebook": run_cells("results", build_notebook.RESULTS_CELLS, "results", failures),
+        "technical appendix": run_cells("appendix", build_notebook.APPENDIX_CELLS, "appendix", failures),
+    }
     Path(args.log).write_text("\n".join(LOG_ROWS) + "\n\n==== rendered Markdown and HTML ====\n"
                               + "\n\n".join(DISPLAY_LOG), encoding="utf-8")
-    print(f"code cells checked: {sum(1 for k, _, _ in build_notebook.CELLS if k == 'code')}")
+    for name, count in counts.items():
+        print(f"code cells checked in the {name}: {count}")
     print(f"read-only queries executed: {QUERY_COUNT['n']}")
     print(f"log written: {args.log}")
     if failures:

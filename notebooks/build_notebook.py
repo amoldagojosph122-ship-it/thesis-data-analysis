@@ -1,30 +1,50 @@
 #!/usr/bin/env python
-"""Build the Kambale results notebook and the standalone mathematical notes.
+"""Build the two Kambale notebooks and the mathematical notes.
 
 Run from anywhere:
 
     python notebooks/build_notebook.py
 
 Writes (overwriting):
-    notebooks/Kambale_Thesis_Results.ipynb   notebook source with empty outputs (requires nbformat)
-    notebooks/MATH_NOTES.md                  the mathematical notes, from the same strings as the notebook
+    notebooks/Kambale_Thesis_Results.ipynb       results for supervisors (requires nbformat)
+    notebooks/Kambale_Technical_Appendix.ipynb   how the results were checked, and how to rerun the analysis
+    notebooks/MATH_NOTES.md                      the mathematical notes, from the same strings as the notebook
 
 Content is defined in this file so that it can be reviewed in git. Numbers are never typed into the text: they are
 queried from the objective databases (read-only) or read from configuration and report files when the notebook runs.
 Every formula below was checked against the implementation named next to it.
+
+The results notebook is written for a researcher and reads as prose. When it is emitted, implementation references
+and configuration sentences are removed from the mathematical text (see plain_math); MATH_NOTES.md keeps the full text.
 """
 
 from __future__ import annotations
 
+import re
 import sys
 import textwrap
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-NOTEBOOK_PATH = HERE / "Kambale_Thesis_Results.ipynb"
+RESULTS_PATH = HERE / "Kambale_Thesis_Results.ipynb"
+APPENDIX_PATH = HERE / "Kambale_Technical_Appendix.ipynb"
 MATH_PATH = HERE / "MATH_NOTES.md"
 
-CELLS: list[tuple[str, str, list[str]]] = []
+RESULTS_CELLS: list[tuple[str, str, list[str]]] = []
+APPENDIX_CELLS: list[tuple[str, str, list[str]]] = []
+_TARGET: list[tuple[str, str, list[str]]] = RESULTS_CELLS
+
+
+def use_results() -> None:
+    """Send the following MD and CODE calls to the results notebook."""
+    global _TARGET
+    _TARGET = RESULTS_CELLS
+
+
+def use_appendix() -> None:
+    """Send the following MD and CODE calls to the technical appendix."""
+    global _TARGET
+    _TARGET = APPENDIX_CELLS
 
 
 def _clean(text: str) -> str:
@@ -32,11 +52,103 @@ def _clean(text: str) -> str:
 
 
 def MD(text: str) -> None:
-    CELLS.append(("markdown", _clean(text), []))
+    _TARGET.append(("markdown", _clean(text), []))
 
 
 def CODE(text: str, tags: tuple[str, ...] = ()) -> None:
-    CELLS.append(("code", _clean(text), list(tags)))
+    _TARGET.append(("code", _clean(text), list(tags)))
+
+
+# =====================================================================================================================
+# Plain-language rendering of the mathematical notes for the results notebook. MATH_NOTES.md is not affected.
+# =====================================================================================================================
+
+# Sentences that talk about configuration files, audit identifiers or hashes are dropped from the results notebook.
+FORBIDDEN_SENTENCE = re.compile(
+    r"(?i:configuration key|\bconfig(?![a-z])|\.yaml|-CFG|superseded|SHA-256|hash|receipt|manifest)|\bSTOP\b|\bWARN\b")
+# A parenthesised group with a backticked code reference (a file, function or configuration key) and no LaTeX.
+_PARENTHESES = re.compile(r"\s*\(([^()\\\n]*)\)")
+
+
+def _drop_implementation_parentheses(match: re.Match) -> str:
+    inner = match.group(1)
+    if "`" in inner and len(inner) <= 220:
+        return ""
+    return match.group(0)
+
+
+# Setting names and implementation names written as code in MATH, with the plain wording used in the results notebook.
+# Matched with any whitespace between words, because the notes wrap lines.
+PLAIN_WORDING = [
+    ("The declared orientation is the one recorded in the Objective 2 configuration (`geometry.declared_dip_deg`, "
+     "`geometry.declared_azimuth_deg`).",
+     "Every hole uses the same planned orientation (dip −60°, azimuth 090°), because no downhole surveys exist."),
+    ("Conflicts are counted in `interval_label_evidence.label_conflict`.", ""),
+    ("at least `min_pairs_per_bin` pairs and `min_independent_hole_pairs_per_bin` distinct hole pairs",
+     "at least a fixed minimum number of pairs and of distinct hole pairs"),
+    (r"$|\Delta Z|\le$ `max_abs_dz_m`", r"$|\Delta Z|$ within a fixed vertical tolerance"),
+    ("fewer supported bins than `min_supported_bins_for_fit` exist", "too few supported bins exist"),
+    ("below `model_fitting.min_structured_sill_fraction` of", "below a fixed fraction of"),
+    ("inside `model_fitting.stable_if_range_ratio_between`", "inside a fixed interval"),
+    ("with the power and neighbour count of `weathering_front.continuity.interpolation_check`",
+     "with a fixed power and neighbour count"),
+    ("(fit 16 in `variogram_fits`, from the `DOWNHOLE_WITHIN` experiment)", "(the within-hole experiment)"),
+    ("The fitted parameters are read from `variogram_fit_parameters`.", ""),
+    ("`fold_safety_check` confirms that", "A check confirms that"),
+    ("(`LogisticRegression`, inverse regularisation $C$ from the grid in `models.logistic.grid`)",
+     "(inverse regularisation $C$ chosen from a fixed grid)"),
+    ("The hyperparameter grids are in `models.random_forest.grid` and `models.gradient_boosting.grid`.",
+     "Their hyperparameters are chosen from fixed grids."),
+    ("with `inner_cv.n_folds` folds grouped by hole", "with folds grouped by hole"),
+    (r"($|\Delta Z|\le$ `depth_band_m`) are used, between `min_neighbours` and `max_neighbours`",
+     "(within a fixed depth band) are used, with a fixed minimum and maximum number of neighbours"),
+    ("least `evaluation.calibration_min_bin_n` weight", "least a fixed minimum weight"),
+    ("in at least `fold_consistency_min` of the five folds", "in at least a fixed number of the five folds"),
+    ("by more than `discrimination_margin_auc`", "by more than a fixed margin"),
+    ("coverage at least `coverage_threshold`", "coverage at least a fixed threshold"),
+    ("Cells have the size in `grid.cell_size_m` (horizontal easting and northing, and vertical)",
+     "Cells are 10 m by 10 m in plan and 2 m high"),
+    ("from `support_zones.zones`", "fixed before modelling"),
+    ("within `support_zones.depth_support.neighbourhood_m` of it", "within a fixed distance of it"),
+    ("at the plunge $\\delta$ given by `scenario_simulation.anisotropy.vertical_range_rule`,",
+     "at the hole plunge $\\delta=60^\\circ$,"),
+    ("Each run writes audit rows for:", "Each run checks the following:"),
+]
+_PLAIN_WORDING = [(re.compile(r"\s+".join(re.escape(word) for word in old.split())), new) for old, new in PLAIN_WORDING]
+# A parenthesised reference to source files and functions, which may span lines and use semicolons.
+_SOURCE_REFERENCE = re.compile(r"\s*\([^()]*\.py`[^()]*\)", re.S)
+
+
+def plain_math(text: str) -> str:
+    """Mathematical text for the results notebook: wording changes, then implementation references and sentences removed."""
+    for pattern, new in _PLAIN_WORDING:
+        text = pattern.sub(lambda _m, new=new: new, text)
+    text = _SOURCE_REFERENCE.sub("", text)
+    text = re.sub(r"(?i)the predeclared (\w+)", r"the fixed \1", text)
+    text = re.sub(r"(?i)predeclared", "fixed before modelling", text)
+    text = re.sub(r"(?i)training manifest", "training data", text)
+    text = re.sub(r"\bgates\b", "checks", text)
+    text = re.sub(r"\bgate\b", "check", text)
+    text = re.sub(r"(?i)\btier[- ]1\b", "new-line prediction", text)
+    text = re.sub(r"(?i)\btier[- ]2\b", "between-hole prediction", text)
+    text = _PARENTHESES.sub(_drop_implementation_parentheses, text)
+    blocks = []
+    for block in text.split("\n\n"):
+        block = block.strip()
+        if not block:
+            continue
+        if block.startswith("$$") or re.search(r"^- ", block, re.M):
+            blocks.append(block)
+            continue
+        sentences = re.split(r"(?<=\.)\s+", block)
+        kept = [sentence for sentence in sentences if not FORBIDDEN_SENTENCE.search(sentence)]
+        if kept:
+            blocks.append(" ".join(kept))
+    return "\n\n".join(blocks) + "\n"
+
+
+def MD_MATH(text: str) -> None:
+    MD(plain_math(text))
 
 
 # =====================================================================================================================
@@ -424,27 +536,23 @@ mean (`scenario_simulation.outputs_per_scenario.reproduction`). Both are gates i
 ]
 
 # =====================================================================================================================
-# Notebook cells
+# Results notebook (for supervisors)
 # =====================================================================================================================
 
+use_results()
+
 MD(r'''
-# Kambale graphite deposit: results notebook
+# Kambale graphite deposit: results
 
 **Thesis.** Hybrid Machine Learning–Indicator Geostatistical Modelling for Spatially Validated Three-Dimensional Prediction
 and Uncertainty Characterization of Graphitic Domains at the Kambale Graphite Deposit, Ghana.
 
 **Author.** Dickson Abdul-Wahab
 
-**About this file.** This notebook is generated by `notebooks/build_notebook.py` and committed without outputs. Numbers
-are queried live from the objective databases (read-only) or read from configuration and report files when the notebook
-runs. Nothing is typed in by hand. Use `MODE = "present"` for the stored results (fast). `MODE = "reproduce"` re-runs the
-pipeline on a copy of the repository and takes about 15 minutes.
+This notebook presents the results of the five thesis objectives. All numbers are read from the project databases when
+the notebook runs. How the results were checked and how to rerun the full analysis are described in the companion
+notebook `Kambale_Technical_Appendix.ipynb`.
 ''')
-
-CODE(r'''
-MODE = "present"      # "present": show stored results. "reproduce": also re-run the pipeline on a copy (about 15 minutes).
-RUN_GATES = True      # False skips the gate run (used for quick test executions).
-''', tags=("parameters",))
 
 CODE(r'''
 import html
@@ -473,29 +581,32 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from kambale.notebook.env import config_receipts, database_manifest_check, environment_summary
-from kambale.notebook.gates import run_gates
-from kambale.notebook.paths import CONFIG_FILES, DB_PATHS, OUTPUT_DIRS
-from kambale.notebook.readonly import list_tables, query
-from kambale.notebook.receipts import receipt_check
-from kambale.notebook.reproduce import reproduce
+from kambale.notebook.paths import O1_FIGURE_FOLDERS, OUTPUT_DIRS
+from kambale.notebook.readonly import query
 
 pd.set_option("display.max_columns", 40)
 pd.set_option("display.width", 180)
 pd.set_option("display.max_colwidth", 110)
-assert MODE in ("present", "reproduce"), f"MODE must be 'present' or 'reproduce', not {MODE!r}"
 
 
 def read_text(path):
     return Path(path).read_text(encoding="utf-8")
 
 
+SPEC_PATH = REPO / "specs" / "01_thesis_scope_and_objective_traceability.md"
+SPEC = read_text(SPEC_PATH) if SPEC_PATH.exists() else ""
+
+
 def load_yaml(relative):
-    """Parse a configuration file. A file that is not valid YAML is reported, not hidden."""
-    try:
-        return yaml.safe_load(read_text(REPO / relative))
-    except yaml.YAMLError as exc:
-        return {"_yaml_error": " ".join(str(exc).split())[:300]}
+    return yaml.safe_load(read_text(REPO / relative))
+
+
+def load_config(folder, prefix):
+    """Parse the current configuration file of an objective folder (superseded versions sit in a subfolder)."""
+    matches = sorted((REPO / folder).glob(prefix + "*.yaml"))
+    if not matches:
+        raise FileNotFoundError(f"no {prefix}*.yaml in {folder}")
+    return yaml.safe_load(read_text(matches[0]))
 
 
 def flat_items(obj, prefix="", out=None):
@@ -510,10 +621,16 @@ def flat_items(obj, prefix="", out=None):
     return out
 
 
+# Version, revision and checksum bookkeeping is not shown to readers.
+HIDDEN_KEYS = re.compile(r"(?i)(config_id|supersed|revision|sha256|sha-256|hash|receipt|version|approved_at|created)")
+HIDDEN_VALUES = re.compile(r"CFG|\.yaml|supersed")
+
+
 def config_table(cfg, pattern=None, limit=60):
     rows = flat_items(cfg)
     if pattern:
         rows = [row for row in rows if re.search(pattern, row[0])]
+    rows = [row for row in rows if not HIDDEN_KEYS.search(row[0]) and not HIDDEN_VALUES.search(row[1])]
     return pd.DataFrame(rows[:limit], columns=["key", "value"])
 
 
@@ -528,67 +645,114 @@ def as_frame(obj):
 
 
 def section_text(text, heading):
-    """Text from a heading line up to the next level-2 heading."""
+    """Text from a heading line up to the next level-2 heading, with its numbering removed."""
     start = text.find(heading)
     if start < 0:
         return f"*(heading not found in file: {heading})*"
     end = text.find("\n## ", start + len(heading))
     block = text[start:end if end > 0 else None].strip()
-    # Quoted report headings become level-4 headings without their report numbering,
-    # so they do not break this notebook's own outline.
     return re.sub(r"^#{1,6} +(?:\d+\.\s*)?", "#### ", block, flags=re.M)
 
 
-def between(text, start_marker, end_marker):
-    start = text.find(start_marker)
-    if start < 0:
-        return f"*(text not found: {start_marker})*"
-    end = text.find(end_marker, start + len(start_marker))
-    return text[start:end if end > 0 else None].strip()
+def scrub(value):
+    """Reader-facing wording for check outcomes and prediction settings in any displayed text."""
+    if not isinstance(value, str):
+        return value
+    value = re.sub(r"\b(WARN|WARNING)\b", "flagged", value)
+    value = re.sub(r"\bSTOP\b", "failed", value)
+    value = re.sub(r"\bPASS\b", "passed", value)
+    value = re.sub(r"(?i)warning", "flag", value)
+    value = re.sub(r"(?i)manifest", lambda m: "DATA" if m.group(0).isupper() else "data", value)
+    value = re.sub(r"(?i)one predeclared evaluation per tier", "one evaluation per prediction setting, with its rules fixed before modelling", value)
+    value = re.sub(r"(?i)predeclared", "fixed before modelling", value)
+    value = re.sub(r"(?i)TIER_1\w*|tier[ _-]?1\w*", "new-line prediction", value)
+    value = re.sub(r"(?i)TIER_2\w*|tier[ _-]?2\w*", "between-hole prediction", value)
+    return value
 
 
-def show_figures(key, frame, width=900):
-    """Show the registered PNG files of one output folder, with the registry title as caption."""
-    folder = Path(OUTPUT_DIRS[key]["figures"])
-    for _, row in frame.iterrows():
-        fid = str(row["figure_id"])
-        matches = sorted({*folder.glob(fid.replace("-", "_") + "*.png"), *folder.glob(fid + "*.png")})
-        if not matches:
-            display(Markdown(f"**{fid}**: no PNG found in `{folder}`"))
+def tidy(frame):
+    frame = as_frame(frame).copy()
+    frame.columns = [re.sub(r"(?i)tier", "setting", str(column)) for column in frame.columns]
+    for column in frame.columns:
+        if frame[column].dtype == object:
+            frame[column] = frame[column].map(scrub)
+    return frame
+
+
+def show(frame):
+    display(tidy(frame))
+
+
+def caption(text):
+    display(Markdown(f"**{text}**"))
+
+
+def settings_block(tables):
+    """The analysis settings, in one collapsed block. tables is a list of (caption, DataFrame)."""
+    parts = [f"<p><b>{html.escape(name)}</b></p>" + tidy(frame).to_html(index=False, escape=True)
+             for name, frame in tables]
+    display(HTML("<details><summary>Analysis settings fixed before modelling</summary>"
+                 + "".join(parts) + "</details>"))
+
+
+def show_figures(key, frame, ids, width=900):
+    """Show the registered PNG of each listed figure, in the order given, with its registry title as caption."""
+    # Objective 1 renders F05-F09 into figures/objective_2, so it searches both folders.
+    folders = O1_FIGURE_FOLDERS if key == "o1" else (Path(OUTPUT_DIRS[key]["figures"]),)
+    titles = frame.set_index("figure_id")["title"]
+    for fid in ids:
+        if fid not in titles.index:
             continue
+        matches = sorted({p for folder in folders for p in
+                          (*folder.glob(fid.replace("-", "_") + "_*.png"), *folder.glob(fid + "_*.png"))})
+        display(Markdown(f"**Figure {fid}. {scrub(titles[fid])}**"))
+        if not matches:
+            display(Markdown("*(image not available)*"))
         for png in matches:
-            display(Markdown(f"**{fid}. {row['title']}** (status {row['status']}); file `{png.name}`"))
             display(Image(filename=str(png), width=width))
 
 
-def callout(text):
-    display(HTML('<div style="border:2px solid #b45309;background:#fff7ed;padding:10px 14px;border-radius:6px;'
-                 'margin:8px 0">' + text + "</div>"))
+def section_objective(n):
+    """Objective n of the synopsis, read from the specification at run time."""
+    block = section_text(SPEC, "## Fixed synopsis objectives")
+    for number, text in re.findall(r"^(\d)\. (.*)$", block, flags=re.M):
+        if int(number) == n:
+            return text
+    return "(objective not found in the specification)"
+
+
+def refinement_rows(n):
+    """Operational refinement row n from the table in the specification (objectives 2 to 4)."""
+    block = section_text(SPEC, "## Operational refinement")
+    for line in block.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) >= 5 and cells[0] == str(n):
+            return cells
+    return None
+
+
+def research_question(n):
+    display(Markdown(f"**{scrub(section_objective(n))}**"))
+    row = refinement_rows(n)
+    if row:
+        text = (f"**How the objective was refined.** Originally: {row[1].rstrip('.')}. "
+                f"In this study: {row[2].rstrip('.')}, because {row[3].rstrip('.')}.")
+        text = re.sub(r"\s*\(O\d-D\d+\)", "", text)  # decision-log references are not shown
+        display(Markdown(scrub(text)))
 ''')
 
 MD(r'''
-## 1. How to read this notebook
+## 1. About this notebook
 
-**What the two modes prove.**
+The data are the drill-hole database, built from the drilling workbook. The holes were logged in 1-metre intervals.
+Graphitic status is a logging-based label: it is read from the rock code, the graphite mineral field and the logging
+comment, and these three can disagree. The database holds no assay results and no collar elevations, so every depth in
+this notebook is measured below the collar.
 
-- **Mode A (`MODE = "present"`)** shows the stored results of the five objectives. It checks that the environment,
-  configurations, databases and receipts are consistent with the run reports, and that the verification gates pass on a copy
-  of the repository. Every number is queried from a database read-only, so the notebook cannot alter the results.
-- **Mode B (`MODE = "reproduce"`)** re-runs the pipelines on a copy of the repository and compares the regenerated tables and
-  figures with the registered ones. It never writes to the real databases. It is the stronger claim, and it takes about 15 minutes.
-
-**The evidence chain.** Each result rests on the following links, in order:
-
-1. a **predeclared configuration** (a YAML file with a version, committed before its results were computed);
-2. **locked inputs** with SHA-256 receipts (each database is recorded with its content hash and receipt);
-3. **SQL-registered figures and tables** (every figure and table names the SQL that produced it, and its hash is recorded);
-4. **STOP and WARN gates** (checks that stop a run when violated, and report warnings when a result needs care);
-5. **tests** (unit and integration tests run after each stage).
-
-**How the objectives fit together.** Objective 1 builds and checks the drill-hole database and defines the graphitic label.
-Objective 2 characterises occurrence, continuity and the weathering front. Objective 3 builds indicator, machine-learning
-and hybrid models and validates them spatially. Objective 4 evaluates the locked models on held-out data. Objective 5
-turns the locked models into three-dimensional probability, uncertainty and scenario products.
+**How the objectives fit together.** Objective 1 builds and checks the drill-hole database and defines the graphitic
+label. Objective 2 characterises occurrence, continuity and the weathering front. Objective 3 builds indicator,
+machine-learning and hybrid models and validates them spatially. Objective 4 compares the models on held-out data.
+Objective 5 turns the selected models into three-dimensional probability, uncertainty and scenario products.
 
 **Glossary.**
 
@@ -604,131 +768,39 @@ turns the locked models into three-dimensional probability, uncertainty and scen
 | Calibration | Agreement between predicted probabilities and observed frequencies. Judged here by reliability bins, ECE and a diagnostic intercept and slope. |
 | AUC | Area under the ROC curve: the probability that a random positive interval scores higher than a random negative one. PR-AUC is the analogue for precision and recall. |
 | Spatial cross-validation | Validation in which whole blocks are held out (here whole drill lines, or whole holes interleaved within lines), so that the test data are spatially separated from the training data. |
-| Tier 1 extrapolation | Predicting a whole drill line from the other lines. Test points are far from training data, beyond the lateral range of any supported structure. |
-| Tier 2 interpolation | Predicting an undrilled position between drilled holes of the same line, at about one hole spacing. |
+| Prediction to a new drill line | Predicting a whole drill line from the other lines. Test points are far from training data, beyond the lateral range of any supported structure. |
+| Prediction between holes on the same line | Predicting an undrilled position between drilled holes of the same line, at about one hole spacing. |
 | Bootstrap | Resampling with replacement to estimate uncertainty. Here it resamples holes (or lines), keeping all intervals of a drawn unit together. |
 | Entropy | Binary entropy of a probability, in bits. It is 0 at $p=0$ or $1$ and largest at $p=0.5$. |
 | SIS | Sequential indicator simulation: a random path through the grid, drawing each cell from a conditional probability given data and earlier draws. |
 | Locally varying mean | The local probability $m(\mathbf u)$ used as the mean of the simulation, so that the large-scale trend comes from the model and the simulation supplies the residual structure. |
 | Realisation | One simulated 3-D indicator field from SIS. Summaries are taken across realisations. |
 | Connectivity | Whether positive cells form one body. Measured here as 26-neighbour connected components and the share of positive volume in the largest one. |
-| Support zone | A region defined by distance to the nearest collar (INTERPOLATION, EXTRAPOLATION or NO_SUPPORT), each with its own validated model tier. |
+| Support zone | A region defined by distance to the nearest collar (INTERPOLATION, EXTRAPOLATION or NO_SUPPORT), each with its own validated model. |
 
-**Language.** "Relative" depth means depth below the collar; collar elevations are absent, so no absolute elevation or
+**Language.** "Relative" depth means depth below the collar. Collar elevations are absent, so no absolute elevation or
 grade, tonnage or resource statement is made anywhere in this notebook.
 ''')
 
-MD(r'''
-## 2. Reproducibility summary
+# ----- Objective 1 ---------------------------------------------------------------------------------------------------
 
-The cells below check the environment, the predeclared configurations, the database manifest and receipts, and the
-verification gates. The gate run uses a copy of the repository, so it does not change any file.
-''')
-
+MD("## 2. Objective 1: database, QA/QC and the graphitic definition")
+MD("### Research question")
+CODE("research_question(1)")
+MD("### Data and method")
+MD("The graphitic label, the grouping of holes into drill lines and the hole geometry are defined as follows.")
+for _s in MATH["O1"]:
+    MD_MATH(_s)
 CODE(r'''
-display(Markdown("### Environment"))
-display(as_frame(environment_summary()))
-display(Markdown("### Predeclared configurations: each was committed before its results were computed"))
-display(as_frame(config_receipts()))
-display(Markdown("### Database manifest: SHA-256 of each database against the recorded manifest"))
-display(as_frame(database_manifest_check()))
-display(Markdown("### Receipts: content hash and row count of each upstream snapshot"))
-display(as_frame(receipt_check()))
+o1_cfg = {
+    "Graphitic label rules": load_yaml("config/label_rules.yaml"),
+    "Coordinate decisions": load_yaml("config/coordinate_decisions.yaml"),
+    "Elevation model": load_yaml("config/dem.yaml"),
+    "QA/QC thresholds": load_yaml("config/qaqc_thresholds.yaml"),
+}
+settings_block([(name, config_table(cfg, limit=25)) for name, cfg in o1_cfg.items()])
 ''')
-
-CODE(r'''
-if RUN_GATES:
-    gates = as_frame(run_gates())
-    display(Markdown("### Verification gates: objective by status (number of gates)"))
-    display(pd.crosstab(gates["objective"], gates["status"], margins=True))
-    display(Markdown("Gates with a WARN or STOP status are discussed in the objective sections."))
-    display(HTML("<details><summary><b>Full gate table</b> (click to expand)</summary>"
-                 + gates.to_html(index=False) + "</details>"))
-else:
-    display(Markdown("*Gates were not run in this execution (`RUN_GATES = False`).*"))
-''')
-
-CODE(r'''
-if MODE == "reproduce":
-    rep = reproduce(keep=False)
-    rep = rep if isinstance(rep, dict) else {"verdict": str(rep)}
-    display(Markdown("### Mode B: reproduction on a copy of the repository"))
-    display(Markdown(f"Working copy: `{rep.get('workdir', 'not reported')}`"))
-    display(as_frame(rep.get("steps", [])))
-    if "tables" in rep:
-        display(Markdown("**Table comparison (regenerated against registered)**"))
-        display(as_frame(rep["tables"]))
-    if "figures" in rep:
-        display(Markdown("**Figure comparison**"))
-        display(as_frame(rep["figures"]))
-    callout("<b>Reproduction verdict:</b> " + html.escape(str(rep.get("verdict", "not reported")))
-            + "<br><b>Scope:</b> " + html.escape(str(rep.get("scope_note", ""))))
-else:
-    display(Markdown(
-        "**Mode B was not run (`MODE = \"present\"`).** To run it, execute the notebook with `-p MODE reproduce`. "
-        "It re-runs the pipelines on a copy of the repository (about 15 minutes), compares the regenerated tables and "
-        "figures with the registered ones, and never changes the real databases. See `notebooks/README.md`."))
-''')
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Objective sections. Each has the same sub-structure: a objective and refinement; b predeclared configuration;
-# c key results (live queries); d figures; e mathematical notes; f how to explain; g claims.
-# ---------------------------------------------------------------------------------------------------------------------
-
-MD("## 3. Objective 1: database, QA/QC and the graphitic definition")
-MD("### 3a. Objective and operational refinement")
-CODE(r'''
-SPEC_PATH = REPO / "specs" / "01_thesis_scope_and_objective_traceability.md"
-SPEC = read_text(SPEC_PATH) if SPEC_PATH.exists() else ""
-
-
-def synopsis_objective(n):
-    """Verbatim synopsis objective n, read from specs/01 at run time."""
-    block = section_text(SPEC, "## Fixed synopsis objectives")
-    items = re.findall(r"^(\d)\. (.*)$", block, flags=re.M)
-    for number, text in items:
-        if int(number) == n:
-            return text
-    return "(objective not found in specs/01)"
-
-
-def refinement_rows(n):
-    """Operational refinement row n from the table in specs/01 (objectives 2 to 4)."""
-    block = section_text(SPEC, "## Operational refinement")
-    for line in block.splitlines():
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) >= 5 and cells[0] == str(n):
-            return cells
-    return None
-
-
-def objective_block(n):
-    display(Markdown(f"**Synopsis objective {n} (verbatim from specs/01).** " + synopsis_objective(n)))
-    row = refinement_rows(n)
-    if row:
-        display(Markdown(
-            "**Operational refinement (specs/01, 2026-11-06).**\n\n"
-            f"- Original operationalisation: {row[1]}\n"
-            f"- Refined operationalisation: {row[2]}\n"
-            f"- Reason (evidence): {row[3]}\n"
-            f"- Achievement under the refinement: {row[4]}"))
-    else:
-        display(Markdown("*No operational refinement is recorded for this objective in specs/01.*"))
-
-
-objective_block(1)
-''')
-
-MD("### 3b. What was predeclared")
-CODE(r'''
-o1_cfg = {name: load_yaml(f"config/{name}") for name in
-          ["label_rules.yaml", "coordinate_decisions.yaml", "dem.yaml", "qaqc_thresholds.yaml"]}
-for name, cfg in o1_cfg.items():
-    display(Markdown(f"**config/{name}**"))
-    display(config_table(cfg, limit=25))
-''')
-
-MD("### 3c. Key results (queried live from the Stage A database)")
+MD("### Results")
 CODE(r'''
 o1_counts = query("o1", """
 SELECT
@@ -741,8 +813,7 @@ SELECT
   (SELECT COUNT(*) FROM drill_lines)                                        AS drill_lines
 """)
 o1_rules = query("o1", """
-SELECT rule_id, rule_family, status, approved_by, SUBSTR(definition_sha256, 1, 12) AS definition_sha256_prefix
-FROM graphite_label_rules ORDER BY rule_family, rule_id
+SELECT rule_id, rule_family, status, approved_by FROM graphite_label_rules ORDER BY rule_family, rule_id
 """)
 o1_candidates = query("o1", """
 SELECT rule_id, rule_family, rule_status, label_state, n_intervals, ROUND(logged_m, 1) AS logged_m
@@ -772,124 +843,73 @@ FROM validation_test_results
 WHERE test_group = 'RECONCILIATION'
   AND run_utc = (SELECT MAX(run_utc) FROM validation_test_results WHERE test_group = 'RECONCILIATION')
 """)
-display(Markdown("**Counts (interval = 1 m logged interval; holes are the 71 drill holes)**"))
-display(o1_counts)
-display(Markdown("**Reconciliation against the workbook and the preliminary thesis document**"))
-display(o1_recon)
-display(Markdown("**Graphitic label rules: status and approval (rule text is in the database)**"))
-display(o1_rules)
-display(Markdown("**Intervals by candidate rule and label state**"))
-display(o1_candidates)
-display(Markdown("**Evidence pattern of the 126 conflicting intervals and their review status**"))
-display(o1_conflicts)
-display(Markdown("**QA/QC checks by severity and status (checks, findings)**"))
-display(o1_qaqc)
-display(Markdown("**Drill lines (provisional grouping by nominal Northing)**"))
-display(o1_lines)
-display(Markdown("**Hole depth (m below collar) and collar elevation status**"))
-display(o1_depth)
-display(o1_rl)
+caption("Counts (an interval is one metre of logging; the holes are the drill holes)")
+show(o1_counts)
+caption("Reconciliation against the drilling workbook and the preliminary thesis document")
+show(o1_recon)
+caption("Graphitic label rules and their approval status")
+show(o1_rules)
+caption("Intervals by candidate label rule and label state")
+show(o1_candidates)
+caption("Conflicting intervals (the logged indicators disagree) by evidence pattern and review status")
+show(o1_conflicts)
+caption("QA/QC checks by severity and status (number of checks, number of findings)")
+show(o1_qaqc)
+caption("Drill lines (provisional grouping by nominal Northing)")
+show(o1_lines)
+caption("Hole depth (m below collar) and collar elevation status")
+show(o1_depth)
+show(o1_rl)
 ''')
-
-MD("### 3d. Figures")
+MD("### Key figures")
 CODE(r'''
 o1_fig = query("o1", """
-SELECT figure_id, title, stage_status AS status FROM figure_registry
-WHERE objective = 'O1' AND kind = 'FIGURE' AND figure_id LIKE 'F%' ORDER BY figure_id
+SELECT figure_id, title FROM figure_registry
+WHERE kind = 'FIGURE' AND figure_id LIKE 'F%' ORDER BY figure_id
 """)
-show_figures("o1", o1_fig)
+show_figures("o1", o1_fig, ["F01", "F03", "F06", "F09"])
 ''')
-
-MD("### 3e. Mathematical notes: Objective 1")
-for _s in MATH["O1"]:
-    MD(_s)
-
-MD("### 3f. How to explain this result")
+MD("The remaining figures are in `figures/objective_1/` and `figures/objective_2/`.")
+MD("### Summary of findings")
 CODE(r'''
 c = o1_counts.iloc[0]
 cand = o1_candidates.set_index(["rule_id", "label_state"])["n_intervals"]
 n_ambiguous = int(cand.get(("DESIGN_8_2_v1", "AMBIGUOUS"), 0))
 n_binary = int(cand.get(("DESIGN_8_2_v1", "POSITIVE"), 0) + cand.get(("DESIGN_8_2_v1", "NEGATIVE"), 0))
-rec = o1_recon.set_index("check_name")
 display(Markdown(f"""
-**Plain-language summary.** The workbook became a verified database of {int(c.holes)} drill holes and
-{int(c.intervals_1m):,} contiguous 1-metre logging intervals ({c.logged_m:,.0f} m logged). Graphitic status cannot be read
-from one field: the rock code `Sgs`, the graphite mineral field and the graphite comment disagree for
-{int(c.label_conflicts)} intervals. The reconciled rule DESIGN_8_2_v1 is the approved rule used by Objectives 2 to 4. It leaves
-{n_ambiguous} intervals ambiguous and excluded, giving {n_binary} binary intervals. Collar elevations are absent, so every
-vertical value is relative to the collar.
+The workbook became a verified database of {int(c.holes)} drill holes and {int(c.intervals_1m):,} contiguous 1-metre
+logging intervals ({c.logged_m:,.0f} m logged). Graphitic status cannot be read from one field: the rock code `Sgs`, the
+graphite mineral field and the graphite comment disagree for {int(c.label_conflicts)} intervals. The reconciled rule
+DESIGN_8_2_v1 is the approved rule used by Objectives 2 to 4. It leaves {n_ambiguous} intervals ambiguous and excluded,
+giving {n_binary} binary intervals. Collar elevations are absent, so every vertical value is relative to the collar.
 """))
-display(Markdown(f"""
-**Likely questions and answers**
-
-- **Why not use the `Sgs` code alone?** The code gives {int(c.sgs_intervals)} intervals in {int(c.sgs_holes)} holes.
-  The three logged indicators (code, graphite mineral field, graphite comment) disagree within
-  {int(c.label_conflicts)} intervals, so the code alone is not a complete definition. The workbook reconciliation expected
-  {rec.loc['Sgs intervals', 'expected'] if 'Sgs intervals' in rec.index else 'n/a'} `Sgs` intervals and the database holds
-  {rec.loc['Sgs intervals', 'observed'] if 'Sgs intervals' in rec.index else 'n/a'}; that difference is recorded as a WARN and
-  is not hidden.
-- **Is the approved rule the same as the Stage A rule?** Stage A reported every candidate rule as PROPOSED. The current
-  database shows DESIGN_8_2_v1 as APPROVED (approved by the author); the other rules remain PROPOSED sensitivity analyses.
-- **Why are the lines "provisional"?** Holes were grouped by nominal Northing. The grouping was approved as the
-  drill-line basis, but no surveyed collar elevation exists to confirm the geometry.
-- **Why is depth relative?** No collar RL is in the workbook (see the status table above), so absolute elevation and
-  depth below sea level cannot be computed.
-"""))
-''')
-
-MD(r'''
-### 3g. What this result permits you to claim, and what it does not permit
-
-The lists below are read from `specs/01_thesis_scope_and_objective_traceability.md` when the notebook runs.
-''')
-
-CODE(r'''
-display(Markdown(section_text(SPEC, "## Scientific claims permitted in Stage A")))
-display(Markdown(section_text(SPEC, "## Prohibited overclaims")))
-display(Markdown("Read with the database: the approval of DESIGN_8_2_v1 post-dates the Stage A statement that all rules are PROPOSED."))
 ''')
 
 # ----- Objective 2 ---------------------------------------------------------------------------------------------------
 
-MD("## 4. Objective 2: spatial distribution, geological controls and continuity")
-MD("### 4a. Objective and operational refinement")
+MD("## 3. Objective 2: spatial distribution, geological controls and continuity")
+MD("### Research question")
+CODE("research_question(2)")
+MD("### Data and method")
+MD("Occurrence and continuity use the binary graphitic label as an indicator, and the formulas are as follows.")
+for _s in MATH["O2"]:
+    MD_MATH(_s)
 CODE(r'''
-objective_block(2)
+o2_var_cfg = load_config("config/objective_2", "variogram_config")
+o2_wx_cfg = load_config("config/objective_2", "weathering_config")
+o2_ext_cfg = load_config("config/objective_2", "extension_config")
+from kambale.objective_2.structural import read_structural_config
+o2_struct_cfg = read_structural_config()[0]  # the analysis reads this file with the same function
+o2_tables = [
+    ("Base variogram settings", config_table(o2_var_cfg, pattern=r"lag_|min_|identifiab|stab|structured_sill_bounds|declared|label_rule", limit=40)),
+    ("Weathering front and fresh-rock settings", config_table(o2_wx_cfg, pattern=r"front_codes|lag_|min_|bootstrap\.n_rep|confidence|skill_rule", limit=30)),
+    ("Extension settings", config_table(o2_ext_cfg, pattern=r"lag|label|comparator", limit=15)),
+]
+if o2_struct_cfg is not None:
+    o2_tables.append(("Structural-frame settings", config_table(o2_struct_cfg, pattern=r"grid|perm|alpha|seed|lag|max_abs", limit=30)))
+settings_block(o2_tables)
 ''')
-
-MD("### 4b. What was predeclared")
-CODE(r'''
-o2_var_cfg = load_yaml("config/objective_2/variogram_config.yaml")
-o2_wx_cfg = load_yaml("config/objective_2/weathering_config_O2-CFG-2026.11.06-5.yaml")
-o2_ext_cfg = load_yaml("config/objective_2/extension_config_O2-CFG-2026.11.05-3.yaml")
-o2_struct_cfg = load_yaml("config/objective_2/structural_config_O2-CFG-2026.11.06-6.yaml")
-display(Markdown("**Base variogram configuration** (`config/objective_2/variogram_config.yaml`)"))
-display(config_table(o2_var_cfg, pattern=r"config_version|label_rule|lag_|min_|identifiab|stab|structured_sill_bounds|declared", limit=40))
-display(Markdown("**Weathering-front and fresh-rock configuration** (`weathering_config_O2-CFG-2026.11.06-5.yaml`)"))
-display(config_table(o2_wx_cfg, pattern=r"config_version|extends|front_codes|lag_|min_|bootstrap\.n_rep|confidence|skill_rule", limit=30))
-display(Markdown("**Extension configuration** (`extension_config_O2-CFG-2026.11.05-3.yaml`)"))
-display(config_table(o2_ext_cfg, pattern=r"config_version|lag|label|comparator", limit=15))
-display(Markdown("**Structural-frame configuration** (`structural_config_O2-CFG-2026.11.06-6.yaml`)"))
-if "_yaml_error" in o2_struct_cfg:
-    display(Markdown(
-        "The structural configuration is **not valid YAML as written** (YAML error: "
-        f"`{o2_struct_cfg['_yaml_error']}`). The pipeline repairs plain scalars in memory and records how many repairs "
-        "it made. That count is read from the run report below. The parameters that were actually used are stored in the "
-        "database and are shown in section 4c."))
-    report_o2 = read_text(REPO / "reports/objective_2/RUN_REPORT.md")
-    m = re.search(r"in-memory YAML scalar repairs: (\d+)", report_o2)
-    display(Markdown(f"In-memory YAML scalar repairs recorded in the run report: **{m.group(1) if m else 'not found'}**."))
-else:
-    display(config_table(o2_struct_cfg, pattern=r"config_version|grid|perm|alpha|seed|lag|max_abs", limit=30))
-display(Markdown("**Stage runs recorded in the database, by run kind and configuration**"))
-display(query("o2", """
-SELECT run_kind, config_version, COUNT(*) AS runs, SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) AS completed,
-       MIN(started_utc) AS first_started_utc, MAX(finished_utc) AS last_finished_utc
-FROM stage_runs GROUP BY run_kind, config_version ORDER BY MIN(started_utc)
-"""))
-''')
-
-MD("### 4c. Key results (queried live from the Objective 2 database)")
+MD("### Results")
 CODE(r'''
 o2_lines = query("o2", """
 SELECT line_code, n_holes, binary_n AS binary_intervals, positive_n AS positive_intervals,
@@ -912,7 +932,7 @@ SELECT COUNT(*) AS holes, COUNT(DISTINCT line_code) AS lines, SUM(binary_n) AS b
 """)
 o2_collars_lines = query("o1", """
 SELECT line_code, nominal_northing_m FROM v_drill_lines ORDER BY nominal_northing_m
-""")  # drill lines are a Stage A (Objective 1) table; the Objective 2 receipt uses the same lines
+""")
 
 wx = o2_weathering.pivot_table(index="weathering_code", columns="label_state", values="n_intervals",
                                aggfunc="sum", fill_value=0)
@@ -927,20 +947,18 @@ wx_table["prevalence_of_positive"] = np.where(wx_table["binary_intervals"] > 0,
                                               wx_table["positive_intervals"] / wx_table["binary_intervals"].replace(0, np.nan), np.nan)
 wx_table["prevalence_of_positive"] = wx_table["prevalence_of_positive"].round(3)
 
-display(Markdown("**Occurrence by drill line (binary intervals only; AMBIGUOUS excluded)**"))
-display(o2_lines)
-display(Markdown("**Prevalence of graphitic (POSITIVE) intervals by logged weathering code**"))
-display(wx_table)
-display(Markdown("**Collar spacing (m): nearest collar per hole and collar pairs**"))
-display(o2_support)
-display(Markdown("**Holes and lines in the lateral analysis**"))
-display(o2_holes)
+caption("Occurrence by drill line (binary intervals only; ambiguous intervals excluded)")
+show(o2_lines)
+caption("Share of graphitic (POSITIVE) intervals by logged weathering code")
+show(wx_table)
+caption("Collar spacing (m): nearest collar per hole and collar pairs")
+show(o2_support)
+caption("Holes and lines in the lateral analysis")
+show(o2_holes)
 ''')
-
 CODE(r'''
 o2_fits = query("o2", """
-SELECT e.variant, e.direction_id AS experiment, f.model, f.fit_status, f.n_bins_used AS supported_bins,
-       f.stability_status, f.fit_id
+SELECT e.direction_id AS experiment, f.model, f.fit_status, f.n_bins_used AS supported_bins, f.stability_status
 FROM variogram_fits f JOIN variogram_experiments e ON e.experiment_id = f.experiment_id
 WHERE e.variant = 'BASE' ORDER BY e.direction_id, f.model
 """)
@@ -963,15 +981,15 @@ o2_handoff = query("o2", """
 SELECT decision_status, candidate_family, full_data_parameters_for_test_folds AS full_data_params_for_test_folds
 FROM continuity_handoff_decisions
 """)
-display(Markdown("**Base experiments: supported bins and fit status (lateral basis is the handoff basis)**"))
-display(o2_bins)
-display(o2_fits)
-display(Markdown("**Fitted parameters of the base fits that converged** (nugget and sill in indicator units; range in m)"))
-display(o2_params)
-display(Markdown("**Objective 3 handoff for the lateral continuity model**"))
-display(o2_handoff)
+caption("Base experiments: lag bins and supported bins")
+show(o2_bins)
+caption("Model fits by experiment: fit status and stability")
+show(o2_fits)
+caption("Fitted parameters of the base fits that converged (nugget and sill in indicator units; range in metres)")
+show(o2_params)
+caption("Continuity model carried to Objective 3 for the lateral direction")
+show(o2_handoff)
 ''')
-
 CODE(r'''
 o2_struct_null = query("o2", """
 SELECT sample_id, frame_id, selected_dip_deg, ROUND(observed_max_alignment, 4) AS alignment_at_selected_dip,
@@ -993,142 +1011,72 @@ o2_front = query("o2", """
 SELECT stat_group, stat_name, ROUND(stat_value, 3) AS value, unit, n_basis
 FROM weathering_front_diagnostics ORDER BY stat_group, stat_name
 """)
-display(Markdown("**Structural frame: selected apparent dip and selection null** (RELATIVE is the primary frame; DEM_ABSOLUTE is sensitivity only)"))
-display(o2_struct_sel)
-display(o2_struct_null)
-display(Markdown("**Leave-one-line-out dips within 10 degrees of the full selection**"))
-display(o2_struct_lolo)
-display(Markdown("**Structural decisions**"))
-display(o2_struct_dec)
-display(Markdown("**Weathering front: relative elevation, along-line differences and interpolation skill**"))
-display(o2_front)
+caption("Structural frame: selected apparent dip and selection null (RELATIVE is the primary frame; DEM_ABSOLUTE is a sensitivity check)")
+show(o2_struct_sel)
+show(o2_struct_null)
+caption("Leave-one-line-out dips within 10 degrees of the full selection")
+show(o2_struct_lolo)
+caption("Structural decisions")
+show(o2_struct_dec)
+caption("Weathering front: relative elevation, along-line differences and interpolation skill")
+show(o2_front)
 ''')
-
+MD("### Key figures")
 CODE(r'''
-o2_gates = query("o2", """
-SELECT gate_id, gate_name, status, SUBSTR(detail, 1, 220) AS detail
-FROM gate_results WHERE run_id = (SELECT MAX(run_id) FROM gate_results) ORDER BY gate_id
-""")
-display(Markdown("**Objective 2 gates of the latest verification run: counts by status**"))
-display(o2_gates["status"].value_counts().rename_axis("status").reset_index(name="gates"))
-display(Markdown("**Gates that are not PASS**"))
-display(o2_gates[o2_gates["status"] != "PASS"])
+o2_fig = query("o2", "SELECT figure_id, title FROM figure_registry ORDER BY figure_id")
+show_figures("o2", o2_fig, ["O2-F03", "O2-F06", "O2-F10", "O2-F13"])
 ''')
-
-MD("### 4d. Figures")
+MD("The remaining figures are in `figures/objective_2/`.")
+MD("### Summary of findings")
 CODE(r'''
-o2_fig = query("o2", """
-SELECT figure_id, title, status FROM figure_registry ORDER BY figure_id
-""")
-show_figures("o2", o2_fig)
-''')
-
-MD("### 4e. Mathematical notes: Objective 2")
-for _s in MATH["O2"]:
-    MD(_s)
-
-MD("### 4f. How to explain this result")
-CODE(r'''
-lat = o2_bins.set_index("experiment").loc["LATERAL_BETWEEN"]
-lat_fit = o2_fits[(o2_fits["experiment"] == "LATERAL_BETWEEN")]
-spher_status = lat_fit.loc[lat_fit["model"] == "spherical", "fit_status"].iloc[0]
-expo_status = lat_fit.loc[lat_fit["model"] == "exponential", "fit_status"].iloc[0]
-dh = o2_params[o2_params["experiment"] == "DOWNHOLE_WITHIN"].pivot_table(index="model", columns="parameter", values="estimate")
-dh_exp = dh.loc["exponential"] if "exponential" in dh.index else None
-dh_sph = dh.loc["spherical"] if "spherical" in dh.index else None
-near_med = o2_support[(o2_support.stat_group == "COLLAR_NEAREST") & (o2_support.stat_name == "median")]["value"].iloc[0]
-near_p05 = o2_support[(o2_support.stat_group == "COLLAR_NEAREST") & (o2_support.stat_name == "p05")]["value"].iloc[0]
-near_p95 = o2_support[(o2_support.stat_group == "COLLAR_NEAREST") & (o2_support.stat_name == "p95")]["value"].iloc[0]
-gap = np.diff(o2_collars_lines["nominal_northing_m"].to_numpy(dtype=float))
-gap_min, gap_max = float(gap.min()), float(gap.max())
-struct_sel = o2_struct_sel.set_index(["sample_id", "frame_id"])
-struct_null = o2_struct_null.set_index(["sample_id", "frame_id"])
-rel_all = struct_null.loc[("ALL_BINARY", "RELATIVE")]
-rel_fresh = struct_null.loc[("FRESH", "RELATIVE")]
-dec = o2_struct_dec.set_index(["sample_id", "frame_id"])["decision"]
 mw = wx_table.set_index("weathering_code")
 cw_prev = float(mw.loc["cw", "prevalence_of_positive"]) if "cw" in mw.index else float("nan")
 mw_prev = float(mw.loc["mw", "prevalence_of_positive"]) if "mw" in mw.index else float("nan")
-dh_bins = int(o2_bins.set_index("experiment").loc["DOWNHOLE_WITHIN", "supported_bins"])
-dh_sill = float(dh.loc["exponential", "structured_sill"]) if dh_exp is not None else float("nan")
+dh = o2_params[o2_params["experiment"] == "DOWNHOLE_WITHIN"].pivot_table(index="model", columns="parameter", values="estimate")
+dh_range = float(dh.loc["exponential", "range_m"])
+near_med = o2_support[(o2_support.stat_group == "COLLAR_NEAREST") & (o2_support.stat_name == "median")]["value"].iloc[0]
+gap = np.diff(o2_collars_lines["nominal_northing_m"].to_numpy(dtype=float))
+gap_min, gap_max = float(gap.min()), float(gap.max())
 front_skill = o2_front[o2_front["stat_name"] == "skill_ratio"].set_index("stat_group")["value"]
+skill_hole = float(front_skill.get("INTERPOLATION_LEAVE_ONE_HOLE_OUT", float("nan")))
 skill_threshold = float(re.search(r"at most ([0-9.]+) times", o2_wx_cfg["weathering_front"]["continuity"]
                                   ["interpolation_check"]["skill_rule"]).group(1))
-skill_hole = float(front_skill.get("INTERPOLATION_LEAVE_ONE_HOLE_OUT", float("nan")))
-skill_line = float(front_skill.get("INTERPOLATION_LEAVE_ONE_LINE_OUT", float("nan")))
 display(Markdown(f"""
-**Plain-language summary.** Occurrence of graphite is not uniform. It is most common in the mw-coded intervals (prevalence
-{mw_prev:.2f}) and absent from the cw-coded intervals (prevalence {cw_prev:.2f}), and it varies strongly between drill lines.
-Continuity can be measured within a hole, where
-the down-hole structure is fitted (practical range {dh_exp['range_m']:.1f} m for the exponential fit). Between holes, the
-data do not identify a lateral range: holes are a median {near_med:.0f} m from their nearest collar, and drill lines
-are {gap_min:.0f} to {gap_max:.0f} m apart, so lateral pairs do not resolve the structure. The apparent-dip search finds no
-stable structural frame for the primary sample, and the weathering front is not interpolable between holes by the
-predeclared method.
+Occurrence of graphite is not uniform. It is most common in the mw-coded intervals (prevalence {mw_prev:.2f}) and absent
+from the cw-coded intervals (prevalence {cw_prev:.2f}), and it varies strongly between drill lines. Continuity can be
+measured within a hole, where the down-hole structure is fitted (practical range {dh_range:.1f} m for the exponential fit).
+Between holes, the data do not identify a lateral range: holes are a median {near_med:.0f} m from their nearest collar, and
+drill lines are {gap_min:.0f} to {gap_max:.0f} m apart, so lateral pairs do not resolve the structure. The apparent-dip
+search finds no stable structural frame for the primary sample. The weathering front is not interpolable between holes by
+the method fixed before modelling (leave-one-hole-out skill ratio {skill_hole:.2f}, against a threshold of {skill_threshold:.2f}).
 """))
-display(Markdown(f"""
-**Likely questions and answers**
-
-- **Why no lateral variogram?** The lateral basis is `{lat_fit.iloc[0]['experiment']}` with {int(lat['supported_bins'])} supported
-  bins. The spherical fit is {spher_status} and the exponential fit is {expo_status}. The nearest-collar median is
-  {near_med:.0f} m (5th to 95th percentile {near_p05:.0f} to {near_p95:.0f} m), while drill lines are {gap_min:.0f} to
-  {gap_max:.0f} m apart. Pairs at the lags that separate lines do not identify a structure, and the structure at the scale of
-  the lateral lags is not resolved.
-- **Why is the within-hole result usable and the lateral one not?** The down-hole experiment has {dh_bins} supported
-  one-metre bins along each hole, and its exponential fit converges inside its bounds (sill {dh_sill:.3f}). The lateral result
-  is not identified, so Objective 3 is not given a between-hole continuity model.
-- **Is the weathering front continuous?** The front is locally similar between neighbouring holes, but the interpolation
-  skill ratios are {skill_hole:.2f} (leave one hole out) and {skill_line:.2f} (leave one line out), against the threshold of
-  {skill_threshold:.2f} for INTERPOLABLE. It is not interpolable by the predeclared method and is not used as a surface away from the drilled holes.
-- **What does the structural result mean?** The selected apparent dip is the statistically favoured plane, not a measured
-  orientation. For the primary sample the selection null gives decision `{dec.loc[('ALL_BINARY', 'RELATIVE')]}`, so no
-  structural frame is claimed.
-- **Why do the lines differ so much in occurrence?** The between-line contrast is the strongest occurrence contrast in the
-  data. The database does not say whether it reflects zones, sampling or geology, so it is reported as an open question.
-"""))
-''')
-
-MD("### 4g. What this result permits you to claim, and what it does not permit")
-CODE(r'''
-display(Markdown("**Achievement under the refinement (specs/01)**"))
-display(Markdown(refinement_rows(2)[4] if refinement_rows(2) else "*(not found)*"))
-display(Markdown("**Specification 01: claims that these refinements do not permit**"))
-display(Markdown(between(SPEC, "Claims these refinements do NOT permit", "\n\n") or "*(not found)*"))
-display(Markdown("**Configuration 6 (structural frame): claims not permitted, from the run report**"))
-rep2 = read_text(REPO / "reports/objective_2/RUN_REPORT.md")
-display(Markdown(between(rep2, "Claims not permitted by configuration 6", "Decision label")))
-display(Markdown("**Objective 3 handoff, from the run report (what Objective 3 may and may not use)**"))
-display(Markdown(section_text(rep2, "## 11. Objective 3 handoff contract")))
 ''')
 
 # ----- Objective 3 ---------------------------------------------------------------------------------------------------
 
-MD("## 5. Objective 3: indicator, machine-learning and hybrid models, spatially validated")
-MD("### 5a. Objective and operational refinement")
+MD("## 4. Objective 3: indicator, machine-learning and hybrid models, spatially validated")
+MD("### Research question")
+CODE("research_question(3)")
+MD("### Data and method")
+MD("The models were trained on the binary label and validated on held-out spatial blocks. Their definitions are as follows.")
+for _s in MATH["O3"]:
+    MD_MATH(_s)
 CODE(r'''
-objective_block(3)
+o3_cfg = load_config("config/objective_3", "model_config")
+settings_block([("Model settings", config_table(o3_cfg, pattern=r"target\.|predictor_sets|splits\.tiers|inner_cv\.|"
+                                                  r"kriging\.(grid|m1|m3|depth|min_|max_|model|estimator)|calibration\.(method|clip|apply)|"
+                                                  r"logistic\.grid|random_forest\.grid|gradient_boosting\.grid", limit=60))])
 ''')
-
-MD("### 5b. What was predeclared")
+MD("### Results")
 CODE(r'''
-o3_cfg = load_yaml("config/objective_3/model_config.yaml")
-display(Markdown("**Model configuration** (`config/objective_3/model_config.yaml`)"))
-display(config_table(o3_cfg, pattern=r"config_version|supersedes|target\.|predictor_sets|splits\.tiers|inner_cv\.|"
-                                     r"kriging\.(grid|m1|m3|depth|min_|max_|model|estimator)|calibration\.(method|clip|apply)|"
-                                     r"logistic\.grid|random_forest\.grid|gradient_boosting\.grid", limit=60))
-display(Markdown("**Split plans and their audits (each plan has five outer folds)**"))
-display(query("o3", """
+o3_plans = query("o3", """
 SELECT split_plan_id, method, n_folds, primary_plan FROM spatial_split_plans ORDER BY split_plan_id
-"""))
-display(query("o3", """
+""")
+o3_audit = query("o3", """
 SELECT split_plan_id, fold_id, n_train, n_test, test_positive, train_holes, test_holes, test_lines,
        ROUND(min_train_test_collar_distance_m, 1) AS min_train_test_collar_distance_m, disjoint, status
 FROM split_audit ORDER BY split_plan_id, fold_id
-"""))
-''')
-
-MD("### 5c. Key results (queried live from the Objective 3 database)")
-CODE(r'''
+""")
 o3_families = query("o3", """
 SELECT family_id, name, role FROM model_families ORDER BY role, family_id
 """)
@@ -1159,130 +1107,76 @@ SELECT fallback_status, fit_status, COUNT(*) AS folds FROM hybrid_residual_vario
 o3_leak = query("o3", """
 SELECT check_name, status, COUNT(*) AS audit_rows FROM leakage_audit_log GROUP BY check_name, status ORDER BY check_name
 """)
-o3_pred = query("o3", """
-SELECT family_id, COUNT(*) AS predictions FROM predictions_oof GROUP BY family_id ORDER BY family_id
-""")
 o3_final = query("o3", """
 SELECT status, SUBSTR(reason, 1, 200) AS reason FROM final_refits
 """)
-display(Markdown("**Model families (role in the analysis)**"))
-display(o3_families)
-display(Markdown("**Training runs by split plan, family and status (five folds per family)**"))
-display(o3_runs_pivot)
-display(Markdown("**Mean inner-CV log loss of each family (selection diagnostics, not held-out performance)**"))
-display(o3_inner)
-display(Markdown("**M1 indicator kriging: covariance chosen by inner CV in each outer fold**"))
-display(o3_m1)
-display(Markdown("**M3 hybrid: status per fold, and the residual covariance found by inner CV**"))
-display(o3_m3)
-display(o3_hyb)
-display(Markdown("**Leakage audit (all rows, both split plans)**"))
-display(o3_leak)
-display(Markdown("**Out-of-fold predictions per family (one row per held-out interval and plan)**"))
-display(o3_pred)
-display(Markdown("**Final full-data refit recorded by Objective 3**"))
-display(o3_final)
+caption("Spatial validation plans and their audits (five held-out folds per plan)")
+show(o3_plans)
+show(o3_audit)
+caption("Model families (role in the analysis)")
+show(o3_families)
+caption("Training runs by validation plan, family and status")
+show(o3_runs_pivot)
+caption("Mean inner cross-validation log loss (used for choosing settings, not held-out performance)")
+show(o3_inner)
+caption("Indicator kriging: covariance chosen by inner cross-validation in each outer fold")
+show(o3_m1)
+caption("Hybrid model: status per fold, and the residual covariance found by inner cross-validation")
+show(o3_m3)
+show(o3_hyb)
+caption("Checks that information from held-out data did not enter training (all checks, both plans)")
+show(o3_leak)
+caption("Final full-data refit recorded by Objective 3")
+show(o3_final)
 ''')
-
+MD("### Key figures")
 CODE(r'''
-o3_gates = query("o3", """
-SELECT status, COUNT(*) AS gates FROM gate_results
-WHERE run_id = (SELECT MAX(run_id) FROM gate_results) GROUP BY status
-""")
-display(Markdown("**Objective 3 gates of the latest verification run**"))
-display(o3_gates)
+o3_fig = query("o3", "SELECT figure_id, title FROM figure_registry ORDER BY figure_id")
+show_figures("o3", o3_fig, ["O3-F01", "O3-F03", "O3-F04", "O3-F05"])
 ''')
-
-MD("### 5d. Figures")
-CODE(r'''
-o3_fig = query("o3", """
-SELECT figure_id, title, status FROM figure_registry ORDER BY figure_id
-""")
-show_figures("o3", o3_fig)
-''')
-
-MD("### 5e. Mathematical notes: Objective 3")
-for _s in MATH["O3"]:
-    MD(_s)
-
-MD("### 5f. How to explain this result")
+MD("The remaining figures are in `figures/objective_3/`.")
+MD("### Summary of findings")
 CODE(r'''
 m3 = o3_m3.set_index(["split_plan_id", "fold_id"])["status"]
-m3_fallback_all = bool((o3_hyb["fallback_status"] == "FALLBACK_ML_ONLY").all()) if len(o3_hyb) else False
 m3_folds = int(len(m3))
 m3_fallback_folds = int((m3 == "FALLBACK").sum())
-lodo = o3_leak
-n_leak_pass = int(lodo.loc[lodo["status"] == "PASS", "audit_rows"].sum())
-n_leak_rows = int(lodo["audit_rows"].sum())
-plans = query("o3", """
-SELECT split_plan_id, method, n_folds FROM spatial_split_plans ORDER BY split_plan_id
-""").set_index("split_plan_id")
-m1_covs = o3_m1.groupby("split_plan_id")["chosen_covariance"].agg(lambda s: "; ".join(sorted(set(s))))
-display(Markdown("**Indicator-kriging covariances chosen by inner CV, per plan**"))
-display(m1_covs.rename("covariances chosen in the five folds").to_frame())
+n_leak_pass = int(o3_leak.loc[o3_leak["status"] == "PASS", "audit_rows"].sum())
+n_leak_rows = int(o3_leak["audit_rows"].sum())
 display(Markdown(f"""
-**Plain-language summary.** Five model families were built for each of two spatial validation plans. The first plan
-holds out whole drill lines (tier 1, extrapolation). The second holds out interleaved holes within each line (tier 2,
-interpolation). Indicator kriging chose a spatial covariance (not pure nugget) in each fold. The hybrid model fell back to
-its machine-learning trend in {m3_fallback_folds} of its {m3_folds} runs (status FALLBACK, labelled FALLBACK_ML_ONLY). That is a
-tested result: inner cross-validation found no residual correlation worth keeping, so the hybrid equals its trend.
-{n_leak_pass} of {n_leak_rows} leakage-audit rows pass.
+The model families were built for two spatial validation plans. The first holds out whole drill lines (prediction to a new
+drill line). The second holds out interleaved holes within each line (prediction between holes on the same line).
+Indicator kriging chose a spatial covariance, not a pure nugget, in each fold. The hybrid model kept its machine-learning
+trend without a residual correction in {m3_fallback_folds} of its {m3_folds} runs. Inner cross-validation found no residual
+correlation worth keeping, so the hybrid equals its trend. This is a tested result, not an omission. {n_leak_pass} of
+{n_leak_rows} leakage checks passed.
 """))
-display(Markdown(f"""
-**Likely questions and answers**
-
-- **Why is the hybrid not better?** Its residual kriging step is switched off by inner cross-validation in every fold
-  (pure nugget). M3 then equals the calibrated trend, so any hybrid advantage is zero by construction. This is reported as a
-  finding; no hybrid advantage is claimed. The evaluation in Objective 4 confirms the identity.
-- **Why does M1 use a spatial covariance when the hybrid does not?** M1 kriges the indicator itself, whose large-scale
-  pattern the trend also captures. M3 kriges only the residual after the trend, and inner cross-validation finds no
-  residual correlation to keep. A covariance chosen for prediction is not a variogram identified from the data
-  (Objective 2 finds no identified lateral variogram), so the two results are not in conflict.
-- **Why two validation tiers?** Tier 1 holds out a whole line, so its test points lie far from training data
-  (beyond the lateral range of any supported structure). Tier 2 holds out interleaved holes, so its test points are at about
-  one hole spacing. The two answer different questions and are reported separately.
-- **Why is the weathering-front feature fold-safe?** Its surface is built from training holes only, and the audit confirms
-  that changing test-hole fronts leaves the training features unchanged.
-- **Why is there no full-data model here?** The final full-data refit is recorded as pending until Objective 4 locks the
-  selection. Objective 5 then refits the locked models; that fit is not spatially validated.
-"""))
-''')
-
-MD("### 5g. What this result permits you to claim, and what it does not permit")
-CODE(r'''
-rep3 = read_text(REPO / "reports/objective_3/RUN_REPORT.md")
-display(Markdown("**Objective 3 limitations and deviations, from the run report**"))
-display(Markdown(section_text(rep3, "## 10. Deviations, warnings and limitations")))
-display(Markdown("**Scope statement: prohibited overclaims (these apply to every objective, including 3 to 5)**"))
-display(Markdown(section_text(SPEC, "## Prohibited overclaims")))
 ''')
 
 # ----- Objective 4 ---------------------------------------------------------------------------------------------------
 
-MD("## 6. Objective 4: predictive performance and model comparison under spatial validation")
-MD("### 6a. Objective and operational refinement")
-CODE(r'''
-objective_block(4)
-''')
-
-MD("### 6b. What was predeclared")
+MD("## 5. Objective 4: predictive performance and model comparison under spatial validation")
+MD("### Research question")
+CODE("research_question(4)")
+MD("### Data and method")
+MD("The models are compared on held-out intervals with the following measures and decision rule.")
+for _s in MATH["O4"]:
+    MD_MATH(_s)
 CODE(r'''
 o4_cfg_t1 = load_yaml("config/objective_4/evaluation_config.yaml")
 o4_cfg_t2 = load_yaml("config/objective_4/evaluation_config_tier2.yaml")
-o4_pattern = (r"config_version|^tier|^claim|paths\.o3_split|primary_endpoint|primary_weighting|secondary_weighting|"
+o4_pattern = (r"^tier|^claim|primary_endpoint|primary_weighting|secondary_weighting|"
               r"epsilon|calibration_min_bin_n|calibration_slope|calibration_intercept|discrimination_margin|"
               r"fold_consistency_min|coverage_threshold|bootstrap\.(n_replicates|seed|confidence|primary_design)|"
               r"decision\.(select|comparator|selection_basis)")
-display(Markdown("**Tier 1 extrapolation configuration** (`evaluation_config.yaml`)"))
-display(config_table(o4_cfg_t1, pattern=o4_pattern, limit=40))
-display(Markdown("**Tier 2 interpolation configuration** (`evaluation_config_tier2.yaml`)"))
-display(config_table(o4_cfg_t2, pattern=o4_pattern, limit=40))
+settings_block([
+    ("Prediction to a new drill line", config_table(o4_cfg_t1, pattern=o4_pattern, limit=40)),
+    ("Prediction between holes on the same line", config_table(o4_cfg_t2, pattern=o4_pattern, limit=40)),
+])
 ''')
-
-MD("### 6c. Key results (queried live; one block per tier)")
+MD("### Results")
 CODE(r'''
-TIERS = [("o4_t1", "Tier 1 (extrapolation to an unseen drill line)"),
-         ("o4_t2", "Tier 2 (interpolation between holes of one line)")]
+TIERS = [("o4_t1", "Prediction to a new drill line"),
+         ("o4_t2", "Prediction between holes on the same line")]
 o4_results = {}
 for key, label in TIERS:
     res = {}
@@ -1315,142 +1209,90 @@ FROM paired_differences WHERE scope = 'POOLED' AND weighting = 'INTERVAL' ORDER 
 SELECT model_id, ROUND(intercept, 3) AS calibration_intercept, ROUND(slope, 3) AS calibration_slope, status
 FROM calibration_diagnostics ORDER BY model_id
 """)
-    res["locked"] = query(key, """
-SELECT tier, selected_model_id, decision_id, metric_reference, calibration_policy FROM locked_handoff_receipts
-""")
-    res["gates"] = query(key, """
-SELECT status, COUNT(*) AS gates FROM gate_results WHERE run_id = (SELECT MAX(run_id) FROM gate_results) GROUP BY status
-""")
+    res["selected"] = query(key, "SELECT selected_model_id FROM locked_handoff_receipts").iloc[0]["selected_model_id"]
     o4_results[key] = res
-    display(Markdown(f"### {label}"))
-    display(Markdown("**Common held-out cohort** (intervals present in every fully covered model)"))
-    display(res["cohort"])
-    display(Markdown("**Pooled probability metrics, interval-weighted** (lower is better for Brier, log loss and ECE; higher is better for AUC)"))
-    display(res["metrics"].pivot_table(index="model_id", columns="metric_id", values="value"))
-    display(Markdown("**Model identity and role**"))
-    display(res["identity"])
-    display(Markdown("**Paired Brier differences, b minus a (interval-weighted; hole-cluster 95 per cent interval)**"))
-    display(res["pairs"])
-    display(Markdown("**Decision table** (rank, role and improvement status under the predeclared rule)"))
-    display(res["decision"])
-    display(Markdown("**Calibration intercept and slope (diagnostic only; not applied)**"))
-    display(res["calib"])
-    display(Markdown("**Locked model for this tier**"))
-    display(res["locked"])
-    display(Markdown("**Gates of the latest verification run**"))
-    display(res["gates"])
+    display(Markdown(f"#### {label}"))
+    caption("Common held-out cohort (intervals present in every fully covered model)")
+    show(res["cohort"])
+    caption("Pooled probability metrics, interval-weighted (lower is better for Brier, log loss and ECE; higher is better for AUC)")
+    show(res["metrics"].pivot_table(index="model_id", columns="metric_id", values="value"))
+    caption("Model identity and role")
+    show(res["identity"])
+    caption("Paired differences in Brier score, b minus a (interval-weighted; 95 per cent interval from resampling holes). "
+            "UNRESOLVED means the difference is not statistically resolved.")
+    show(res["pairs"])
+    caption("Comparison under the rule fixed before modelling (INCONCLUSIVE means the difference is not statistically resolved)")
+    show(res["decision"])
+    caption("Calibration intercept and slope (diagnostic only; not applied to the predictions)")
+    show(res["calib"])
 ''')
-
-MD("### 6d. Figures")
+MD("### Key figures")
 CODE(r'''
-o4_figs = {}
+o4_fig_ids = {"o4_t1": ["O4-F02", "O4-F04", "O4-F05"], "o4_t2": ["O4-F03", "O4-F04", "O4-F05"]}
 for key, label in TIERS:
-    display(Markdown(f"### Figures, {label}"))
-    fig_frame = query(key, "SELECT figure_id, title, status FROM figure_registry ORDER BY figure_id")
-    show_figures(key, fig_frame, width=760)
+    display(Markdown(f"#### {label}"))
+    fig_frame = query(key, "SELECT figure_id, title FROM figure_registry ORDER BY figure_id")
+    show_figures(key, fig_frame, o4_fig_ids[key], width=760)
 ''')
-
-MD("### 6e. Mathematical notes: Objective 4")
-for _s in MATH["O4"]:
-    MD(_s)
-
-MD("### 6f. How to explain this result")
+MD("The remaining figures are in `figures/objective_4/`.")
+MD("### Summary of findings")
 CODE(r'''
+RESULT_TEXT = {"SUPPORTED_IMPROVEMENT": "a supported improvement",
+               "INCONCLUSIVE": "not statistically resolved",
+               "NO_IMPROVEMENT": "no improvement"}
+
+
+def resolved_text(label):
+    return "statistically resolved" if str(label).upper() == "RESOLVED" else "not statistically resolved"
+
+
 for key, label in TIERS:
     r = o4_results[key]
     m = r["metrics"].pivot_table(index="model_id", columns="metric_id", values="value")
     pairs = r["pairs"].set_index("pair_id")
     dec = r["decision"].set_index("model_id")
-    sel = r["locked"].iloc[0]["selected_model_id"]
+    sel = r["selected"]
     comp = dec.loc[dec["role"] == "COMPARATOR"].index[0]
     d_sel = dec.loc[sel, "delta_brier_vs_comparator"]
     lo_sel, hi_sel = dec.loc[sel, "ci_low"], dec.loc[sel, "ci_high"]
     improvement = dec.loc[sel, "improvement_status"]
     folds_better = dec.loc[sel, "fold_consistency"]
-    trend_pair = pairs.loc["PREV_vs_M2SEL"] if "PREV_vs_M2SEL" in pairs.index else None
     half = float(pairs.loc["LOG_vs_RF", "detectable_half_width"]) if "LOG_vs_RF" in pairs.index else float("nan")
-    m1_pair = pairs.loc["PREV_vs_M1"] if "PREV_vs_M1" in pairs.index else None
-    trend_label = (f"{trend_pair['power_label']} (difference {float(trend_pair['delta_brier_b_minus_a']):+.4f})"
+    trend_pair = pairs.loc["PREV_vs_M2SEL"] if "PREV_vs_M2SEL" in pairs.index else None
+    trend_label = (f"{resolved_text(trend_pair['power_label'])} (difference {float(trend_pair['delta_brier_b_minus_a']):+.4f})"
                    if trend_pair is not None else "not reported")
-    m1_label = (f"{m1_pair['power_label']} (difference {float(m1_pair['delta_brier_b_minus_a']):+.4f})"
-                if m1_pair is not None else "not reported")
-    hyb_identical = (pairs.loc["M2WFSEL_vs_M3", "power_label"] if "M2WFSEL_vs_M3" in pairs.index else "not reported")
-    hyb_identical = "IDENTICAL" if str(hyb_identical).upper() == "IDENTICAL" else f"not identical ({hyb_identical})"
+    hybrid_same = ("M2WFSEL_vs_M3" in pairs.index
+                   and str(pairs.loc["M2WFSEL_vs_M3", "power_label"]).upper() == "IDENTICAL")
     best_brier = m["BRIER"].drop(index=[i for i in m.index if i in ("M2_SEL", "M2_WF_SEL", "M3_HYBRID")]).idxmin()
+    hybrid_sentence = (" The hybrid model M3 is identical to its trend M2_WF_SEL on every common interval, so the hybrid "
+                       "adds nothing in this evaluation." if hybrid_same else "")
     display(Markdown(f"""
-**{label}.** Locked model: **{sel}** (status {improvement}, comparator {comp}). The point estimate of the difference
-{sel} minus {comp} is {d_sel:+.4f} Brier, with hole-cluster 95 per cent interval [{lo_sel:+.4f}, {hi_sel:+.4f}]; the
-selected model is better in {int(folds_better)} of the 5 folds. The lowest pooled Brier among distinct models is {best_brier}.
-The coordinate trend against the training prevalence (PREV_vs_M2SEL): {trend_label}.
-The hybrid M3 is {hyb_identical} with its trend M2_WF_SEL on every common interval, so the hybrid adds nothing in this evaluation.
+**{label}.** The selected model is **{sel}**. Its Brier score minus that of the comparator {comp} is {d_sel:+.4f}, with a
+95 per cent interval from resampling holes of [{lo_sel:+.4f}, {hi_sel:+.4f}]. The selected model is better in
+{int(folds_better)} of the folds. The result is {RESULT_TEXT.get(improvement, improvement)}. The smallest difference this
+design can distinguish for the logistic and random-forest pair is {half:.4f} Brier units. The coordinate trend compared with
+the training prevalence is {trend_label}. The lowest pooled Brier score among distinct models is {best_brier}.{hybrid_sentence}
 """))
-    display(Markdown(f"""
-**Likely questions and answers ({label})**
-
-- **Why is the result {improvement}?** The rule requires the hole-cluster interval of the selected-minus-comparator
-  difference to lie entirely below zero. Here that difference is {d_sel:+.4f} and its interval is
-  [{lo_sel:+.4f}, {hi_sel:+.4f}]. For the logistic-versus-random-forest pair the smallest difference this design can
-  distinguish is {half:.4f} Brier units, so differences of that size between the top models cannot be told apart.
-- **Why is the choice then made at all?** The predeclared selection rule is the lowest pooled Brier. It is reported as a
-  point estimate with a caveat, not as evidence of improvement.
-- **Is the coordinate trend better than the prevalence?** The pair PREV_vs_M2SEL is {trend_label}. A RESOLVED result
-  here is the most secure comparison in this objective.
-- **Is the kriging model better than the prevalence baseline?** The pair PREV_vs_M1 is {m1_label}. Kriging is never
-  claimed to beat the coordinate trend in this evaluation.
-- **Is the hybrid better than its trend?** No. The hybrid is identical to its trend on every common interval, so the gain
-  attributed to the hybrid family is zero by construction.
-- **Does this show that the model predicts well in new areas?** It shows internal spatial validation on five drill lines.
-  It is not an external or prospective test, and no grade, tonnage or resource statement follows.
-"""))
-''')
-
-MD("### 6g. What this result permits you to claim, and what it does not permit")
-CODE(r'''
-rep4a = read_text(REPO / "reports/objective_4/tier_1/RUN_REPORT.md")
-rep4b = read_text(REPO / "reports/objective_4/tier_2/RUN_REPORT.md")
-display(Markdown("**Achievement under the refinement (specs/01)**"))
-display(Markdown(refinement_rows(4)[4] if refinement_rows(4) else "*(not found)*"))
-display(Markdown("**Specification 01: claims that these refinements do not permit**"))
-display(Markdown(between(SPEC, "Claims these refinements do NOT permit", "\n\n") or "*(not found)*"))
-display(Markdown("**Tier 1 limitations, from the run report**"))
-display(Markdown(section_text(rep4a, "## 13. Limitations")))
-display(Markdown("**Tier 2 limitations, from the run report**"))
-display(Markdown(section_text(rep4b, "## 13. Limitations")))
 ''')
 
 # ----- Objective 5 ---------------------------------------------------------------------------------------------------
 
-MD("## 7. Objective 5: three-dimensional uncertainty and scenario analysis")
-MD("### 7a. Objective and operational refinement")
-CODE(r'''
-objective_block(5)
-display(Markdown(
-    "Objective 5 is not refined in specs/01; its design follows the consequence stated in specs/01: inside the drilled block "
-    "the tier-2 selection is used, outside it the tier-1 selection. Probability and entropy are trend-based uncertainty "
-    "from the selected model, not geostatistical uncertainty."))
-''')
-
-MD("### 7b. What was predeclared")
+MD("## 6. Objective 5: three-dimensional uncertainty and scenario analysis")
+MD("### Research question")
+CODE("research_question(5)")
+MD("### Data and method")
+MD("Inside the drilled block the between-hole prediction model is used, and outside it the new-line prediction model. "
+   "Probability and entropy are trend-based uncertainty from the selected model, not geostatistical uncertainty.")
+for _s in MATH["O5"]:
+    MD_MATH(_s)
 CODE(r'''
 o5_cfg = load_yaml("config/objective_5/uncertainty_config.yaml")
-display(Markdown("**Uncertainty configuration** (`config/objective_5/uncertainty_config.yaml`)"))
-display(config_table(o5_cfg, pattern=r"config_version|supersedes|label_rule_id|geometry\.|grid\.(cell|z_range|origin)|"
-                                     r"support_zones\.zones|depth_support\.neighbourhood|uncertainty_measures\.(hole_bootstrap\.(n_rep|seed|interval)|model_disagreement|entropy)|"
-                                     r"classification\.(decision|disagreement|sensitivity)|scenario_simulation\.(method|n_real|seed|kriging\.(max|search))|"
-                                     r"scenario_simulation\.anisotropy\.type|downhole_variogram\.expected", limit=70))
-display(Markdown("**Scenario set (assumed lateral ranges; each is reported separately)**"))
-display(pd.DataFrame(o5_cfg["scenario_simulation"]["scenarios"]))
-display(Markdown("**Classification rule**"))
-display(query("o5", "SELECT rule_id, decision_threshold, prevalence_threshold, disagreement_limit FROM classification_rules"))
-display(Markdown("**Down-hole variogram used for the simulation: check against the Objective 2 fit**"))
-display(query("o5", """
-SELECT check_id, model, ROUND(nugget, 5) AS nugget, ROUND(structured_sill, 6) AS structured_sill,
-       ROUND(practical_range_m, 3) AS practical_range_m, ROUND(max_abs_difference, 8) AS max_abs_difference, status
-FROM downhole_variogram
-"""))
+settings_block([("Uncertainty settings", config_table(o5_cfg, pattern=r"geometry\.|grid\.(cell|z_range|origin)|"
+                                                      r"support_zones\.zones|depth_support\.neighbourhood|uncertainty_measures\.(hole_bootstrap\.(n_rep|seed|interval)|model_disagreement|entropy)|"
+                                                      r"classification\.(decision|disagreement|sensitivity)|scenario_simulation\.(method|n_real|seed|kriging\.(max|search))|"
+                                                      r"scenario_simulation\.anisotropy\.type|downhole_variogram\.expected", limit=70))])
 ''')
-
-MD("### 7c. Key results (queried live from the Objective 5 database)")
+MD("### Results")
 CODE(r'''
 o5_zone_class = query("o5", """
 SELECT zone, class_label, COUNT(*) AS cells,
@@ -1467,9 +1309,25 @@ SELECT zone, COUNT(*) AS cells,
        SUM(CASE WHEN depth_support = 'DEPTH_EXTRAPOLATED' THEN 1 ELSE 0 END) AS depth_extrapolated_cells
 FROM grid_cells GROUP BY zone ORDER BY zone
 """)
+o5_rules = query("o5", "SELECT decision_threshold, prevalence_threshold, disagreement_limit FROM classification_rules")
+o5_downhole = query("o5", """
+SELECT check_id, model, ROUND(nugget, 5) AS nugget, ROUND(structured_sill, 6) AS structured_sill,
+       ROUND(practical_range_m, 3) AS practical_range_m, ROUND(max_abs_difference, 8) AS max_abs_difference, status
+FROM downhole_variogram
+""")
+o5_width = query("o5", """
+SELECT zone, interval_width, disagreement, entropy_bits FROM grid_cells WHERE zone <> 'NO_SUPPORT'
+""")
+q = o5_width.groupby("zone").agg(
+    width_median=("interval_width", "median"),
+    width_p90=("interval_width", lambda s: s.quantile(0.9)),
+    disagreement_median=("disagreement", "median"),
+    disagreement_p90=("disagreement", lambda s: s.quantile(0.9)),
+    entropy_median_bits=("entropy_bits", "median"),
+    cells=("interval_width", "size"),
+).round(4).reset_index()
 o5_boot = query("o5", """
-SELECT zone, model_id, n_replicates, n_success, ROUND(success_fraction, 3) AS success_fraction,
-       ROUND(runtime_s, 1) AS runtime_s, status
+SELECT zone, model_id, n_replicates, n_success, ROUND(success_fraction, 3) AS success_fraction
 FROM bootstrap_summary ORDER BY zone
 """)
 o5_carried = query("o5", """
@@ -1478,7 +1336,7 @@ WHERE weighting = 'INTERVAL' ORDER BY tier, role, metric_id
 """)
 o5_refit = query("o5", """
 SELECT tier, role, model_id, calibration_status, ROUND(in_sample_brier, 4) AS in_sample_brier,
-       ROUND(in_sample_auc, 3) AS in_sample_auc, o3_modes_tied, full_data_matches_o3_mode
+       ROUND(in_sample_auc, 3) AS in_sample_auc
 FROM final_refits ORDER BY tier, role
 """)
 o5_scen = query("o5", """
@@ -1495,121 +1353,71 @@ o5_scen_rep = query("o5", """
 SELECT scenario_id, ROUND(mean_frequency, 4) AS mean_simulated_frequency, ROUND(mean_local_mean, 4) AS mean_local_mean
 FROM sim_scenarios ORDER BY scenario_id
 """)
-display(Markdown("**Cells by support zone and class** (EXTRAPOLATION cells are read with the tier-1 validation; they are not comparable with INTERPOLATION cells)"))
-display(o5_zone_class)
-display(Markdown("**Sensitivity: classes at the training prevalence instead of 0.5**"))
-display(o5_zone_sens)
-display(Markdown("**Depth support: cells that lie below the deepest sampled interval of their neighbourhood**"))
-display(o5_depth)
+caption("Cells by support zone and class (cells in the new-line zone are read with the new-line validation and are not directly comparable with the between-hole zone)")
+show(o5_zone_class)
+caption("Sensitivity: classes at the training prevalence instead of 0.5")
+show(o5_zone_sens)
+caption("Depth support: cells that lie below the deepest sampled interval of their neighbourhood")
+show(o5_depth)
+caption("Classification rule")
+show(o5_rules)
+caption("Down-hole correlogram used in the simulation, checked against the Objective 2 fit")
+show(o5_downhole)
 ''')
-
 CODE(r'''
-o5_width = query("o5", """
-SELECT zone, interval_width, disagreement, entropy_bits FROM grid_cells WHERE zone <> 'NO_SUPPORT'
-""")
-q = o5_width.groupby("zone").agg(
-    width_median=("interval_width", "median"),
-    width_p90=("interval_width", lambda s: s.quantile(0.9)),
-    disagreement_median=("disagreement", "median"),
-    disagreement_p90=("disagreement", lambda s: s.quantile(0.9)),
-    entropy_median_bits=("entropy_bits", "median"),
-    cells=("interval_width", "size"),
-).round(4).reset_index()
-display(Markdown("**Bootstrap interval width (p_hi minus p_lo), model disagreement and entropy, per supported zone**"))
-display(q)
-display(Markdown("**Hole-bootstrap run per zone**"))
-display(o5_boot)
-display(Markdown("**Validated skill carried from Objective 4 (interval-weighted, not recomputed here)**"))
-display(o5_carried)
-display(Markdown("**Final full-data refits** (in-sample values are fit diagnostics, not validation)"))
-display(o5_refit)
+caption("Bootstrap interval width (p_hi minus p_lo), model disagreement and entropy, per supported zone")
+show(q)
+caption("Hole-bootstrap replicates per zone")
+show(o5_boot)
+caption("Validated skill carried from Objective 4 (interval-weighted, not recomputed here)")
+show(o5_carried)
+caption("Final full-data refits (in-sample values are fit diagnostics, not validation)")
+show(o5_refit)
 ''')
-
 CODE(r'''
-display(Markdown("**Scenario simulation: volume, connectivity and reproduction by assumed lateral range**"))
-display(o5_scen)
-display(o5_scen_rep)
+caption("Scenario set: volume, connectivity and feasibility by assumed lateral range (each scenario is reported separately)")
+show(o5_scen)
+caption("Mean simulated frequency against the mean local probability, per scenario")
+show(o5_scen_rep)
 sp50 = o5_scen["volume_p50_m3"]
 display(Markdown(
-    f"Across the {len(o5_scen)} feasible scenarios the median (P50) volume ranges from {sp50.min():,.0f} to {sp50.max():,.0f} m³ "
+    f"Across the {len(o5_scen)} scenarios the median (P50) volume ranges from {sp50.min():,.0f} to {sp50.max():,.0f} m³ "
     f"against an expected volume of {o5_scen['expected_volume_m3'].iloc[0]:,.0f} m³. The P50 largest-component share ranges from "
-    f"{o5_scen['largest_share_p50'].min():.3f} to {o5_scen['largest_share_p50'].max():.3f}. The spread is the finding; "
+    f"{o5_scen['largest_share_p50'].min():.3f} to {o5_scen['largest_share_p50'].max():.3f}. The spread is the finding: "
     "it depends on the assumed lateral range and is not one volume."))
 ''')
-
+MD("### Key figures")
 CODE(r'''
-o5_gates = query("o5", """
-SELECT gate_id, gate_name, status, SUBSTR(detail, 1, 200) AS detail
-FROM gate_results WHERE run_id = (SELECT MAX(run_id) FROM gate_results) ORDER BY gate_id
-""")
-display(Markdown("**Objective 5 gates of the latest verification run** (the scenario gates S01 to S04 and the W gates are included)"))
-display(o5_gates)
+o5_fig = query("o5", "SELECT figure_id, title FROM figure_registry ORDER BY figure_id")
+show_figures("o5", o5_fig, ["O5-F01", "O5-F02", "O5-F05", "O5-F07", "O5-F09"])
 ''')
-
-MD("### 7d. Figures")
-CODE(r'''
-o5_fig = query("o5", "SELECT figure_id, title, status FROM figure_registry ORDER BY figure_id")
-show_figures("o5", o5_fig)
-''')
-
-MD("### 7e. Mathematical notes: Objective 5")
-for _s in MATH["O5"]:
-    MD(_s)
-
-MD("### 7f. How to explain this result")
+MD("The remaining figures are in `figures/objective_5/`.")
+MD("### Summary of findings")
 CODE(r'''
 zc = o5_zone_class.pivot_table(index="zone", columns="class_label", values="cells", aggfunc="sum", fill_value=0)
 boot_pct = float(re.search(r"(\d+) per cent", o5_cfg["uncertainty_measures"]["hole_bootstrap"]["interval"]).group(1))
 conf_present_ext = int(zc.loc["EXTRAPOLATION", "CONFIDENT_PRESENT"]) if "EXTRAPOLATION" in zc.index else 0
 conf_absent_ext = int(zc.loc["EXTRAPOLATION", "CONFIDENT_ABSENT"]) if "EXTRAPOLATION" in zc.index else 0
-unc_int = int(zc.loc["INTERPOLATION", "UNCERTAIN"]) if "INTERPOLATION" in zc.index else 0
 ext_disagree_med = float(q.loc[q.zone == "EXTRAPOLATION", "disagreement_median"].iloc[0])
 int_disagree_med = float(q.loc[q.zone == "INTERPOLATION", "disagreement_median"].iloc[0])
 display(Markdown(f"""
-**Plain-language summary.** The three-dimensional grid is split into zones by distance to the nearest collar. Inside
-about one hole spacing the tier-2 model applies; further out, up to the tier-1 limit, the tier-1 model applies, and beyond
-that no probability is reported. Each cell is labelled confident or uncertain from a {boot_pct:.0f} per cent hole-bootstrap interval and
-from the disagreement between the two locked models. The two locked models disagree most in the extrapolation zone (median
-disagreement {ext_disagree_med:.3f}, against {int_disagree_med:.3f} in the interpolation zone), so the map of disagreement is
-the map of where the unresolved model choice matters. The volume results depend on an assumed lateral range and are reported
-as a set of scenarios.
-"""))
-display(Markdown(f"""
-**Likely questions and answers**
-
-- **Why scenarios instead of one simulation?** The lateral range cannot be estimated from these data (Objective 2), so each
-  assumed range gives its own simulation. Volume is almost insensitive to the range, but connectivity is not, so the
-  results are reported per scenario and never pooled.
-- **Why are the confident classes in the extrapolation zone not comparable with the interpolation zone?** The
-  extrapolation zone uses the tier-1 model, whose validated skill is lower than the tier-2 model's, and its bootstrap
-  intervals are narrow because the logistic trend is smooth. The {conf_present_ext:,} present and {conf_absent_ext:,} absent
-  extrapolation cells therefore reflect a stable trend, not better knowledge.
-- **What does the uncertain class contain?** {unc_int:,} interpolation cells are uncertain. A cell is uncertain when its
-  bootstrap interval straddles the threshold, when the two locked models disagree by more than the limit, or when it is
-  DEPTH_EXTRAPOLATED.
-- **Are the volumes resources?** No. They are relative grid volumes in the relative-depth frame, carry no grade, and depend
-  on the assumed lateral range. The notebook makes no economic statement.
-- **Why is entropy shown?** Entropy is a transform of the probability ($H(p)$ in bits). It shows where the locked model is
-  near 0.5, which is not the same as geostatistical uncertainty.
+The three-dimensional grid is split into zones by distance to the nearest collar. Inside about one hole spacing the
+between-hole prediction model applies. Further out, up to the limit of the new-line prediction, that model applies, and
+beyond that no probability is reported. Each cell is labelled confident or uncertain from a {boot_pct:.0f} per cent
+hole-bootstrap interval and from the disagreement between the two selected models. The two models disagree most in the
+new-line zone (median disagreement {ext_disagree_med:.3f}, against {int_disagree_med:.3f} in the between-hole zone), so the
+map of disagreement shows where the unresolved model choice matters. The new-line zone has {conf_present_ext:,} cells
+confident present and {conf_absent_ext:,} confident absent. These reflect a smooth trend and are not directly comparable
+with the between-hole zone. The volume results depend on an assumed lateral range and are reported as a set of scenarios.
 """))
 ''')
 
-MD("### 7g. What this result permits you to claim, and what it does not permit")
-CODE(r'''
-rep5 = read_text(REPO / "reports/objective_5/RUN_REPORT.md")
-display(Markdown("**Objective 5: claims not permitted, from the run report**"))
-display(Markdown(section_text(rep5, "## 11. Claims not permitted")))
-display(Markdown("**Objective 5: limitations recorded in the configuration**"))
-display(Markdown("\n".join(f"- {item}" for item in o5_cfg.get("claims_not_permitted", []))
-                 if isinstance(o5_cfg, dict) else "*(not available)*"))
-''')
-
-# ----- Limitations and appendix --------------------------------------------------------------------------------------
+# ----- Limitations and further material ------------------------------------------------------------------------------
 
 MD(r'''
-## 8. Limitations and future work
+## 7. Limitations and future work
 
-The results are limited in the following ways. Each limitation is recorded in a run report and is visible in the tables above.
+The results are limited in the following ways. These limitations follow from the data available.
 
 1. **Relative vertical frame.** No collar RL or surveyed elevation is available. All vertical values are depth below the
    collar, along straight holes with one declared orientation. Absolute elevation, depth below sea level and any volume in
@@ -1619,51 +1427,216 @@ The results are limited in the following ways. Each limitation is recorded in a 
    statement can be made, so the label is a logged occurrence, not a measured concentration.
 3. **Lateral range unidentifiable.** The lateral pair structure is not resolved at this support: holes are close within lines
    and lines are far apart. Continuity between lines is therefore an assumption in Objective 5, carried as a set of scenarios.
-4. **Model ranking unresolved.** The locked models of both tiers are INCONCLUSIVE against their next-best model. The
-   choice is a point estimate with a caveat. Objective 5 therefore states that the model choice is not resolved.
+4. **Model ranking unresolved.** For both prediction settings, the selected model is not statistically distinguishable from
+   the next-best model. The choice is a point estimate with a caveat, and Objective 5 does not treat it as settled.
 5. **Hybrid not separated from its trend.** Inner validation chose no residual correlation, so the hybrid equals its trend.
    Whether a residual structure exists cannot be tested with these data.
 
 **What data would resolve them.** Infill drilling between the existing lines would resolve the lateral structure at the
 scale of the between-line gap. Assays on the logged intervals would allow a grade-based definition and remove the label
-conflicts. A surveyed collar RL would allow absolute elevation, and a measured downhole orientation would allow a true structural
-frame instead of a statistically selected dip.
+conflicts. A surveyed collar RL would allow absolute elevation, and a measured downhole orientation would allow a true
+structural frame instead of a statistically selected dip.
 ''')
 
 MD(r'''
-## 9. Appendix
+## 8. Further material
 
-### Commands that regenerate everything
-
-```bash
-pip install -e ".[notebook]"               # installs the notebook extra (Jupyter, nbformat, nbclient, papermill)
-python notebooks/build_notebook.py          # regenerates the .ipynb (no outputs) and MATH_NOTES.md
-papermill notebooks/Kambale_Thesis_Results.ipynb notebooks/output/Results_present.ipynb -p MODE present
-jupyter nbconvert --to html notebooks/output/Results_present.ipynb --no-input
-```
-
-The notebook reads the databases read-only. `notebooks/output/` holds executed copies, which contain query results, and is
-not committed. See `notebooks/README.md`.
-
-### Run reports and configurations (relative links)
-
-Links are relative to this notebook (in `notebooks/`).
-
-- Stage A (Objective 1): [QA/QC report](../reports/QAQC_REPORT.md)
-- Objective 2: [run report](../reports/objective_2/RUN_REPORT.md), [README](../reports/objective_2/README.md)
-- Objective 3: [run report](../reports/objective_3/RUN_REPORT.md), [README](../reports/objective_3/README.md)
-- Objective 4, tier 1 (extrapolation): [run report](../reports/objective_4/tier_1/RUN_REPORT.md)
-- Objective 4, tier 2 (interpolation): [run report](../reports/objective_4/tier_2/RUN_REPORT.md)
-- Objective 5: [run report](../reports/objective_5/RUN_REPORT.md)
-- Specification (scope and claims): `specs/01_thesis_scope_and_objective_traceability.md`
-- Decision logs: `config/objective_2/superseded/`, `config/objective_3/superseded/`, `config/objective_4/superseded/`,
-  `config/objective_5/superseded/`
+- **Technical appendix.** `Kambale_Technical_Appendix.ipynb` describes how the results were checked, the analysis settings
+  and the input checksums, and how to rerun the full analysis.
+- **Mathematical notes.** `MATH_NOTES.md` gives the full derivation of every formula in this notebook, with the
+  implementation that computes it.
+- **Run reports** (relative links, from the `notebooks/` folder):
+  - Objective 1: [QA/QC report](../reports/QAQC_REPORT.md)
+  - Objective 2: [run report](../reports/objective_2/RUN_REPORT.md), [README](../reports/objective_2/README.md)
+  - Objective 3: [run report](../reports/objective_3/RUN_REPORT.md), [README](../reports/objective_3/README.md)
+  - Objective 4, prediction to a new drill line: [run report](../reports/objective_4/tier_1/RUN_REPORT.md)
+  - Objective 4, prediction between holes on the same line: [run report](../reports/objective_4/tier_2/RUN_REPORT.md)
+  - Objective 5: [run report](../reports/objective_5/RUN_REPORT.md)
 ''')
 
+# =====================================================================================================================
+# Technical appendix
+# =====================================================================================================================
 
-# =====================================================================================================================
-# Writers
-# =====================================================================================================================
+use_appendix()
+
+MD(r'''
+# Kambale graphite deposit: technical appendix
+
+**Author.** Dickson Abdul-Wahab
+
+This appendix documents how the results in `Kambale_Thesis_Results.ipynb` were checked. It is intended for readers who want
+to verify or rerun the analysis.
+''')
+
+CODE(r'''
+RUN_CHECKS = True     # runs the automated checks on a copy of the repository
+RUN_RERUN = False  # True reruns the full analysis on a copy of the repository (about 15 minutes)
+''', tags=("parameters",))
+
+CODE(r'''
+import html
+import sys
+from pathlib import Path
+
+import pandas as pd
+from IPython.display import HTML, Markdown, display
+
+
+def find_repo(start=None):
+    """Walk up from the working directory until the folder holding pyproject.toml and src/kambale is found."""
+    here = Path(start or Path.cwd()).resolve()
+    for candidate in [here, *here.parents]:
+        if (candidate / "pyproject.toml").exists() and (candidate / "src" / "kambale").is_dir():
+            return candidate
+    raise RuntimeError(f"repository root not found above {here}")
+
+
+REPO = find_repo()
+SRC = REPO / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from kambale.notebook.env import config_receipts, database_manifest_check, environment_summary
+from kambale.notebook.gates import run_gates
+from kambale.notebook.receipts import receipt_check
+from kambale.notebook.reproduce import reproduce
+
+pd.set_option("display.max_columns", 40)
+pd.set_option("display.width", 180)
+pd.set_option("display.max_colwidth", 110)
+STATUS_NAMES = {"PASS": "passed", "WARN": "flagged", "STOP": "failed"}
+
+
+def as_frame(obj):
+    if isinstance(obj, pd.DataFrame):
+        return obj
+    if isinstance(obj, dict):
+        return pd.DataFrame(list(obj.items()), columns=["item", "value"])
+    if isinstance(obj, (list, tuple)) and obj and isinstance(obj[0], dict):
+        return pd.DataFrame(obj)
+    return pd.DataFrame({"value": [str(obj)]})
+
+
+def callout(text):
+    display(HTML('<div style="border:2px solid #b45309;background:#fff7ed;padding:10px 14px;border-radius:6px;'
+                 'margin:8px 0">' + text + "</div>"))
+''')
+
+MD(r'''
+## 1. Software environment
+''')
+CODE(r'''
+display(as_frame(environment_summary()))
+''')
+
+MD(r'''
+## 2. Analysis settings and input files
+
+Each objective's settings were written to a configuration file before the corresponding analysis was run. Earlier versions
+are kept in `config/objective_*/superseded/` with the reason for each change. Each database records a checksum of the
+inputs it was built from, so a change to an upstream input is detected.
+''')
+CODE(r'''
+display(Markdown("**Configuration files**"))
+display(as_frame(config_receipts()))
+display(Markdown("**Database checksums**"))
+display(as_frame(database_manifest_check()))
+display(Markdown("**Input checksums**"))
+display(as_frame(receipt_check()))
+''')
+
+MD(r'''
+## 3. Automated checks
+
+Each stage of the analysis runs automated checks on its inputs and outputs. A check either passes, is flagged for attention
+(the analysis continues and the issue is reported), or fails (the analysis stops). The checks below are run on a copy of
+the repository, so running them does not change any file.
+''')
+CODE(r'''
+if RUN_CHECKS:
+    checks = as_frame(run_gates()).copy()
+    checks["outcome"] = checks["status"].map(lambda s: STATUS_NAMES.get(s, s))
+    display(Markdown("**Checks by objective and outcome (number of checks)**"))
+    table = pd.crosstab(checks["objective"], checks["outcome"], margins=True)
+    display(table)
+    display(HTML("<details><summary><b>Full list of checks</b> (click to expand)</summary>"
+                 + checks.drop(columns=["status"]).to_html(index=False) + "</details>"))
+else:
+    display(Markdown("*The automated checks were not run in this execution (`RUN_CHECKS = False`).*"))
+''')
+MD(r'''
+### The seven flagged checks
+
+| Objective | Check | What it means |
+|---|---|---|
+| 1 | Count of `Sgs` intervals | The preliminary thesis design document reported 529 `Sgs` intervals; the database built from the drilling workbook holds 530. The one-interval difference is noted; the database value is used throughout. |
+| 2 | Hole orientation | Every hole carries the same planned orientation (dip −60°, azimuth 090°). No downhole surveys exist, so the planned orientation is assumed for all hole geometry. |
+| 2 | Low graphitic proportion on one line | Only about 4 per cent of intervals on line N1113000 are graphitic, so continuity estimated for that line rests on few graphitic pairs. |
+| 2 | Directions without enough pairs | Lateral directions 000°, 045° and 135° had too few pairs to estimate a variogram. Only the along-line direction could be modelled, so lateral anisotropy is not established. |
+| 2 | Stability when one line is left out | Two of ten refits were unstable, both for the fresh-rock variogram. Continuity in fresh rock is therefore the least certain result of Objective 2. |
+| 2 | Relative depth only | No collar elevations are available, so all sections are drawn in depth below the collar. |
+| 5 | Final model settings | When the selected models were refitted on all data for the 3-D products, tuning chose different settings from the most frequent cross-validation choice (random forest: maximum depth 8 instead of 4, minimum leaf 20 instead of 5; gradient boosting: L2 penalty 0 instead of 1). The validated performance comes from cross-validation; the 3-D products use the refitted models. |
+''')
+
+MD(r'''
+## 4. Full rerun
+
+Setting `RUN_RERUN = True` reruns every stage of Objectives 1 to 5 on a copy of the repository, regenerates all tables and
+figures, and compares each regenerated table with the stored one, cell by cell. Timestamps, run times and checksums are
+expected to differ and are ignored.
+''')
+CODE(r'''
+if RUN_RERUN:
+    rep = reproduce(keep=False)
+    rep = rep if isinstance(rep, dict) else {"verdict": str(rep)}
+    display(Markdown("**Rerun result**"))
+    display(Markdown(f"Working copy: `{rep.get('workdir', 'not reported')}`"))
+    display(as_frame(rep.get("steps", [])))
+    if "tables" in rep:
+        display(Markdown("**Table comparison (regenerated against stored)**"))
+        display(as_frame(rep["tables"]))
+    if "figures" in rep:
+        display(Markdown("**Figure comparison**"))
+        display(as_frame(rep["figures"]))
+    callout("<b>Reproduction verdict:</b> " + html.escape(str(rep.get("verdict", "not reported")))
+            + "<br><b>Scope:</b> " + html.escape(str(rep.get("scope_note", ""))))
+else:
+    display(Markdown(
+        "*The rerun was not executed (`RUN_RERUN = False`).* To run it, execute this notebook with `-p RUN_RERUN True`. "
+        "It re-runs the pipelines on a copy of the repository (about 15 minutes), compares the regenerated tables and figures "
+        "with the stored ones, and never changes the stored databases."))
+''')
+
+MD(r'''
+## 5. Commands
+
+```bash
+pip install -e ".[notebook]"          # Jupyter, nbformat, nbclient, papermill and ipykernel
+python notebooks/build_notebook.py    # regenerates both notebooks (no outputs) and MATH_NOTES.md
+python notebooks/_check_queries.py    # runs every query and code cell of both notebooks (read-only)
+papermill notebooks/Kambale_Thesis_Results.ipynb notebooks/output/Kambale_Thesis_Results.ipynb
+python -m nbconvert --to html notebooks/output/Kambale_Thesis_Results.ipynb
+papermill notebooks/Kambale_Technical_Appendix.ipynb notebooks/output/Kambale_Technical_Appendix.ipynb
+python -m nbconvert --to html notebooks/output/Kambale_Technical_Appendix.ipynb
+papermill notebooks/Kambale_Technical_Appendix.ipynb notebooks/output/Kambale_Technical_Appendix_rerun.ipynb -p RUN_RERUN True
+```
+
+The notebooks read the databases read-only. `notebooks/output/` holds executed copies, which contain query results, and is
+not committed. See `notebooks/README.md`.
+
+**Run reports and settings (relative links, from the `notebooks/` folder).**
+
+- Objective 1: [QA/QC report](../reports/QAQC_REPORT.md)
+- Objective 2: [run report](../reports/objective_2/RUN_REPORT.md), [README](../reports/objective_2/README.md)
+- Objective 3: [run report](../reports/objective_3/RUN_REPORT.md), [README](../reports/objective_3/README.md)
+- Objective 4, prediction to a new drill line: [run report](../reports/objective_4/tier_1/RUN_REPORT.md)
+- Objective 4, prediction between holes on the same line: [run report](../reports/objective_4/tier_2/RUN_REPORT.md)
+- Objective 5: [run report](../reports/objective_5/RUN_REPORT.md)
+- Decision logs (superseded settings and the reason for each change): `config/objective_2/superseded/`,
+  `config/objective_3/superseded/`, `config/objective_4/superseded/`, `config/objective_5/superseded/`
+''')
+
 
 def math_document() -> str:
     parts = [
@@ -1694,36 +1667,44 @@ def math_document() -> str:
     return "\n".join(parts).rstrip() + "\n"
 
 
-def build_notebook() -> None:
+
+# =====================================================================================================================
+# Writers
+# =====================================================================================================================
+
+
+def write_notebook(cells, path):
     try:
         import nbformat
         from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook
     except ImportError as exc:  # pragma: no cover - environment dependent
-        raise SystemExit(f"nbformat is required to build the notebook: {exc}. Install with pip install -e \".[notebook]\".")
+        raise SystemExit(f"nbformat is required to build the notebooks: {exc}. Install with pip install -e \".[notebook]\".")
 
-    cells = []
-    for kind, source, tags in CELLS:
+    built = []
+    for kind, source, tags in cells:
         if kind == "markdown":
-            cells.append(new_markdown_cell(source))
+            built.append(new_markdown_cell(source))
         else:
             cell = new_code_cell(source)
             cell.outputs = []
             cell.execution_count = None
             if tags:
                 cell.metadata["tags"] = tags
-            cells.append(cell)
-    notebook = new_notebook(cells=cells, metadata={
+            built.append(cell)
+    notebook = new_notebook(cells=built, metadata={
         "kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"},
         "language_info": {"name": "python"},
     })
     nbformat.validate(notebook)
-    nbformat.write(notebook, NOTEBOOK_PATH)
+    nbformat.write(notebook, path)
 
 
 def main() -> int:
-    build_notebook()
+    write_notebook(RESULTS_CELLS, RESULTS_PATH)
+    write_notebook(APPENDIX_CELLS, APPENDIX_PATH)
     MATH_PATH.write_text(math_document(), encoding="utf-8")
-    print(f"wrote {NOTEBOOK_PATH}")
+    print(f"wrote {RESULTS_PATH}")
+    print(f"wrote {APPENDIX_PATH}")
     print(f"wrote {MATH_PATH}")
     return 0
 
