@@ -21,8 +21,9 @@ def connect_o5(path: Path | None = None) -> sqlite3.Connection:
 
 def apply_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(O5_SCHEMA_PATH.read_text(encoding="utf-8"))
-    conn.execute("INSERT OR IGNORE INTO schema_version (version_id, schema_name, applied_utc) VALUES (1, ?, ?)",
-                 (O5_SCHEMA_VERSION, utc_now()))
+    conn.execute("INSERT INTO schema_version (version_id, schema_name, applied_utc) VALUES (1, ?, ?) "
+                 "ON CONFLICT(version_id) DO UPDATE SET schema_name = excluded.schema_name, "
+                 "applied_utc = excluded.applied_utc", (O5_SCHEMA_VERSION, utc_now()))
 
 
 def connect_readonly(path: Path) -> sqlite3.Connection:

@@ -1,7 +1,6 @@
 """Command-line entry point: python -I -m kambale.objective_5 <command>.
 
-`all` runs import, refit, grid, bootstrap, classify, verify, figures, tables, verify, report and verify, in that order. It
-does not run simulate (part 2). A verify step that finds a STOP gate ends the run before anything after it is written.
+`all` runs import, refit, grid, bootstrap, classify, simulate, verify, figures, tables, verify, report and verify, in that order. A verify step that finds a STOP gate ends the run before anything after it is written.
 Every command prints a JSON summary and exits with status 1 when a STOP gate or StopError occurs.
 """
 
@@ -38,9 +37,6 @@ def main(argv: list[str] | None = None) -> int:
     from kambale.objective_5.db import connect_o5
     try:
         cfg, _ = load_config(O5_CONFIG_PATH)
-        if command == "simulate":
-            from kambale.objective_5 import simulate
-            simulate.run()
         if command in ("import", "all"):
             from kambale.objective_5 import importer
             summary["import"] = importer.import_inputs()
@@ -75,6 +71,15 @@ def main(argv: list[str] | None = None) -> int:
             o5 = connect_o5()
             try:
                 summary["classify"] = classify.classify_all(o5, cfg)
+            finally:
+                o5.close()
+        if command in ("simulate", "all"):
+            from kambale.objective_5 import simulate
+            o5 = connect_o5()
+            try:
+                t0 = time.time()
+                summary["simulate"] = simulate.run_all(o5, cfg)
+                summary["simulate"]["wall_clock_s"] = round(time.time() - t0, 1)
             finally:
                 o5.close()
         if command == "verify" and _verify_step(summary, "verify"):

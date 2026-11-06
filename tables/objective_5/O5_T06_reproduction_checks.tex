@@ -1,0 +1,48 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O5-T06. Scenario reproduction checks. Mean simulated frequency against the mean local mean over the domain (WARN above 0.05). Down-hole indicator semivariogram of realisations 1-5 against the data semivariogram on the Objective 2 lag bins; reported, not gated. Receipt 1.}
+\label{tab:O5T06}
+\begin{tabular}{lllllll}
+\toprule
+scenario\_id & check\_id & simulated & reference & difference & status & basis \\
+\midrule
+DATA & DOWNHOLE\_DATA\_VS\_O2\_MAX\_ABS\_DIFF & 0 &  &  & REPORTED & data semivariance recomputed here against the stored Objective 2 DOWNHOLE\_WITHIN bins \\
+SIS\_AH015 & DOWNHOLE\_GAMMA\_LAG\_1 & 0.023165 & 0.036411 & -0.013245 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH015 & DOWNHOLE\_GAMMA\_LAG\_10 & 0.145856 & 0.161712 & -0.015856 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH015 & DOWNHOLE\_GAMMA\_LAG\_20 & 0.193131 & 0.212121 & -0.01899 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH015 & DOWNHOLE\_GAMMA\_LAG\_30 & 0.230303 & 0.280303 & -0.05 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH015 & DOWNHOLE\_GAMMA\_LAG\_5 & 0.093728 & 0.114404 & -0.020675 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH015 & DOWNHOLE\_MAX\_ABS\_DIFF\_SUPPORTED\_BINS & 0.052564 &  &  & REPORTED & maximum over supported bins of |simulated mean - data| \\
+SIS\_AH015 & MEAN\_FREQUENCY\_VS\_MEAN\_LOCAL\_MEAN & 0.297238 & 0.299885 & -0.002647 & PASS & domain nodes; WARN when the absolute difference exceeds 0.05 \\
+SIS\_AH025 & DOWNHOLE\_GAMMA\_LAG\_1 & 0.029759 & 0.036411 & -0.006651 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH025 & DOWNHOLE\_GAMMA\_LAG\_10 & 0.15009 & 0.161712 & -0.011622 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH025 & DOWNHOLE\_GAMMA\_LAG\_20 & 0.210101 & 0.212121 & -0.00202 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH025 & DOWNHOLE\_GAMMA\_LAG\_30 & 0.249242 & 0.280303 & -0.031061 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH025 & DOWNHOLE\_GAMMA\_LAG\_5 & 0.110613 & 0.114404 & -0.00379 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH025 & DOWNHOLE\_MAX\_ABS\_DIFF\_SUPPORTED\_BINS & 0.033333 &  &  & REPORTED & maximum over supported bins of |simulated mean - data| \\
+SIS\_AH025 & MEAN\_FREQUENCY\_VS\_MEAN\_LOCAL\_MEAN & 0.292319 & 0.299885 & -0.007566 & PASS & domain nodes; WARN when the absolute difference exceeds 0.05 \\
+SIS\_AH050 & DOWNHOLE\_GAMMA\_LAG\_1 & 0.034002 & 0.036411 & -0.002408 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH050 & DOWNHOLE\_GAMMA\_LAG\_10 & 0.162342 & 0.161712 & 0.000631 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH050 & DOWNHOLE\_GAMMA\_LAG\_20 & 0.209697 & 0.212121 & -0.002424 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH050 & DOWNHOLE\_GAMMA\_LAG\_30 & 0.274242 & 0.280303 & -0.006061 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH050 & DOWNHOLE\_GAMMA\_LAG\_5 & 0.11785 & 0.114404 & 0.003446 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH050 & DOWNHOLE\_MAX\_ABS\_DIFF\_SUPPORTED\_BINS & 0.013333 &  &  & REPORTED & maximum over supported bins of |simulated mean - data| \\
+SIS\_AH050 & MEAN\_FREQUENCY\_VS\_MEAN\_LOCAL\_MEAN & 0.291311 & 0.299885 & -0.008575 & PASS & domain nodes; WARN when the absolute difference exceeds 0.05 \\
+SIS\_AH100 & DOWNHOLE\_GAMMA\_LAG\_1 & 0.038475 & 0.036411 & 0.002064 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH100 & DOWNHOLE\_GAMMA\_LAG\_10 & 0.161441 & 0.161712 & -0.00027 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH100 & DOWNHOLE\_GAMMA\_LAG\_20 & 0.208081 & 0.212121 & -0.00404 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH100 & DOWNHOLE\_GAMMA\_LAG\_30 & 0.269697 & 0.280303 & -0.010606 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH100 & DOWNHOLE\_GAMMA\_LAG\_5 & 0.122329 & 0.114404 & 0.007926 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH100 & DOWNHOLE\_MAX\_ABS\_DIFF\_SUPPORTED\_BINS & 0.01859 &  &  & REPORTED & maximum over supported bins of |simulated mean - data| \\
+SIS\_AH100 & MEAN\_FREQUENCY\_VS\_MEAN\_LOCAL\_MEAN & 0.293633 & 0.299885 & -0.006252 & PASS & domain nodes; WARN when the absolute difference exceeds 0.05 \\
+SIS\_AH200 & DOWNHOLE\_GAMMA\_LAG\_1 & 0.040539 & 0.036411 & 0.004128 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH200 & DOWNHOLE\_GAMMA\_LAG\_10 & 0.164775 & 0.161712 & 0.003063 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH200 & DOWNHOLE\_GAMMA\_LAG\_20 & 0.209697 & 0.212121 & -0.002424 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH200 & DOWNHOLE\_GAMMA\_LAG\_30 & 0.265909 & 0.280303 & -0.014394 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH200 & DOWNHOLE\_GAMMA\_LAG\_5 & 0.126327 & 0.114404 & 0.011923 & REPORTED & mean over realisations 1-5; data semivariance of binary intervals \\
+SIS\_AH200 & DOWNHOLE\_MAX\_ABS\_DIFF\_SUPPORTED\_BINS & 0.017949 &  &  & REPORTED & maximum over supported bins of |simulated mean - data| \\
+SIS\_AH200 & MEAN\_FREQUENCY\_VS\_MEAN\_LOCAL\_MEAN & 0.299825 & 0.299885 & -0.00006 & PASS & domain nodes; WARN when the absolute difference exceeds 0.05 \\
+\bottomrule
+\end{tabular}
+\end{table}

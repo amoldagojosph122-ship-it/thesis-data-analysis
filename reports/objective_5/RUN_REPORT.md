@@ -1,8 +1,8 @@
 # Objective 5 run report: model-based three-dimensional uncertainty (part 1)
 
-Configuration O5-CFG-2026.11.06-2 (supersedes O5-CFG-2026.11.06-1); SHA-256 of the configuration bytes 77227d3a23ceb6ba50d93994d83ca7a1a367ba36451cb28d6271409413169893. Generated 2026-11-06T10:43:27Z. Relative depth below collar throughout; absolute elevation is not used.
+Configuration O5-CFG-2026.11.06-2 (supersedes O5-CFG-2026.11.06-1); SHA-256 of the configuration bytes 77227d3a23ceb6ba50d93994d83ca7a1a367ba36451cb28d6271409413169893. Generated 2026-11-06T11:09:37Z. Relative depth below collar throughout; absolute elevation is not used.
 
-Status: part 1 of the predeclared stage. Scenario simulation: part 2, not yet run.
+Status: parts 1 and 2 of the predeclared stage. Part 2 is a scenario analysis with an assumed lateral range (section 10).
 
 ## 1. Inputs and receipts
 
@@ -81,6 +81,8 @@ Sensitivity at the training prevalence 0.2870 (headline threshold 0.5):
 | INTERPOLATION | UNCERTAIN | 20146 |
 | NO_SUPPORT | NO_SUPPORT | 24136 |
 
+Confident classes depend on the width of the bootstrap interval of the zone's model. The tier-1 logistic model is smooth and its bootstrap intervals are narrow, so CONFIDENT classes in the EXTRAPOLATION zone reflect a stable simple trend, not better knowledge: its validated skill (tier 1) is lower than the tier-2 model's. EXTRAPOLATION-zone classes must be read with the tier-1 validation in O5-T03 and the model-disagreement map, and are not comparable with INTERPOLATION-zone classes.
+
 ## 5. Interval width and disagreement by zone
 
 Median and 90th percentile over the supported cells of each zone.
@@ -129,8 +131,13 @@ Median and 90th percentile over the supported cells of each zone.
 | G13 | Classification recomputed from stored probabilities | PASS | 0 cells differ from the recomputed class |
 | G14 | Carried Objective 4 validation equals the source | PASS | 0 carried values differ from the Objective 4 pooled metrics |
 | G15 | uint8 quantisation round trip | PASS | maximum round-trip error 0.001961 (limit 1/510 = 0.001961) |
+| S01 | Scenario set matches configuration | PASS | [('SIS_AH015', 15.0), ('SIS_AH025', 25.0), ('SIS_AH050', 50.0), ('SIS_AH100', 100.0), ('SIS_AH200', 200.0)] |
+| S02 | Realisation count, neighbour limits and seed | PASS | realisations per scenario {'SIS_AH015': 100, 'SIS_AH025': 100, 'SIS_AH050': 100, 'SIS_AH100': 100, 'SIS_AH200': 100}; neighbour limits 24/12; seed 20261109; mismatches [] |
+| S03 | Vertical ranges match the expected values | PASS | a_v within 0.01 of the expected values; infeasibility recorded |
+| S04 | Simulation nodes inside the domain | PASS | 0 simulated cells outside INTERPOLATION and SUPPORTED |
 | W01 | Full-data hyperparameters versus the most frequent Objective 3 fold choice | WARN | TIER_1_EXTRAPOLATION M2_RF: full {"max_depth":8,"max_features":"sqrt","min_samples_leaf":20,"n_estimators":200} vs O3 mode {"max_depth":4,"max_features":"sqrt","min_samples_leaf":5,"n_estimators":200} (5 folds); TIER_2_INTERPOLATION M2_HGB: full {"l2_regularization":0.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} vs O3 mode {"l2_regularization":1.0,"learning_rate":0.05,"max_iter":150,"max_leaf_nodes":7,"min_samples_leaf":20} (5 folds) |
 | W02 | Share of INTERPOLATION cells that are DEPTH_EXTRAPOLATED | PASS | 0.456 of 28000 interpolation cells |
+| W03 | Mean simulated frequency against mean local mean | PASS | all scenarios within 0.05 |
 
 ## 9. Figures and tables
 
@@ -143,6 +150,9 @@ Median and 90th percentile over the supported cells of each zone.
 | O5-F05 | Class depth slices with weathering-front tag | GENERATED | rendered from O5-F05.sql; 157380 rows |
 | O5-F06 | Along-line sections | GENERATED | rendered from O5-F06.sql; 34160 rows |
 | O5-F07 | Three-dimensional view | GENERATED | rendered from O5-F07.sql; 19023 rows |
+| O5-F08 | Graphitic grid volume distribution per scenario | GENERATED | rendered from O5-F08.sql; 500 rows |
+| O5-F09 | Connectivity per scenario | GENERATED | rendered from O5-F09.sql; 500 rows |
+| O5-F10 | Realisation and frequency section per scenario | GENERATED | rendered from O5-F10.sql; 34160 rows |
 
 | id | title | status | rows |
 |---|---|---|---|
@@ -150,10 +160,38 @@ Median and 90th percentile over the supported cells of each zone.
 | O5-T02 | Sensitivity of the class counts to the decision threshold | GENERATED | 14 |
 | O5-T03 | Validated skill carried from Objective 4 beside the class counts | GENERATED | 2 |
 | O5-T04 | Final-refit record | GENERATED | 4 |
+| O5-T05 | Scenario simulation summary (assumed lateral range) | GENERATED | 5 |
+| O5-T06 | Scenario reproduction checks | GENERATED | 36 |
 
-Scenario simulation: part 2, not yet run.
+## 10. Scenario simulation (scenario analysis; lateral range assumed, not estimated)
 
-## 10. Claims not permitted
+Sequential indicator simulation with a locally varying mean (tier-2 M2_HGB_WF, calibrated), residual simple kriging with up to 24 conditioning data and 12 previously simulated nodes within anisotropy-scaled distance 1.0, 100 realisations per scenario, seed 20261109. Vertical range set so that the range along the hole direction (plunge 60 degrees) equals the fitted down-hole practical range. This is a scenario analysis: each lateral range is assumed, scenarios are reported separately and never pooled.
+
+| scenario | a_h (m) | a_v (m) | volume P10 (m3) | volume P50 (m3) | volume P90 (m3) | expected sum(m) x 200 (m3) | components P50 | largest share P10 | P50 | P90 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| SIS_AH015 | 15 | 32.85 | 8.656e+05 | 9.089e+05 | 9.368e+05 | 9.13e+05 | 73 | 0.4448 | 0.4743 | 0.4983 |
+| SIS_AH025 | 25 | 23.09 | 8.448e+05 | 8.891e+05 | 9.401e+05 | 9.13e+05 | 61 | 0.4456 | 0.4758 | 0.505 |
+| SIS_AH050 | 50 | 20.97 | 8.327e+05 | 8.894e+05 | 9.317e+05 | 9.13e+05 | 40.5 | 0.4418 | 0.4885 | 0.5175 |
+| SIS_AH100 | 100 | 20.52 | 8.525e+05 | 8.879e+05 | 9.442e+05 | 9.13e+05 | 34 | 0.467 | 0.5056 | 0.5332 |
+| SIS_AH200 | 200 | 20.41 | 8.673e+05 | 9.157e+05 | 9.539e+05 | 9.13e+05 | 35 | 0.4823 | 0.5102 | 0.5367 |
+
+Reproduction and gates per scenario:
+
+| scenario | mean simulated frequency | mean local mean | difference | frequency status | SK fallbacks | neighbourless node visits (sum over realisations) | exact neighbour searches (sum) | downhole max abs diff (supported bins) | runtime (s) |
+|---|---|---|---|---|---|---|---|---|---|
+| SIS_AH015 | 0.2972 | 0.2999 | -0.0026 | PASS | 0 | 9931 | 0 | 0.0526 | 170 |
+| SIS_AH025 | 0.2923 | 0.2999 | -0.0076 | PASS | 0 | 1039 | 0 | 0.0333 | 214 |
+| SIS_AH050 | 0.2913 | 0.2999 | -0.0086 | PASS | 0 | 42 | 8428 | 0.0133 | 234 |
+| SIS_AH100 | 0.2936 | 0.2999 | -0.0063 | PASS | 0 | 5 | 33436 | 0.0186 | 237 |
+| SIS_AH200 | 0.2998 | 0.2999 | -0.0001 | PASS | 0 | 0 | 34903 | 0.0179 | 238 |
+
+Spread across scenarios (the finding): the median simulated volume ranges from 8.879e+05 to 9.157e+05 m3 over the 5 feasible scenarios, against an expected volume of 9.13e+05 to 9.13e+05 m3. The median largest-component share ranges from 0.474 to 0.510 and the median component count from 34 to 73. The result is this spread, which depends on the assumed lateral range; it is not one volume.
+
+Data semivariance recomputed here against the stored Objective 2 DOWNHOLE_WITHIN bins: maximum absolute difference 0.00e+00. Down-hole reproduction per scenario is in O5-T06 (lags 1, 5, 10, 20 and 30 m, and the maximum over supported bins).
+
+Scenario claims: Volumes are relative grid volumes of the logged DESIGN_8_2_v1 domain inside the INTERPOLATION zone. They are not resources, carry no grade, and depend on the assumed lateral range; the spread across scenarios is the result.
+
+## 11. Claims not permitted
 
 - grade, tonnage, resource or reserve of any kind
 - a geostatistical uncertainty with an estimated lateral covariance; scenario results rest on an assumed lateral range

@@ -1,5 +1,5 @@
--- Objective 5 schema: model-based uncertainty on a relative grid. O5-SCHEMA-2026.11.06-1.
--- Reads Objective 2, 3 and 4 databases read-only. Part 1 writes no scenario tables (O5-T05, O5-T06, O5-F08..F10 are part 2).
+-- Objective 5 schema: model-based uncertainty on a relative grid and the scenario simulation. O5-SCHEMA-2026.11.06-2.
+-- Reads Objective 2, 3 and 4 databases read-only. Part 2 adds the sim_* tables (O5-T05, O5-T06, O5-F08..F10).
 
 PRAGMA foreign_keys = ON;
 
@@ -310,4 +310,119 @@ CREATE TABLE IF NOT EXISTS gate_results (
     detail      TEXT    NOT NULL,
     created_utc TEXT    NOT NULL,
     PRIMARY KEY (run_id, gate_id)
+);
+
+-- ---------------------------------------------------------------------------------------------------------------------
+-- Part 2: scenario simulation (sequential indicator simulation with a locally varying mean). Scenario analysis only:
+-- the lateral range of each scenario is assumed. One row per scenario; INFEASIBLE scenarios are recorded, not run.
+CREATE TABLE IF NOT EXISTS sim_scenarios (
+    scenario_id                 TEXT    PRIMARY KEY,
+    scenario_index              INTEGER NOT NULL,
+    horizontal_range_m          REAL    NOT NULL,
+    feasibility                 TEXT    NOT NULL CHECK (feasibility IN ('FEASIBLE','INFEASIBLE')),
+    vertical_bracket            REAL    NOT NULL,
+    vertical_range_m            REAL,
+    expected_vertical_range_m   REAL    NOT NULL,
+    downhole_practical_range_m  REAL    NOT NULL,
+    dip_deg                     REAL    NOT NULL,
+    n_domain_nodes              INTEGER NOT NULL,
+    n_data                      INTEGER NOT NULL,
+    n_realisations              INTEGER,
+    seed                        INTEGER NOT NULL,
+    max_conditioning            INTEGER NOT NULL,
+    max_simulated               INTEGER NOT NULL,
+    search_radius               REAL    NOT NULL,
+    jitter_fraction             REAL    NOT NULL,
+    expected_volume_m3          REAL    NOT NULL,
+    volume_p10_m3               REAL,
+    volume_p50_m3               REAL,
+    volume_p90_m3               REAL,
+    components_p10              REAL,
+    components_p50              REAL,
+    components_p90              REAL,
+    largest_share_p10           REAL,
+    largest_share_p50           REAL,
+    largest_share_p90           REAL,
+    mean_local_mean             REAL,
+    mean_frequency              REAL,
+    mean_frequency_diff         REAL,
+    frequency_status            TEXT,
+    sk_fallbacks                INTEGER,
+    sk_neighbourless_nodes      INTEGER,
+    exact_neighbour_searches       INTEGER,
+    downhole_max_abs_diff       REAL,
+    downhole_mean_abs_diff      REAL,
+    runtime_s                   REAL,
+    status                      TEXT    NOT NULL CHECK (status IN ('COMPLETED','INFEASIBLE_NOT_RUN')),
+    config_version              TEXT    NOT NULL,
+    created_utc                 TEXT    NOT NULL
+);
+
+-- One row per realisation of a feasible scenario.
+CREATE TABLE IF NOT EXISTS sim_realisations (
+    scenario_id                 TEXT    NOT NULL REFERENCES sim_scenarios (scenario_id),
+    realisation                 INTEGER NOT NULL CHECK (realisation >= 1),
+    n_positive                  INTEGER NOT NULL CHECK (n_positive >= 0),
+    volume_m3                   REAL    NOT NULL,
+    n_components                INTEGER NOT NULL CHECK (n_components >= 0),
+    largest_volume_m3           REAL    NOT NULL,
+    largest_share               REAL,
+    sk_fallbacks                INTEGER NOT NULL,
+    sk_neighbourless_nodes      INTEGER NOT NULL,
+    exact_neighbour_searches       INTEGER NOT NULL,
+    PRIMARY KEY (scenario_id, realisation)
+);
+
+-- Per-cell frequency of positive outcomes over the realisations, and the local mean of the cell.
+CREATE TABLE IF NOT EXISTS sim_cell_frequency (
+    scenario_id                 TEXT    NOT NULL REFERENCES sim_scenarios (scenario_id),
+    cell_id                     INTEGER NOT NULL REFERENCES grid_cells (cell_id),
+    n_positive                  INTEGER NOT NULL,
+    frequency                   REAL    NOT NULL,
+    local_mean                  REAL    NOT NULL,
+    PRIMARY KEY (scenario_id, cell_id)
+);
+
+-- Two full realisations per scenario (indicator values per simulation node).
+CREATE TABLE IF NOT EXISTS sim_cell_realisation (
+    scenario_id                 TEXT    NOT NULL REFERENCES sim_scenarios (scenario_id),
+    realisation                 INTEGER NOT NULL CHECK (realisation IN (1,2)),
+    cell_id                     INTEGER NOT NULL REFERENCES grid_cells (cell_id),
+    value                       INTEGER NOT NULL CHECK (value IN (0,1)),
+    PRIMARY KEY (scenario_id, realisation, cell_id)
+);
+
+-- Down-hole indicator semivariogram per Objective 2 lag bin: data and the realisations sampled at the nearest node.
+CREATE TABLE IF NOT EXISTS sim_downhole_variogram (
+    scenario_id                 TEXT    NOT NULL REFERENCES sim_scenarios (scenario_id),
+    bin_index                   INTEGER NOT NULL,
+    lag_centre_m                REAL    NOT NULL,
+    n_pairs                     INTEGER NOT NULL,
+    n_hole_pairs                INTEGER NOT NULL,
+    supported                   INTEGER NOT NULL CHECK (supported IN (0,1)),
+    n_realisations_sampled      INTEGER NOT NULL,
+    data_gamma                  REAL,
+    data_o2_gamma               REAL,
+    sim_gamma_mean              REAL,
+    sim_gamma_min               REAL,
+    sim_gamma_max               REAL,
+    PRIMARY KEY (scenario_id, bin_index)
+);
+
+-- Binary intervals with their local mean (final tier-2 refit) and the nearest simulation node.
+CREATE TABLE IF NOT EXISTS sim_datum (
+    upstream_interval_id        INTEGER PRIMARY KEY,
+    hole_id                     TEXT    NOT NULL,
+    easting_m                   REAL    NOT NULL,
+    northing_m                  REAL    NOT NULL,
+    z_relative_m                REAL    NOT NULL,
+    indicator                   INTEGER NOT NULL CHECK (indicator IN (0,1)),
+    local_mean                  REAL    NOT NULL,
+    nearest_node_cell_id        INTEGER NOT NULL REFERENCES grid_cells (cell_id),
+    nearest_node_distance_m     REAL    NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sim_run_meta (
+    meta_key                    TEXT    PRIMARY KEY,
+    meta_value                  TEXT    NOT NULL
 );

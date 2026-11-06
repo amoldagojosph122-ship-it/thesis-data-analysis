@@ -1,4 +1,4 @@
-"""Objective 5 table renderers O5-T01..T04 (CSV, Markdown and LaTeX from one registered query each)."""
+"""Objective 5 table renderers O5-T01..T06 (CSV, Markdown and LaTeX from one registered query each)."""
 
 from __future__ import annotations
 
@@ -29,6 +29,14 @@ TABLES = OrderedDict([
                 "Full-data fits on all binary intervals. In-sample Brier and AUC are fit diagnostics only, not validation. "
                 "full_data_matches_o3_mode compares the full-data hyperparameters with the most frequent Objective 3 "
                 "per-fold choice.")),
+    ("O5-T05", ("Scenario simulation summary (assumed lateral range)", "O5_T05_scenario_summary", "O5-T05.sql",
+                "Scenario analysis: the lateral range is assumed, not estimated, and scenarios are never pooled. Volumes are "
+                "relative grid volumes of the simulated domain (INTERPOLATION, SUPPORTED cells), not resources. A scenario "
+                "with a_h <= a_d cos(60) is INFEASIBLE and is not run.")),
+    ("O5-T06", ("Scenario reproduction checks", "O5_T06_reproduction_checks", "O5-T06.sql",
+                "Mean simulated frequency against the mean local mean over the domain (WARN above 0.05). Down-hole indicator "
+                "semivariogram of realisations 1-5 against the data semivariogram on the Objective 2 lag bins; reported, not "
+                "gated.")),
 ])
 WIDE_TEXT = {"reason", "notes", "statement", "caption", "hyperparameters_json", "predictors_json", "artifact_path"}
 TEX_SPECIAL = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_", "{": r"\{",

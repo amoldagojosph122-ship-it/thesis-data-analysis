@@ -19,6 +19,70 @@ def _table(headers, rows) -> list[str]:
     return out
 
 
+CONFIDENT_CLASS_PARAGRAPH = (
+    "Confident classes depend on the width of the bootstrap interval of the zone's model. The tier-1 logistic model is "
+    "smooth and its bootstrap intervals are narrow, so CONFIDENT classes in the EXTRAPOLATION zone reflect a stable simple "
+    "trend, not better knowledge: its validated skill (tier 1) is lower than the tier-2 model's. EXTRAPOLATION-zone classes "
+    "must be read with the tier-1 validation in O5-T03 and the model-disagreement map, and are not comparable with "
+    "INTERPOLATION-zone classes.")
+
+
+def _scenario_section(conn, cfg) -> list[str]:
+    scfg = cfg["scenario_simulation"]
+    out = ["## 10. Scenario simulation (scenario analysis; lateral range assumed, not estimated)", "",
+           f"Sequential indicator simulation with a locally varying mean (tier-2 M2_HGB_WF, calibrated), residual "
+           f"simple kriging with up to {scfg['kriging']['max_conditioning_data']} conditioning data and "
+           f"{scfg['kriging']['max_previously_simulated']} previously simulated nodes within anisotropy-scaled distance "
+           f"1.0, {scfg['n_realisations']} realisations per scenario, seed {scfg['seed']}. Vertical range set so that the "
+           "range along the hole direction (plunge 60 degrees) equals the fitted down-hole practical range. This is a "
+           "scenario analysis: each lateral range is assumed, scenarios are reported separately and never pooled.", ""]
+    scen = conn.execute("SELECT * FROM sim_scenarios ORDER BY horizontal_range_m").fetchall()
+    if not scen:
+        return out + ["The scenario simulation has not been run.", ""]
+    meta = {r["meta_key"]: json.loads(r["meta_value"]) for r in conn.execute("SELECT * FROM sim_run_meta")}
+    rows = []
+    for r in scen:
+        if r["feasibility"] == "INFEASIBLE":
+            rows.append((r["scenario_id"], r["horizontal_range_m"], "INFEASIBLE (not run)", None, None, None, None,
+                         None, None, None, None))
+            continue
+        rows.append((r["scenario_id"], r["horizontal_range_m"], r["vertical_range_m"], r["volume_p10_m3"],
+                     r["volume_p50_m3"], r["volume_p90_m3"], r["expected_volume_m3"], r["components_p50"],
+                     r["largest_share_p10"], r["largest_share_p50"], r["largest_share_p90"]))
+    out += ["| scenario | a_h (m) | a_v (m) | volume P10 (m3) | volume P50 (m3) | volume P90 (m3) | expected sum(m) x 200 "
+            "(m3) | components P50 | largest share P10 | P50 | P90 |", "|" + "|".join("---" for _ in range(11)) + "|"]
+    for row in rows:
+        out.append("| " + " | ".join("" if v is None else (f"{v:.4g}" if isinstance(v, float) else str(v)) for v in row)
+                   + " |")
+    out += [""]
+    feas = [r for r in scen if r["feasibility"] == "FEASIBLE"]
+    out += ["Reproduction and gates per scenario:", ""]
+    out += ["| scenario | mean simulated frequency | mean local mean | difference | frequency status | SK fallbacks | "
+            "neighbourless node visits (sum over realisations) | exact neighbour searches (sum) | downhole max abs diff (supported bins) | runtime (s) |",
+            "|" + "|".join("---" for _ in range(10)) + "|"]
+    for r in feas:
+        out.append(f"| {r['scenario_id']} | {r['mean_frequency']:.4f} | {r['mean_local_mean']:.4f} | "
+                   f"{r['mean_frequency_diff']:+.4f} | {r['frequency_status']} | {r['sk_fallbacks']} | "
+                   f"{r['sk_neighbourless_nodes']} | {r['exact_neighbour_searches']} | "
+                   f"{r['downhole_max_abs_diff']:.4f} | {r['runtime_s']:.0f} |")
+    out += [""]
+    if feas:
+        p50 = [r["volume_p50_m3"] for r in feas]
+        exp = [r["expected_volume_m3"] for r in feas]
+        share50 = [r["largest_share_p50"] for r in feas]
+        comp50 = [r["components_p50"] for r in feas]
+        out += [f"Spread across scenarios (the finding): the median simulated volume ranges from {min(p50):.4g} to "
+                f"{max(p50):.4g} m3 over the {len(feas)} feasible scenarios, against an expected volume of "
+                f"{min(exp):.4g} to {max(exp):.4g} m3. The median largest-component share ranges from {min(share50):.3f} "
+                f"to {max(share50):.3f} and the median component count from {min(comp50):.0f} to {max(comp50):.0f}. "
+                "The result is this spread, which depends on the assumed lateral range; it is not one volume.", ""]
+    out += [f"Data semivariance recomputed here against the stored Objective 2 DOWNHOLE_WITHIN bins: maximum absolute "
+            f"difference {float(meta['data_vs_o2_max_abs_diff']):.2e}. Down-hole reproduction per scenario is in "
+            "O5-T06 (lags 1, 5, 10, 20 and 30 m, and the maximum over supported bins).", ""]
+    out += ["Scenario claims: " + " ".join(scfg["claims"].split()), ""]
+    return out
+
+
 def write_all(o5_path=None) -> dict:
     cfg, cfg_sha = load_config(O5_CONFIG_PATH)
     conn = connect_o5(o5_path)
@@ -31,7 +95,8 @@ def write_all(o5_path=None) -> dict:
         lines = [f"# Objective 5 run report: model-based three-dimensional uncertainty (part 1)", "",
                  f"Configuration {cfg['config_version']} (supersedes {cfg['supersedes']}); SHA-256 of the configuration bytes "
                  f"{cfg_sha}. Generated {utc_now()}. Relative depth below collar throughout; absolute elevation is not used.",
-                 "", "Status: part 1 of the predeclared stage. Scenario simulation: part 2, not yet run.", ""]
+                 "", "Status: parts 1 and 2 of the predeclared stage. Part 2 is a scenario analysis with an assumed lateral "
+                     "range (section 10).", ""]
 
         lines += ["## 1. Inputs and receipts", ""]
         files = conn.execute("SELECT role, path, bytes, sha256 FROM input_files ORDER BY role").fetchall()
@@ -98,6 +163,8 @@ def write_all(o5_path=None) -> dict:
             lines += _table(["zone", "class at prevalence", "cells"], [(s["zone"], s["cls"], s["cells"]) for s in sens])
             lines += [""]
 
+        lines += [CONFIDENT_CLASS_PARAGRAPH, ""]
+
         lines += ["## 5. Interval width and disagreement by zone", "",
                   "Median and 90th percentile over the supported cells of each zone.", ""]
         stats = []
@@ -137,9 +204,9 @@ def write_all(o5_path=None) -> dict:
                                                            for f in figs])
         lines += [""] + _table(["id", "title", "status", "rows"], [(t["table_id"], t["title"], t["status"], t["row_count"])
                                                                 for t in tabs]) + [""]
-        lines += ["Scenario simulation: part 2, not yet run.", ""]
+        lines += _scenario_section(conn, cfg)
 
-        lines += ["## 10. Claims not permitted", ""]
+        lines += ["## 11. Claims not permitted", ""]
         lines += [f"- {claim}" for claim in cfg["claims_not_permitted"]] + [""]
         O5_REPORT_DIR.mkdir(parents=True, exist_ok=True)
         path = O5_REPORT_DIR / "RUN_REPORT.md"

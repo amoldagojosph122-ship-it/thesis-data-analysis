@@ -315,6 +315,10 @@ def run(o5_path=None, config_path=None) -> dict:
         gates.append(_g("W02", "Share of INTERPOLATION cells that are DEPTH_EXTRAPOLATED",
                         "WARN" if share > 0.5 else "PASS", "zones", f"{share:.3f} of {iz['n']} interpolation cells"))
 
+        # S and W03 gates of the scenario simulation (part 2), recomputed from the stored scenario tables
+        from kambale.objective_5 import simulate
+        gates.extend(simulate.verify_gates(o5, cfg))
+
         stopped = any(g["status"] == "STOP" for g in gates)
         for g in gates:
             o5.execute("INSERT INTO gate_results (run_id, gate_id, gate_name, status, scope, detail, created_utc) "
