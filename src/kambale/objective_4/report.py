@@ -15,7 +15,8 @@ from pathlib import Path
 
 from kambale.objective_4 import O4_CODE_VERSION, O4_SCHEMA_VERSION
 from kambale.objective_4.config import (O4_CONFIG_PATH, O4_DB_PATH, O4_FIGURE_DIR, O4_REPORT_DIR, O4_TABLE_DIR,
-                                        PROJECT_ROOT, StopError, code_commit, load_config, sha256_bytes, utc_now)
+                                        PROJECT_ROOT, StopError, code_commit, load_config, sha256_bytes, tier_stem,
+                                        utc_now)
 from kambale.objective_4.db import connect_o4
 from kambale.objective_4.decision import TIER_TEXT
 from kambale.objective_4.figures import FIGURES, MODEL_LABEL
@@ -68,7 +69,7 @@ def _manifest_rows(conn, report_paths):
             continue
         stem = FIGURES[fig["figure_id"]][1]
         for ext in ("svg", "pdf", "png"):
-            path = O4_FIGURE_DIR / f"{stem}.{ext}"
+            path = O4_FIGURE_DIR / f"{tier_stem(stem)}.{ext}"
             rows.append({"artifact_path": _rel(path), "kind": "FIGURE", "id": fig["figure_id"],
                          "sha256": sha256_bytes(path.read_bytes()), "bytes": path.stat().st_size,
                          "source": "figure_sql_registry"})
@@ -77,7 +78,7 @@ def _manifest_rows(conn, report_paths):
             continue
         stem = TABLES[tab["table_id"]][1]
         for ext in ("csv", "md", "tex"):
-            path = O4_TABLE_DIR / f"{stem}.{ext}"
+            path = O4_TABLE_DIR / f"{tier_stem(stem)}.{ext}"
             rows.append({"artifact_path": _rel(path), "kind": "TABLE", "id": tab["table_id"],
                          "sha256": sha256_bytes(path.read_bytes()), "bytes": path.stat().st_size,
                          "source": "table_sql_registry"})
@@ -182,7 +183,7 @@ def write_all(o4_path=None) -> dict:
                             "WHERE in_common_cohort = 1").fetchone()
         bootstrap_n = conn.execute("SELECT COUNT(*) FROM bootstrap_replicates").fetchone()[0]
         pytest_text = PYTEST_OUTPUT.read_text(encoding="utf-8").strip() if PYTEST_OUTPUT.exists() else (
-            "Not recorded. Run pytest with its output written to reports/objective_4/PYTEST_OUTPUT.txt and run report again.")
+            f"Not recorded. Run pytest with its output written to {_rel(PYTEST_OUTPUT)} and run report again.")
         created = utc_now()
         import_run = _one(conn, "SELECT * FROM stage_runs WHERE run_kind = 'IMPORT' ORDER BY run_id DESC LIMIT 1")
         eval_run = _one(conn, "SELECT * FROM stage_runs WHERE run_kind = 'EVALUATE' ORDER BY run_id DESC LIMIT 1")

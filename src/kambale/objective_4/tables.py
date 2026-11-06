@@ -8,7 +8,7 @@ from collections import OrderedDict
 from pathlib import Path
 
 from kambale.objective_4.config import (O4_DB_PATH, O4_SQL_DIR, O4_TABLE_DIR, PROJECT_ROOT, StopError, sha256_bytes,
-                                        utc_now)
+                                        tier_stem, utc_now)
 from kambale.objective_4.db import connect_o4
 from kambale.objective_4.figures import load_queries
 
@@ -123,7 +123,7 @@ def render_all(o4_path=None, table_ids=None) -> dict:
                        "tex": _latex(columns, rows, title, note, tid, rid)}
             files = []
             for ext, content in outputs.items():
-                path = O4_TABLE_DIR / f"{stem}.{ext}"
+                path = O4_TABLE_DIR / f"{tier_stem(stem)}.{ext}"
                 path.write_text(content, encoding="utf-8", newline="\n")
                 files.append(path)
                 conn.execute("INSERT OR REPLACE INTO export_manifests (artifact_path, artifact_kind, artifact_id, "

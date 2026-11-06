@@ -31,7 +31,7 @@ Brier, log loss, ROC-AUC, PR-AUC, calibration diagnostics, confusion matrices, p
 uncertainty. On the current snapshot the random forest has the lowest pooled Brier, but its improvement over logistic
 regression is **INCONCLUSIVE**; M1 is not comparable (no prediction) and M3 is the fallback identical to M2_RF. The
 locked Objective 5 model choice is stored in `locked_handoff_receipts`. Run it with
-`python -I -m kambale.objective_4 all`; the record is in `reports/objective_4/RUN_REPORT.md`.
+`python -I -m kambale.objective_4 all`; the record is in `reports/objective_4/tier_1/RUN_REPORT.md`.
 
 ## Layout
 

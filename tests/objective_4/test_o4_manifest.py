@@ -1,23 +1,23 @@
 """Manifest, artifact and SQL provenance checks on each built tier database."""
 
-from kambale.objective_4.config import PROJECT_ROOT, sha256_file
+from kambale.objective_4.config import PROJECT_ROOT, sha256_file, tier_stem
 from kambale.objective_4.figures import FIGURES
 from kambale.objective_4.tables import TABLES
 
 
-def test_figures_and_tables_exist(o4_ro, tier_paths):
+def test_figures_and_tables_exist(o4_ro, tier, tier_paths):
     for r in o4_ro.execute("SELECT figure_id, status FROM figure_registry").fetchall():
         if r["status"] != "GENERATED":
             continue
         stem = FIGURES[r["figure_id"]][1]
         for ext in ("svg", "pdf", "png"):
-            assert (tier_paths["figure_dir"] / f"{stem}.{ext}").exists()
+            assert (tier_paths["figure_dir"] / f"{tier_stem(stem, tier)}.{ext}").exists()
     for r in o4_ro.execute("SELECT table_id, status FROM table_registry").fetchall():
         if r["status"] != "GENERATED":
             continue
         stem = TABLES[r["table_id"]][1]
         for ext in ("csv", "md", "tex"):
-            assert (tier_paths["table_dir"] / f"{stem}.{ext}").exists()
+            assert (tier_paths["table_dir"] / f"{tier_stem(stem, tier)}.{ext}").exists()
 
 
 def test_registered_sql_hashes(o4_ro):

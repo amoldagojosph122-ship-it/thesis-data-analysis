@@ -91,7 +91,7 @@
     }
   ],
   "claim": "skill when predicting an undrilled position between drilled holes of the same line (one hole spacing)",
-  "code_commit": "dbb556a",
+  "code_commit": "a9b54df",
   "code_version": "4.1.0",
   "config_sha256": "b85fda0649123186ee2bad6d81ddcadbed465a5c577523f8403c6cefcbda503c",
   "config_version": "O4-CFG-2026.11.06-2T2",
@@ -240,7 +240,7 @@
       "status": "FULL"
     }
   ],
-  "created_utc": "2026-11-06T11:59:56Z",
+  "created_utc": "2026-11-06T15:16:31Z",
   "decisions": [
     {
       "calibration_status": "ACCEPTABLE",
@@ -469,11 +469,11 @@
     "caveats": "Internal spatially held-out validation between drilled holes: interpolation at one hole spacing, not an external prospective campaign. Only easting, northing and relative Z are predictors. No grade, tonnage or resource is estimated. M3_HYBRID is identical to M2_WF_SEL on every common observation, so its residual kriging adds no skill in this evaluation; no hybrid advantage is claimed.",
     "claim": "skill when predicting an undrilled position between drilled holes of the same line (one hole spacing)",
     "config_version": "O4-CFG-2026.11.06-2T2",
-    "created_utc": "2026-11-06T04:56:38Z",
+    "created_utc": "2026-11-06T15:15:57Z",
     "decision_id": 1,
     "metric_reference": "pooled interval-weighted Brier is the primary endpoint; see the tier's O4-T01, O4-T02 and O4-T05 tables",
     "receipt_id": 1,
-    "receipt_sha256": "deb6bf50c7ed43417da7356e94c2a5522d51cc7f854a0a8791900b300fac26ca",
+    "receipt_sha256": "9aa361f17f1a9b24ac0ff7f3af957a1dba4ea550d1b1c7fc0607fd1adcfd9c7f",
     "selected_model_id": "M2_HGB_WF",
     "split_plan_id": "O3-SPLIT-HOLE-IL-2",
     "split_plan_sha256": "df0364073d40ae93e40195e1429d6a1ab23d32ebdeac7dfcf85e7a68f17577c1",
@@ -541,183 +541,183 @@
   "output_hashes": [
     {
       "bytes": 105481,
-      "path": "figures/objective_4/tier_2/O4_F01_holdout_coverage.svg",
+      "path": "figures/objective_4/tier_2/O4_F01_holdout_coverage_tier2.svg",
       "sha256": "fc529c2b6a1faabef8ba5f55f63812297a0bc78a2ad5c8ef630a8c098f4ecc2c"
     },
     {
       "bytes": 23645,
-      "path": "figures/objective_4/tier_2/O4_F01_holdout_coverage.pdf",
+      "path": "figures/objective_4/tier_2/O4_F01_holdout_coverage_tier2.pdf",
       "sha256": "ec53043e0fb030952a004bd9cef01d73ffa646b0dee5043a189473ef786db8b9"
     },
     {
       "bytes": 150710,
-      "path": "figures/objective_4/tier_2/O4_F01_holdout_coverage.png",
+      "path": "figures/objective_4/tier_2/O4_F01_holdout_coverage_tier2.png",
       "sha256": "c3f6701b922f6541fe6fd0a8288380a3af6117fc0bc93323b5e5e633093a62fe"
     },
     {
       "bytes": 98889,
-      "path": "figures/objective_4/tier_2/O4_F02_brier.svg",
+      "path": "figures/objective_4/tier_2/O4_F02_brier_tier2.svg",
       "sha256": "19636ef60274a2287987417d6ebf233b19a4d159d3bd1b5151a94189a5aa419b"
     },
     {
       "bytes": 25754,
-      "path": "figures/objective_4/tier_2/O4_F02_brier.pdf",
+      "path": "figures/objective_4/tier_2/O4_F02_brier_tier2.pdf",
       "sha256": "c32aa03bdc5860ee9bdf9cf3ab289e1fa869e634689a85a8e697c796cf9771a0"
     },
     {
       "bytes": 178120,
-      "path": "figures/objective_4/tier_2/O4_F02_brier.png",
+      "path": "figures/objective_4/tier_2/O4_F02_brier_tier2.png",
       "sha256": "bfe14efef11691c584237474d3e24fae3f1f968a8cce6cd1ba70f99585238ea8"
     },
     {
       "bytes": 260410,
-      "path": "figures/objective_4/tier_2/O4_F03_curves.svg",
+      "path": "figures/objective_4/tier_2/O4_F03_curves_tier2.svg",
       "sha256": "e9c864e73fdbf9004bbe6276cf4f68d747aa94ed8b5e1352b5800f453abc8d99"
     },
     {
       "bytes": 62477,
-      "path": "figures/objective_4/tier_2/O4_F03_curves.pdf",
+      "path": "figures/objective_4/tier_2/O4_F03_curves_tier2.pdf",
       "sha256": "6dbe05ab3cde01bc2953f3ff1686b5be73ef6ae41ad5f80e64915f25872c9341"
     },
     {
       "bytes": 348555,
-      "path": "figures/objective_4/tier_2/O4_F03_curves.png",
+      "path": "figures/objective_4/tier_2/O4_F03_curves_tier2.png",
       "sha256": "cf3c48c614f40203fe2b0787fb28eb88cc5c37f7e0bba2c3c2c17588838e4f09"
     },
     {
       "bytes": 175086,
-      "path": "figures/objective_4/tier_2/O4_F04_reliability.svg",
+      "path": "figures/objective_4/tier_2/O4_F04_reliability_tier2.svg",
       "sha256": "7ecf14c377d1499fe7c03dd9beaa489de7aa534ebde21fc5513957544587867e"
     },
     {
       "bytes": 27823,
-      "path": "figures/objective_4/tier_2/O4_F04_reliability.pdf",
+      "path": "figures/objective_4/tier_2/O4_F04_reliability_tier2.pdf",
       "sha256": "302345ac84a78e1c7bf06650b4d4335189b9a7efbc66e6d391559599228e6c87"
     },
     {
       "bytes": 310090,
-      "path": "figures/objective_4/tier_2/O4_F04_reliability.png",
+      "path": "figures/objective_4/tier_2/O4_F04_reliability_tier2.png",
       "sha256": "41686a5245117fe08f80e7d060fcc8e336c4bbdeb2d314aa33ba8f0c12349718"
     },
     {
       "bytes": 95724,
-      "path": "figures/objective_4/tier_2/O4_F05_paired.svg",
+      "path": "figures/objective_4/tier_2/O4_F05_paired_tier2.svg",
       "sha256": "8b1c755d9b54a2fab0a4b65e4720678d9cd9efdf4d14567584f94fa3df4bdb51"
     },
     {
       "bytes": 25805,
-      "path": "figures/objective_4/tier_2/O4_F05_paired.pdf",
+      "path": "figures/objective_4/tier_2/O4_F05_paired_tier2.pdf",
       "sha256": "4edd55017faf2328e87098880d22442429db6f56576dec134bfebe6ef43c93da"
     },
     {
       "bytes": 156886,
-      "path": "figures/objective_4/tier_2/O4_F05_paired.png",
+      "path": "figures/objective_4/tier_2/O4_F05_paired_tier2.png",
       "sha256": "1daa78c65d3d2746f7ab6899d310b2734d2cd68173fa25854b6cd007d744124e"
     },
     {
       "bytes": 457554,
-      "path": "figures/objective_4/tier_2/O4_F06_residuals.svg",
+      "path": "figures/objective_4/tier_2/O4_F06_residuals_tier2.svg",
       "sha256": "6695c3de5a36225a5ef0a46aac0bdb39c35befc691da5c442a65f6dab57a0034"
     },
     {
       "bytes": 46563,
-      "path": "figures/objective_4/tier_2/O4_F06_residuals.pdf",
+      "path": "figures/objective_4/tier_2/O4_F06_residuals_tier2.pdf",
       "sha256": "f26e2c614cfb9ef54c49467eae1671424942cf2682c058fe3bad8530eaf6e73f"
     },
     {
       "bytes": 578036,
-      "path": "figures/objective_4/tier_2/O4_F06_residuals.png",
+      "path": "figures/objective_4/tier_2/O4_F06_residuals_tier2.png",
       "sha256": "be16f77b14a9360c51a35175af7fc8a8f9cc6ba2e15d4e6ae7f8020c0b32b95e"
     },
     {
       "bytes": 102822,
-      "path": "figures/objective_4/tier_2/O4_F07_coverage.svg",
+      "path": "figures/objective_4/tier_2/O4_F07_coverage_tier2.svg",
       "sha256": "ad597e5ecade8f6676779f410b4e9f23167e97ba880d0664528890599f68d127"
     },
     {
       "bytes": 22087,
-      "path": "figures/objective_4/tier_2/O4_F07_coverage.pdf",
+      "path": "figures/objective_4/tier_2/O4_F07_coverage_tier2.pdf",
       "sha256": "d171df56f2138ac049f8f09cf316ee5b4c6b70ccebbd043899aae8e35bbcf404"
     },
     {
       "bytes": 158892,
-      "path": "figures/objective_4/tier_2/O4_F07_coverage.png",
+      "path": "figures/objective_4/tier_2/O4_F07_coverage_tier2.png",
       "sha256": "5dea9c1ebb8f8b0b25a1bbdf135c5536bbce1f1dfbb3a9d9bb9f6fb41d5fcd9d"
     },
     {
       "bytes": 1959,
-      "path": "tables/objective_4/tier_2/O4_T01_evaluation_summary.csv",
+      "path": "tables/objective_4/tier_2/O4_T01_evaluation_summary_tier2.csv",
       "sha256": "053dc24b74a9298a370d758fc3e58d383e5f5df3edece73a32af4cf77e15f821"
     },
     {
       "bytes": 2994,
-      "path": "tables/objective_4/tier_2/O4_T01_evaluation_summary.md",
+      "path": "tables/objective_4/tier_2/O4_T01_evaluation_summary_tier2.md",
       "sha256": "8b6f0af80b67725470df7d2c25644aadd7cc7dd4d985ed2f14a0c05c88068ef1"
     },
     {
       "bytes": 3070,
-      "path": "tables/objective_4/tier_2/O4_T01_evaluation_summary.tex",
+      "path": "tables/objective_4/tier_2/O4_T01_evaluation_summary_tier2.tex",
       "sha256": "2f998b21ecf048583807d5b6bb455ffd34c56a189474134c8ff5bf2c9a6f39ec"
     },
     {
       "bytes": 7573,
-      "path": "tables/objective_4/tier_2/O4_T02_fold_scores.csv",
+      "path": "tables/objective_4/tier_2/O4_T02_fold_scores_tier2.csv",
       "sha256": "836f31f90259d8650930a6c10f1d2a127825b9efd96044587ac9c908cae1ee42"
     },
     {
       "bytes": 9289,
-      "path": "tables/objective_4/tier_2/O4_T02_fold_scores.md",
+      "path": "tables/objective_4/tier_2/O4_T02_fold_scores_tier2.md",
       "sha256": "0db29e54d18b32d891da337730c9d3ac55b9ddb49565cda5c5735d0ab779cd8c"
     },
     {
       "bytes": 9621,
-      "path": "tables/objective_4/tier_2/O4_T02_fold_scores.tex",
+      "path": "tables/objective_4/tier_2/O4_T02_fold_scores_tier2.tex",
       "sha256": "5c47e559ae5691c1c6450ce97b22a1399ad05d340afffdd2c860aed38af8451c"
     },
     {
       "bytes": 9381,
-      "path": "tables/objective_4/tier_2/O4_T03_confusion.csv",
+      "path": "tables/objective_4/tier_2/O4_T03_confusion_tier2.csv",
       "sha256": "865f717c65fdbd7a894fbce2b005e0fe9a7ad586c278e1a9642650cd9d7ea3ff"
     },
     {
       "bytes": 12131,
-      "path": "tables/objective_4/tier_2/O4_T03_confusion.md",
+      "path": "tables/objective_4/tier_2/O4_T03_confusion_tier2.md",
       "sha256": "52b8cd78f507741b12806e4e072a4205825365eed7598a157424afdcee05b145"
     },
     {
       "bytes": 12418,
-      "path": "tables/objective_4/tier_2/O4_T03_confusion.tex",
+      "path": "tables/objective_4/tier_2/O4_T03_confusion_tier2.tex",
       "sha256": "45f6e5bbe6ce1b1f4701c7e658f9368c1b95452e3d1e26eb128220e9343c6958"
     },
     {
       "bytes": 2749,
-      "path": "tables/objective_4/tier_2/O4_T04_paired_uncertainty.csv",
+      "path": "tables/objective_4/tier_2/O4_T04_paired_uncertainty_tier2.csv",
       "sha256": "154e9c088f7c9cab09a08d1c07f27417ae458680d2b0ba145edf00e3cde2693b"
     },
     {
       "bytes": 4014,
-      "path": "tables/objective_4/tier_2/O4_T04_paired_uncertainty.md",
+      "path": "tables/objective_4/tier_2/O4_T04_paired_uncertainty_tier2.md",
       "sha256": "ea051c00b33653e9ff7b7317806004b124e5b8ad861fe6836f1d1509dc5a7f66"
     },
     {
       "bytes": 4172,
-      "path": "tables/objective_4/tier_2/O4_T04_paired_uncertainty.tex",
+      "path": "tables/objective_4/tier_2/O4_T04_paired_uncertainty_tier2.tex",
       "sha256": "44bb6f517bf9de70f2eef0fab928e0f9f41260bbdfc1944de967d7db9440fdbc"
     },
     {
       "bytes": 3286,
-      "path": "tables/objective_4/tier_2/O4_T05_decision.csv",
-      "sha256": "d1ecbe62926addf36f023c0b2bc85d9a147b6e08d4277ef1662ac325b3ba8dc8"
+      "path": "tables/objective_4/tier_2/O4_T05_decision_tier2.csv",
+      "sha256": "554ae092c31808ee475fa88922b4b1eb186c70e302cab487678170c1cedfe6cf"
     },
     {
       "bytes": 4266,
-      "path": "tables/objective_4/tier_2/O4_T05_decision.md",
-      "sha256": "4f2ddf857479148fbd0d7ae435946e421eadd91beaaab5a14b395cfafdec2849"
+      "path": "tables/objective_4/tier_2/O4_T05_decision_tier2.md",
+      "sha256": "7389b4450050f781bec748f938735e623e7ab55a91ed65ed9235f66cae646af8"
     },
     {
       "bytes": 4412,
-      "path": "tables/objective_4/tier_2/O4_T05_decision.tex",
-      "sha256": "310fae8084cbe7c2511b4e74b752c2f07bffa13d2429f2e6ee3437be28624978"
+      "path": "tables/objective_4/tier_2/O4_T05_decision_tier2.tex",
+      "sha256": "772f59bb2745a74c6f0fc039680aaf20b1c35ca1a7fbcb95151a8a1c5b9a88e2"
     }
   ],
   "paired": [
@@ -934,9 +934,9 @@
     "calibration_policy": "O3 calibration only; O4 fits diagnostics and never recalibrates",
     "cohort_definition": "intersection of the full-coverage feasible models on the held-out folds",
     "decision_policy_json": "{\"comparator\": \"NEXT_LOWEST_POOLED_INTERVAL_BRIER\", \"improvement_rule\": \"SUPPORTED_IMPROVEMENT requires all of: the 95% hole-cluster bootstrap interval of (Brier_selected - Brier_comparator) lies entirely below zero; the selected model has the lower Brier in at least four of the five folds; the calibration slope is in [0.5, 2.0] and |intercept| <= 0.5; the selected model's ROC-AUC is not worse than the comparator's by more than 0.02; and coverage is at least 0.95. INCONCLUSIVE applies when the interval includes zero or fold consistency is below four of five. NO_IMPROVEMENT applies when the point estimate is non-negative or the interval lies entirely above zero. NOT_COMPARABLE applies to a model with coverage below 0.95, a missing metric, or an identity with another model.\\n\", \"select\": \"LOWEST_POOLED_INTERVAL_BRIER_AMONG_DISTINCT_FULL_COVERAGE_MODELS\", \"selection_basis_when_inconclusive\": \"POINT_ESTIMATE_WITH_CAVEAT\"}",
-    "frozen_utc": "2026-11-06T04:56:38Z",
+    "frozen_utc": "2026-11-06T15:15:56Z",
     "plan_id": "O4-CFG-2026.11.06-2T2-PLAN",
-    "plan_sha256": "f7b77383646dcff844c8f7ad21db0f42ebe4509b540d9cb7b455556fa9c716b5",
+    "plan_sha256": "009215d8fcded4dc727bd14ea907ac225eefb7a68bd8479b11d0e3715a5acdac",
     "primary_endpoint": "BRIER",
     "primary_weighting": "INTERVAL",
     "secondary_weighting": "EQUAL_HOLE",
@@ -1497,7 +1497,7 @@
   "runs": {
     "evaluate": 2,
     "import": 1,
-    "verify": 14
+    "verify": 5
   },
   "schema_version": "O4-SCHEMA-2026.11.06-1",
   "tables": [

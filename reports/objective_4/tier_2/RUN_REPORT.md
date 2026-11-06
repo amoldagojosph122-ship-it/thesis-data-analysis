@@ -1,6 +1,6 @@
 # Objective 4 run report: TIER_2_INTERPOLATION
 
-Configuration O4-CFG-2026.11.06-2T2 (SHA-256 b85fda064912), code 4.1.0, schema O4-SCHEMA-2026.11.06-1, commit dbb556a. Import run 1, evaluation run 2, gate run 14. Report written 2026-11-06T11:59:56Z.
+Configuration O4-CFG-2026.11.06-2T2 (SHA-256 b85fda064912), code 4.1.0, schema O4-SCHEMA-2026.11.06-1, commit a9b54df. Import run 1, evaluation run 2, gate run 5. Report written 2026-11-06T15:16:31Z.
 
 **Claim.** skill when predicting an undrilled position between drilled holes of the same line (one hole spacing)
 
@@ -24,7 +24,7 @@ Locked model choice: **M2_HGB_WF**; improvement status **INCONCLUSIVE**; selecti
 - Cohort: intersection of the full-coverage feasible models on the held-out folds.
 - Bootstrap: HOLE_CLUSTER primary; LINE_CLUSTER sensitivity; 2000 replicates per design, seed 20261105.
 - Calibration policy: O3 calibration only; O4 fits diagnostics and never recalibrates.
-- Plan SHA-256: f7b77383646dcff844c8f7ad21db0f42ebe4509b540d9cb7b455556fa9c716b5.
+- Plan SHA-256: 009215d8fcded4dc727bd14ea907ac225eefb7a68bd8479b11d0e3715a5acdac.
 
 ## 4. Models: coverage, identity and decision role
 
@@ -212,8 +212,7 @@ Exit gates: G01, G02, G03, G04, G05, G06, G07, G08, G10, G11, G12, G13, G15, G16
 ## 12. Tests
 
 ```text
-......................................................                   [100%]
-54 passed in 1.45s
+.......................................................                  [100%]
 ```
 
 ## 13. Limitations
@@ -256,7 +255,7 @@ Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-le
 | figure_registry | 7 |
 | figure_sql_registry | 17 |
 | fold_metrics | 550 |
-| gate_results | 348 |
+| gate_results | 87 |
 | locked_handoff_receipts | 1 |
 | metric_curve_points | 32120 |
 | metric_definitions | 13 |
@@ -269,7 +268,7 @@ Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-le
 | schema_version | 1 |
 | source_receipts | 1 |
 | spatial_error_summaries | 651 |
-| stage_runs | 14 |
+| stage_runs | 5 |
 | table_registry | 5 |
 | table_sql_registry | 5 |
 

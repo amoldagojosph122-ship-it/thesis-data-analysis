@@ -1,10 +1,10 @@
 # Objective 4 evaluation configuration, TIER_1_EXTRAPOLATION. Predeclared before any metric on the configuration-2 Objective 3
 # predictions is computed. A change of any value requires a new config_version; earlier versions are in superseded/.
-config_version: O4-CFG-2026.11.06-2
-supersedes: O4-CFG-2026.11.05-1
+config_version: O4-CFG-2026.11.06-3
+supersedes: O4-CFG-2026.11.06-2
 tier: TIER_1_EXTRAPOLATION
 revision_reason: >
-  Objective 3 configuration 2 adds a weathering-front predictor, a kriging covariance chosen by inner cross-validation,
+  Version 3 changes only the output folder to tier_1 so both tiers are stored symmetrically; no analysis value, split, model or threshold changes. Objective 3 configuration 2 adds a weathering-front predictor, a kriging covariance chosen by inner cross-validation,
   per-fold selected composites, and a second validation tier. Objective 4 evaluates each tier separately, because
   extrapolation to an unseen line and interpolation between drilled holes are different claims and one pooled score
   would mix them. No model is refitted, no split is changed and no threshold is tuned here.
@@ -13,7 +13,7 @@ claim: skill when predicting a whole undrilled line from the other four lines
 paths:
   o3_split_plan_id: O3-SPLIT-LODO-1
   database: database/kambale_obj4_validation.sqlite
-  output_subdir: ''          # '' writes to figures/, tables/ and reports/objective_4 directly
+  output_subdir: tier_1      # tier_1 writes to figures/, tables/ and reports/objective_4 under tier_1/
 
 target:
   label_rule_id: DESIGN_8_2_v1

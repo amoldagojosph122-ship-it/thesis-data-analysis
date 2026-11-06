@@ -13,6 +13,6 @@ Contents:
 - BLOCKED_OR_DEFERRED.md: every warning, failure and deferred item.
 - DATA_LINEAGE.json: upstream receipts, configuration, code and output hashes.
 - FIGURE_MANIFEST.csv: SHA-256 for every figure, table and report file.
-- figures/objective_4 and tables/objective_4: the outputs.
+- figures/objective_4/tier_1 and tables/objective_4/tier_1: the outputs.
 
 Reproduce with the commands in RUN_REPORT.md section 14.

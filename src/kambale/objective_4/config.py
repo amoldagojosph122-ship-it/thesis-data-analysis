@@ -74,6 +74,11 @@ O4_TABLE_DIR = _RESOLVED["table_dir"]
 O4_SPLIT_PLAN_ID = _RESOLVED["split_plan_id"]
 
 
+def tier_stem(stem: str, tier: str | None = None) -> str:
+    """File stem of a figure or table for one tier: the registered stem with _tier1 or _tier2 appended."""
+    return f"{stem}_tier{tier or TIER}"
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 

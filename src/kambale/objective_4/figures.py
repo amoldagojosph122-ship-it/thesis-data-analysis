@@ -19,7 +19,7 @@ import numpy as np  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 
-from kambale.objective_4.config import (O4_CONFIG_PATH, O4_DB_PATH, O4_FIGURE_DIR, O4_SQL_DIR, PROJECT_ROOT, StopError,
+from kambale.objective_4.config import (O4_CONFIG_PATH, O4_DB_PATH, O4_FIGURE_DIR, O4_SQL_DIR, PROJECT_ROOT, StopError, tier_stem,
                                         load_config, sha256_bytes, utc_now)  # noqa: E402
 from kambale.objective_4.db import connect_o4  # noqa: E402
 
@@ -428,7 +428,7 @@ def _save(fig, figure_id, stem):
     for ext, kwargs in (("svg", {"metadata": {"Date": None}}),
                         ("pdf", {"metadata": {"CreationDate": None, "ModDate": None}}),
                         ("png", {"dpi": 300, "metadata": {"Software": None}})):
-        path = O4_FIGURE_DIR / f"{stem}.{ext}"
+        path = O4_FIGURE_DIR / f"{tier_stem(stem)}.{ext}"
         fig.savefig(path, **kwargs)
         paths.append(path)
     return paths
