@@ -1,0 +1,18 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O4-T01. Main evaluation summary. Brier is the primary endpoint; the equal-hole weighting is a sensitivity analysis. Coverage is the share of held-out intervals with a prediction. M1 has no prediction; M3 is the fallback identical to M2\_RF and is not ranked. Receipt 1.}
+\label{tab:O4-T01}
+\begin{tabular}{lllllllllllllllllll}
+\toprule
+model\_id & role & comparable & coverage & n\_predicted & n\_expected & n\_failed & brier\_interval & brier\_equal\_hole & log\_loss\_interval & roc\_auc & pr\_auc & ece & calibration\_intercept & calibration\_slope & calibration\_status & decision\_rank & improvement\_status & selection\_basis \\
+\midrule
+M2\_RF & M2 & 1 & 1 & 1829 & 1829 & 0 & 0.165515 & 0.15099 & 0.501592 & 0.781648 & 0.573873 & 0.060151 & 0.263171 & 1.36926 & DEFINED & 1 & INCONCLUSIVE & POINT\_ESTIMATE\_WITH\_CAVEAT \\
+BASE\_LOGISTIC & BASELINE & 1 & 1 & 1829 & 1829 & 0 & 0.165817 & 0.151508 & 0.507433 & 0.756211 & 0.615319 & 0.059558 & 0.060156 & 0.887238 & DEFINED & 2 & INCONCLUSIVE & NOT\_SELECTED \\
+M2\_HGB & M2 & 1 & 1 & 1829 & 1829 & 0 & 0.17148 & 0.156431 & 0.52518 & 0.751269 & 0.576846 & 0.050829 & 0.222731 & 1.076797 & DEFINED & 3 & INCONCLUSIVE & NOT\_SELECTED \\
+BASE\_PREVALENCE & BASELINE & 1 & 1 & 1829 & 1829 & 0 & 0.221125 & 0.199565 & 0.64036 & 0.287837 & 0.224825 & 0.164886 & -4.320374 & -3.566699 & DEFINED & 4 & NO\_IMPROVEMENT & NOT\_SELECTED \\
+M1\_IK & M1 & 0 & 0 & 0 & 1829 & 1829 &  &  &  &  &  &  &  &  & NOT\_ESTIMABLE &  & NOT\_COMPARABLE & NOT\_RANKED \\
+M3\_HYBRID & M3 & 0 & 1 & 1829 & 1829 & 0 & 0.165515 & 0.15099 & 0.501592 & 0.781648 & 0.573873 & 0.060151 & 0.263171 & 1.36926 & DEFINED &  & NOT\_COMPARABLE & NOT\_RANKED \\
+\bottomrule
+\end{tabular}
+\end{table}

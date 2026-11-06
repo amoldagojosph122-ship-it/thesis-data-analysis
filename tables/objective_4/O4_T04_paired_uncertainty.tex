@@ -1,0 +1,28 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O4-T04. Paired difference uncertainty and weighting sensitivity. Sign convention: delta Brier = Brier(model\_a) - Brier(model\_b); negative means model\_a is better. The primary interval is the 95\% hole-cluster bootstrap; the line-level interval is a five-line sensitivity analysis. Receipt 1.}
+\label{tab:O4-T04}
+\begin{tabular}{lllllllllllllp{0.3\linewidth}}
+\toprule
+pair\_id & model\_a & model\_b & weighting & delta\_brier & delta\_log\_loss & ci\_low\_hole & ci\_high\_hole & ci\_low\_line & ci\_high\_line & folds\_a\_better & n & status & reason \\
+\midrule
+LOG\_vs\_HGB & BASE\_LOGISTIC & M2\_HGB & EQUAL\_HOLE & -0.004923 & -0.021571 &  &  &  &  & 4 & 1829 & DEFINED & both models defined on this subset \\
+LOG\_vs\_HGB & BASE\_LOGISTIC & M2\_HGB & INTERVAL & -0.005663 & -0.017747 & -0.01954 & 0.007475 & -0.026264 & 0.00921 & 4 & 1829 & DEFINED & both models defined on this subset \\
+LOG\_vs\_RF & BASE\_LOGISTIC & M2\_RF & EQUAL\_HOLE & 0.000518 & 0.002974 &  &  &  &  & 2 & 1829 & DEFINED & both models defined on this subset \\
+LOG\_vs\_RF & BASE\_LOGISTIC & M2\_RF & INTERVAL & 0.000302 & 0.00584 & -0.011983 & 0.013688 & -0.013111 & 0.010218 & 2 & 1829 & DEFINED & both models defined on this subset \\
+M3\_vs\_M2\_HGB & M3\_HYBRID & M2\_HGB & EQUAL\_HOLE & -0.005441 & -0.024545 &  &  &  &  & 4 & 1829 & DEFINED & both models defined on this subset \\
+M3\_vs\_M2\_HGB & M3\_HYBRID & M2\_HGB & INTERVAL & -0.005965 & -0.023587 & -0.017428 & 0.005874 & -0.018511 & -0.000161 & 4 & 1829 & DEFINED & both models defined on this subset \\
+M3\_vs\_M2\_RF & M3\_HYBRID & M2\_RF & EQUAL\_HOLE & 0 & 0 &  &  &  &  & 0 & 1829 & DEFINED & both models defined on this subset \\
+M3\_vs\_M2\_RF & M3\_HYBRID & M2\_RF & INTERVAL & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_HGB & BASE\_PREVALENCE & M2\_HGB & EQUAL\_HOLE & 0.043134 & 0.100573 &  &  &  &  & 2 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_HGB & BASE\_PREVALENCE & M2\_HGB & INTERVAL & 0.049645 & 0.11518 & 0.027464 & 0.073074 & 0.005106 & 0.09334 & 2 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_LOG & BASE\_PREVALENCE & BASE\_LOGISTIC & EQUAL\_HOLE & 0.048057 & 0.122144 &  &  &  &  & 1 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_LOG & BASE\_PREVALENCE & BASE\_LOGISTIC & INTERVAL & 0.055308 & 0.132927 & 0.026319 & 0.085153 & 0.005219 & 0.120267 & 1 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_RF & BASE\_PREVALENCE & M2\_RF & EQUAL\_HOLE & 0.048575 & 0.125118 &  &  &  &  & 1 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_RF & BASE\_PREVALENCE & M2\_RF & INTERVAL & 0.05561 & 0.138767 & 0.031441 & 0.081147 & 0.013305 & 0.106003 & 1 & 1829 & DEFINED & both models defined on this subset \\
+RF\_vs\_HGB & M2\_RF & M2\_HGB & EQUAL\_HOLE & -0.005441 & -0.024545 &  &  &  &  & 4 & 1829 & DEFINED & both models defined on this subset \\
+RF\_vs\_HGB & M2\_RF & M2\_HGB & INTERVAL & -0.005965 & -0.023587 & -0.017428 & 0.005874 & -0.018511 & -0.000161 & 4 & 1829 & DEFINED & both models defined on this subset \\
+\bottomrule
+\end{tabular}
+\end{table}

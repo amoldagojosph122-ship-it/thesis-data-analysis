@@ -1,0 +1,50 @@
+{
+  "candidate_run_id": "M3_HYBRID",
+  "chosen_model": null,
+  "chosen_params": null,
+  "fallback": "FALLBACK_ML_ONLY",
+  "feature_names": [
+    "easting_m",
+    "northing_m",
+    "z_relative_m"
+  ],
+  "fold_id": 5,
+  "residual_variogram": {
+    "exponential": {
+      "objective": 1447.1576797222942,
+      "params": [
+        0.17501271539917138,
+        2.785200015436708e-13,
+        10.000003326046457
+      ],
+      "stability": "NOT_ASSESSED",
+      "status": "NOT_IDENTIFIABLE"
+    },
+    "spherical": {
+      "objective": 1447.1576797164448,
+      "params": [
+        0.1659221997149562,
+        0.009090568564387006,
+        10.00000000000002
+      ],
+      "stability": "NOT_ASSESSED",
+      "status": "NOT_IDENTIFIABLE"
+    }
+  },
+  "seed": 20261105,
+  "software": {
+    "numpy": "2.4.6",
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.0"
+  },
+  "training_id_digest": "5ddf20a85f35d0f29ca3ca9f49d5e671ff692012d6bef856cfd3e479653481f3",
+  "training_n": 1442,
+  "trend_candidate": "M2_RF",
+  "trend_hyperparameters": {
+    "max_depth": 8,
+    "max_features": "sqrt",
+    "min_samples_leaf": 20,
+    "n_estimators": 200
+  }
+}

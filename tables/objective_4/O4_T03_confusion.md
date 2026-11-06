@@ -1,0 +1,38 @@
+# O4-T03. Confusion matrices and threshold provenance
+
+The pooled matrix sums the fold-specific confusion counts; the threshold is therefore NULL and the source records that the fold-specific thresholds were summed.
+Source: sql/objective_4/tables/O4-T03.sql, receipt 1, 31 rows.
+
+| model_id | scope | fold_id | threshold | threshold_source | tp | fp | tn | fn | precision | recall | specificity | balanced_accuracy | f1 | mcc | status | reason |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| BASE_LOGISTIC | POOLED | 0 |  | O3_FOLD_SPECIFIC_THRESHOLDS_SUMMED | 339 | 405 | 899 | 186 | 0.455645 | 0.645714 | 0.689417 | 0.667566 | 0.534279 | 0.308626 | DEFINED | all rates defined |
+| BASE_LOGISTIC | FOLD | 1 | 0.3 | O3_TRAINING_ONLY_THRESHOLD | 29 | 40 | 15 | 0 | 0.42029 | 1 | 0.272727 | 0.636364 | 0.591837 | 0.338562 | DEFINED | all rates defined |
+| BASE_LOGISTIC | FOLD | 2 | 0.15 | O3_TRAINING_ONLY_THRESHOLD | 217 | 212 | 0 | 0 | 0.505828 | 1 | 0 | 0.5 | 0.671827 |  | UNDEFINED | undefined rates: mcc |
+| BASE_LOGISTIC | FOLD | 3 | 0.3 | O3_TRAINING_ONLY_THRESHOLD | 19 | 24 | 374 | 111 | 0.44186 | 0.146154 | 0.939698 | 0.542926 | 0.219653 | 0.135226 | DEFINED | all rates defined |
+| BASE_LOGISTIC | FOLD | 4 | 0.2 | O3_TRAINING_ONLY_THRESHOLD | 74 | 112 | 156 | 59 | 0.397849 | 0.556391 | 0.58209 | 0.56924 | 0.46395 | 0.130739 | DEFINED | all rates defined |
+| BASE_LOGISTIC | FOLD | 5 | 0.35 | O3_TRAINING_ONLY_THRESHOLD | 0 | 17 | 354 | 16 | 0 | 0 | 0.954178 | 0.477089 |  | -0.044514 | UNDEFINED | undefined rates: f1 |
+| BASE_PREVALENCE | POOLED | 0 |  | O3_FOLD_SPECIFIC_THRESHOLDS_SUMMED | 0 | 0 | 1304 | 525 |  | 0 | 1 | 0.5 |  |  | UNDEFINED | undefined rates: precision, f1, mcc |
+| BASE_PREVALENCE | FOLD | 1 | 0.5 | O3_TRAINING_ONLY_THRESHOLD | 0 | 0 | 55 | 29 |  | 0 | 1 | 0.5 |  |  | UNDEFINED | undefined rates: precision, f1, mcc |
+| BASE_PREVALENCE | FOLD | 2 | 0.5 | O3_TRAINING_ONLY_THRESHOLD | 0 | 0 | 212 | 217 |  | 0 | 1 | 0.5 |  |  | UNDEFINED | undefined rates: precision, f1, mcc |
+| BASE_PREVALENCE | FOLD | 3 | 0.5 | O3_TRAINING_ONLY_THRESHOLD | 0 | 0 | 398 | 130 |  | 0 | 1 | 0.5 |  |  | UNDEFINED | undefined rates: precision, f1, mcc |
+| BASE_PREVALENCE | FOLD | 4 | 0.5 | O3_TRAINING_ONLY_THRESHOLD | 0 | 0 | 268 | 133 |  | 0 | 1 | 0.5 |  |  | UNDEFINED | undefined rates: precision, f1, mcc |
+| BASE_PREVALENCE | FOLD | 5 | 0.5 | O3_TRAINING_ONLY_THRESHOLD | 0 | 0 | 371 | 16 |  | 0 | 1 | 0.5 |  |  | UNDEFINED | undefined rates: precision, f1, mcc |
+| M1_IK | POOLED | 0 |  | NO_PREDICTION | 0 | 0 | 0 | 0 |  |  |  |  |  |  | UNDEFINED | no prediction; 1829 explicit failures |
+| M2_HGB | POOLED | 0 |  | O3_FOLD_SPECIFIC_THRESHOLDS_SUMMED | 459 | 809 | 495 | 66 | 0.361987 | 0.874286 | 0.379601 | 0.626943 | 0.511991 | 0.249068 | DEFINED | all rates defined |
+| M2_HGB | FOLD | 1 | 0.15 | O3_TRAINING_ONLY_THRESHOLD | 15 | 5 | 50 | 14 | 0.75 | 0.517241 | 0.909091 | 0.713166 | 0.612245 | 0.475909 | DEFINED | all rates defined |
+| M2_HGB | FOLD | 2 | 0.05 | O3_TRAINING_ONLY_THRESHOLD | 217 | 212 | 0 | 0 | 0.505828 | 1 | 0 | 0.5 | 0.671827 |  | UNDEFINED | undefined rates: mcc |
+| M2_HGB | FOLD | 3 | 0.1 | O3_TRAINING_ONLY_THRESHOLD | 130 | 356 | 42 | 0 | 0.26749 | 1 | 0.105528 | 0.552764 | 0.422078 | 0.168011 | DEFINED | all rates defined |
+| M2_HGB | FOLD | 4 | 0.2 | O3_TRAINING_ONLY_THRESHOLD | 84 | 132 | 136 | 49 | 0.388889 | 0.631579 | 0.507463 | 0.569521 | 0.481375 | 0.131318 | DEFINED | all rates defined |
+| M2_HGB | FOLD | 5 | 0.25 | O3_TRAINING_ONLY_THRESHOLD | 13 | 104 | 267 | 3 | 0.111111 | 0.8125 | 0.719677 | 0.766088 | 0.195489 | 0.23069 | DEFINED | all rates defined |
+| M2_RF | POOLED | 0 |  | O3_FOLD_SPECIFIC_THRESHOLDS_SUMMED | 444 | 536 | 768 | 81 | 0.453061 | 0.845714 | 0.588957 | 0.717336 | 0.590033 | 0.394287 | DEFINED | all rates defined |
+| M2_RF | FOLD | 1 | 0.25 | O3_TRAINING_ONLY_THRESHOLD | 25 | 17 | 38 | 4 | 0.595238 | 0.862069 | 0.690909 | 0.776489 | 0.704225 | 0.525822 | DEFINED | all rates defined |
+| M2_RF | FOLD | 2 | 0.15 | O3_TRAINING_ONLY_THRESHOLD | 217 | 212 | 0 | 0 | 0.505828 | 1 | 0 | 0.5 | 0.671827 |  | UNDEFINED | undefined rates: mcc |
+| M2_RF | FOLD | 3 | 0.25 | O3_TRAINING_ONLY_THRESHOLD | 104 | 152 | 246 | 26 | 0.40625 | 0.8 | 0.61809 | 0.709045 | 0.53886 | 0.360395 | DEFINED | all rates defined |
+| M2_RF | FOLD | 4 | 0.25 | O3_TRAINING_ONLY_THRESHOLD | 98 | 151 | 117 | 35 | 0.393574 | 0.736842 | 0.436567 | 0.586705 | 0.513089 | 0.168284 | DEFINED | all rates defined |
+| M2_RF | FOLD | 5 | 0.35 | O3_TRAINING_ONLY_THRESHOLD | 0 | 4 | 367 | 16 | 0 | 0 | 0.989218 | 0.494609 |  | -0.021223 | UNDEFINED | undefined rates: f1 |
+| M3_HYBRID | POOLED | 0 |  | O3_FOLD_SPECIFIC_THRESHOLDS_SUMMED | 444 | 536 | 768 | 81 | 0.453061 | 0.845714 | 0.588957 | 0.717336 | 0.590033 | 0.394287 | DEFINED | all rates defined |
+| M3_HYBRID | FOLD | 1 | 0.25 | O3_TRAINING_ONLY_THRESHOLD | 25 | 17 | 38 | 4 | 0.595238 | 0.862069 | 0.690909 | 0.776489 | 0.704225 | 0.525822 | DEFINED | all rates defined |
+| M3_HYBRID | FOLD | 2 | 0.15 | O3_TRAINING_ONLY_THRESHOLD | 217 | 212 | 0 | 0 | 0.505828 | 1 | 0 | 0.5 | 0.671827 |  | UNDEFINED | undefined rates: mcc |
+| M3_HYBRID | FOLD | 3 | 0.25 | O3_TRAINING_ONLY_THRESHOLD | 104 | 152 | 246 | 26 | 0.40625 | 0.8 | 0.61809 | 0.709045 | 0.53886 | 0.360395 | DEFINED | all rates defined |
+| M3_HYBRID | FOLD | 4 | 0.25 | O3_TRAINING_ONLY_THRESHOLD | 98 | 151 | 117 | 35 | 0.393574 | 0.736842 | 0.436567 | 0.586705 | 0.513089 | 0.168284 | DEFINED | all rates defined |
+| M3_HYBRID | FOLD | 5 | 0.35 | O3_TRAINING_ONLY_THRESHOLD | 0 | 4 | 367 | 16 | 0 | 0 | 0.989218 | 0.494609 |  | -0.021223 | UNDEFINED | undefined rates: f1 |

@@ -1,0 +1,23 @@
+# O4-T04. Paired difference uncertainty and weighting sensitivity
+
+Sign convention: delta Brier = Brier(model_a) - Brier(model_b); negative means model_a is better. The primary interval is the 95% hole-cluster bootstrap; the line-level interval is a five-line sensitivity analysis.
+Source: sql/objective_4/tables/O4-T04.sql, receipt 1, 16 rows.
+
+| pair_id | model_a | model_b | weighting | delta_brier | delta_log_loss | ci_low_hole | ci_high_hole | ci_low_line | ci_high_line | folds_a_better | n | status | reason |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| LOG_vs_HGB | BASE_LOGISTIC | M2_HGB | EQUAL_HOLE | -0.004923 | -0.021571 |  |  |  |  | 4 | 1829 | DEFINED | both models defined on this subset |
+| LOG_vs_HGB | BASE_LOGISTIC | M2_HGB | INTERVAL | -0.005663 | -0.017747 | -0.01954 | 0.007475 | -0.026264 | 0.00921 | 4 | 1829 | DEFINED | both models defined on this subset |
+| LOG_vs_RF | BASE_LOGISTIC | M2_RF | EQUAL_HOLE | 0.000518 | 0.002974 |  |  |  |  | 2 | 1829 | DEFINED | both models defined on this subset |
+| LOG_vs_RF | BASE_LOGISTIC | M2_RF | INTERVAL | 0.000302 | 0.00584 | -0.011983 | 0.013688 | -0.013111 | 0.010218 | 2 | 1829 | DEFINED | both models defined on this subset |
+| M3_vs_M2_HGB | M3_HYBRID | M2_HGB | EQUAL_HOLE | -0.005441 | -0.024545 |  |  |  |  | 4 | 1829 | DEFINED | both models defined on this subset |
+| M3_vs_M2_HGB | M3_HYBRID | M2_HGB | INTERVAL | -0.005965 | -0.023587 | -0.017428 | 0.005874 | -0.018511 | -0.000161 | 4 | 1829 | DEFINED | both models defined on this subset |
+| M3_vs_M2_RF | M3_HYBRID | M2_RF | EQUAL_HOLE | 0 | 0 |  |  |  |  | 0 | 1829 | DEFINED | both models defined on this subset |
+| M3_vs_M2_RF | M3_HYBRID | M2_RF | INTERVAL | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_HGB | BASE_PREVALENCE | M2_HGB | EQUAL_HOLE | 0.043134 | 0.100573 |  |  |  |  | 2 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_HGB | BASE_PREVALENCE | M2_HGB | INTERVAL | 0.049645 | 0.11518 | 0.027464 | 0.073074 | 0.005106 | 0.09334 | 2 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_LOG | BASE_PREVALENCE | BASE_LOGISTIC | EQUAL_HOLE | 0.048057 | 0.122144 |  |  |  |  | 1 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_LOG | BASE_PREVALENCE | BASE_LOGISTIC | INTERVAL | 0.055308 | 0.132927 | 0.026319 | 0.085153 | 0.005219 | 0.120267 | 1 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_RF | BASE_PREVALENCE | M2_RF | EQUAL_HOLE | 0.048575 | 0.125118 |  |  |  |  | 1 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_RF | BASE_PREVALENCE | M2_RF | INTERVAL | 0.05561 | 0.138767 | 0.031441 | 0.081147 | 0.013305 | 0.106003 | 1 | 1829 | DEFINED | both models defined on this subset |
+| RF_vs_HGB | M2_RF | M2_HGB | EQUAL_HOLE | -0.005441 | -0.024545 |  |  |  |  | 4 | 1829 | DEFINED | both models defined on this subset |
+| RF_vs_HGB | M2_RF | M2_HGB | INTERVAL | -0.005965 | -0.023587 | -0.017428 | 0.005874 | -0.018511 | -0.000161 | 4 | 1829 | DEFINED | both models defined on this subset |

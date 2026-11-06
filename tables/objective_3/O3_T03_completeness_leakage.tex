@@ -1,0 +1,73 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O3-T03. Out-of-fold completeness and leakage audit. Expected rows are the held-out intervals of each fold. A completed candidate has a prediction or an explicit failure record for every held-out interval. Leakage rows are the audit log written by training. Receipt 1.}
+\label{tab:O3-T03}
+\begin{tabular}{lllllllllllp{0.34\linewidth}}
+\toprule
+section & fold\_id & line\_code & family\_id & expected & predicted & failed & clipped & positive\_true & positive\_pred & status & detail \\
+\midrule
+FOLD\_FAMILY & 1 &  & BASE\_LOGISTIC & 84 & 84 & 0 & 0 & 29 & 69 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & 1 &  & BASE\_PREVALENCE & 84 & 84 & 0 & 0 & 29 & 0 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & 1 &  & M1\_IK & 84 & 0 & 84 & 0 & 29 & 0 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & 1 &  & M2\_HGB & 84 & 84 & 0 & 0 & 29 & 20 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & 1 &  & M2\_RF & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & 1 &  & M3\_HYBRID & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & 2 &  & BASE\_LOGISTIC & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 2 &  & BASE\_PREVALENCE & 429 & 429 & 0 & 0 & 217 & 0 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 2 &  & M1\_IK & 429 & 0 & 429 & 0 & 217 & 0 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 2 &  & M2\_HGB & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 2 &  & M2\_RF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 2 &  & M3\_HYBRID & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 3 &  & BASE\_LOGISTIC & 528 & 528 & 0 & 0 & 130 & 43 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 3 &  & BASE\_PREVALENCE & 528 & 528 & 0 & 0 & 130 & 0 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 3 &  & M1\_IK & 528 & 0 & 528 & 0 & 130 & 0 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 3 &  & M2\_HGB & 528 & 528 & 0 & 0 & 130 & 486 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 3 &  & M2\_RF & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 3 &  & M3\_HYBRID & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 4 &  & BASE\_LOGISTIC & 401 & 401 & 0 & 0 & 133 & 186 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 4 &  & BASE\_PREVALENCE & 401 & 401 & 0 & 0 & 133 & 0 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 4 &  & M1\_IK & 401 & 0 & 401 & 0 & 133 & 0 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 4 &  & M2\_HGB & 401 & 401 & 0 & 0 & 133 & 216 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 4 &  & M2\_RF & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 4 &  & M3\_HYBRID & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & 5 &  & BASE\_LOGISTIC & 387 & 387 & 0 & 0 & 16 & 17 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 5 &  & BASE\_PREVALENCE & 387 & 387 & 0 & 0 & 16 & 0 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 5 &  & M1\_IK & 387 & 0 & 387 & 0 & 16 & 0 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 5 &  & M2\_HGB & 387 & 387 & 0 & 0 & 16 & 117 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 5 &  & M2\_RF & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & 5 &  & M3\_HYBRID & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+LEAKAGE &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & OUTER\_TEST\_NOT\_IN\_TRAINING\_MANIFEST: 0 test observations appear in a training manifest of the same fold \\
+LEAKAGE &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & PREDICTIONS\_ARE\_TEST\_MEMBERS: 0 predictions are not test members of their fold \\
+LEAKAGE &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & PREDICTORS\_SAFE\_AND\_AVAILABLE: 0 deployed predictors are not SAFE and available \\
+LEAKAGE &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & VARIOGRAMS\_BELONG\_TO\_THEIR\_TRAINING\_FOLD: 0 variogram rows reference a different fold \\
+LEAKAGE &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & CALIBRATION\_USES\_INNER\_DATA\_ONLY: 0 calibration fits use more rows than the outer training fold \\
+LEAKAGE &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & NO\_FINAL\_FULL\_FIT\_IN\_OOF: 0 final full-data refits exist before Objective 4 selection \\
+LINE\_FAMILY & 1 & NOM\_N1111930 & BASE\_LOGISTIC & 84 & 84 & 0 & 0 & 29 & 69 & COMPLETE & observations in the held-out line; mean p 0.5121 \\
+LINE\_FAMILY & 1 & NOM\_N1111930 & BASE\_PREVALENCE & 84 & 84 & 0 & 0 & 29 & 0 & COMPLETE & observations in the held-out line; mean p 0.2842 \\
+LINE\_FAMILY & 1 & NOM\_N1111930 & M2\_HGB & 84 & 84 & 0 & 0 & 29 & 20 & COMPLETE & observations in the held-out line; mean p 0.1142 \\
+LINE\_FAMILY & 1 & NOM\_N1111930 & M2\_RF & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & observations in the held-out line; mean p 0.2142 \\
+LINE\_FAMILY & 1 & NOM\_N1111930 & M3\_HYBRID & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & observations in the held-out line; mean p 0.2142 \\
+LINE\_FAMILY & 2 & NOM\_N1112140 & BASE\_LOGISTIC & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.4735 \\
+LINE\_FAMILY & 2 & NOM\_N1112140 & BASE\_PREVALENCE & 429 & 429 & 0 & 0 & 217 & 0 & COMPLETE & observations in the held-out line; mean p 0.22 \\
+LINE\_FAMILY & 2 & NOM\_N1112140 & M2\_HGB & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.4358 \\
+LINE\_FAMILY & 2 & NOM\_N1112140 & M2\_RF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.3982 \\
+LINE\_FAMILY & 2 & NOM\_N1112140 & M3\_HYBRID & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.3982 \\
+LINE\_FAMILY & 3 & NOM\_N1112500 & BASE\_LOGISTIC & 528 & 528 & 0 & 0 & 130 & 43 & COMPLETE & observations in the held-out line; mean p 0.1415 \\
+LINE\_FAMILY & 3 & NOM\_N1112500 & BASE\_PREVALENCE & 528 & 528 & 0 & 0 & 130 & 0 & COMPLETE & observations in the held-out line; mean p 0.3036 \\
+LINE\_FAMILY & 3 & NOM\_N1112500 & M2\_HGB & 528 & 528 & 0 & 0 & 130 & 486 & COMPLETE & observations in the held-out line; mean p 0.2093 \\
+LINE\_FAMILY & 3 & NOM\_N1112500 & M2\_RF & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & observations in the held-out line; mean p 0.2397 \\
+LINE\_FAMILY & 3 & NOM\_N1112500 & M3\_HYBRID & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & observations in the held-out line; mean p 0.2397 \\
+LINE\_FAMILY & 4 & NOM\_N1112600 & BASE\_LOGISTIC & 401 & 401 & 0 & 0 & 133 & 186 & COMPLETE & observations in the held-out line; mean p 0.2547 \\
+LINE\_FAMILY & 4 & NOM\_N1112600 & BASE\_PREVALENCE & 401 & 401 & 0 & 0 & 133 & 0 & COMPLETE & observations in the held-out line; mean p 0.2745 \\
+LINE\_FAMILY & 4 & NOM\_N1112600 & M2\_HGB & 401 & 401 & 0 & 0 & 133 & 216 & COMPLETE & observations in the held-out line; mean p 0.2258 \\
+LINE\_FAMILY & 4 & NOM\_N1112600 & M2\_RF & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & observations in the held-out line; mean p 0.3687 \\
+LINE\_FAMILY & 4 & NOM\_N1112600 & M3\_HYBRID & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & observations in the held-out line; mean p 0.3687 \\
+LINE\_FAMILY & 5 & NOM\_N1113000 & BASE\_LOGISTIC & 387 & 387 & 0 & 0 & 16 & 17 & COMPLETE & observations in the held-out line; mean p 0.1442 \\
+LINE\_FAMILY & 5 & NOM\_N1113000 & BASE\_PREVALENCE & 387 & 387 & 0 & 0 & 16 & 0 & COMPLETE & observations in the held-out line; mean p 0.353 \\
+LINE\_FAMILY & 5 & NOM\_N1113000 & M2\_HGB & 387 & 387 & 0 & 0 & 16 & 117 & COMPLETE & observations in the held-out line; mean p 0.2054 \\
+LINE\_FAMILY & 5 & NOM\_N1113000 & M2\_RF & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & observations in the held-out line; mean p 0.171 \\
+LINE\_FAMILY & 5 & NOM\_N1113000 & M3\_HYBRID & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & observations in the held-out line; mean p 0.171 \\
+\bottomrule
+\end{tabular}
+\end{table}

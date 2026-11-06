@@ -1,0 +1,580 @@
+{
+  "code_commit": "c15b680",
+  "code_version": "3.0.0",
+  "config_sha256": "f0f2e1927db95a623d86fe2828e79490a61dcf4bc382ff0dd6fd8f3949336431",
+  "config_version": "O3-CFG-2026.11.05-1",
+  "created_utc": "2026-11-05T18:59:57Z",
+  "failures": [
+    {
+      "family_id": "M1_IK",
+      "n": 1829
+    }
+  ],
+  "figures": [
+    {
+      "figure_id": "O3-F01",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Outer-fold spatial map and class support"
+    },
+    {
+      "figure_id": "O3-F02",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Predictor availability and observation support"
+    },
+    {
+      "figure_id": "O3-F03",
+      "reason": "M1 indicator kriging produced no out-of-fold prediction because no training-only variogram was both identified and stable: F1: NOT_ESTIMABLE (spherical: NOT_IDENTIFIABLE (range at the upper bound: not identified inside the supported lags; structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED); exponential: NOT_IDENTIFIABLE (structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED)); F2: NOT_ESTIMABLE (spherical: NOT_IDENTIFIABLE (structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED); exponential: NOT_IDENTIFIABLE (structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED)); F3: NOT_ESTIMABLE (spherical: NOT_IDENTIFIABLE (structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED); exponential: NOT_IDENTIFIABLE (range at the smallest supported lag: no dependence beyond the nugget; structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED)); F4: NOT_ESTIMABLE (spherical: NOT_IDENTIFIABLE (range at the upper bound: not identified inside the supported lags; structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED); exponential: NOT_IDENTIFIABLE (range at the smallest supported lag: no dependence beyond the nugget; structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED)); F5: NOT_ESTIMABLE (spherical: NOT_IDENTIFIABLE (structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED); exponential: NOT_IDENTIFIABLE (structured sill below 5% of the reference variance); stability NOT_ASSESSED (base fit is not FITTED))",
+      "status": "NOT_SUPPORTED",
+      "title": "M1 indicator-kriging out-of-fold probabilities"
+    },
+    {
+      "figure_id": "O3-F04",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "M2 out-of-fold probability sections"
+    },
+    {
+      "figure_id": "O3-F05",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "M3 hybrid or fallback probability section"
+    },
+    {
+      "figure_id": "O3-F06",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Training-only residual variogram diagnostics"
+    }
+  ],
+  "geometry_version": {
+    "created_utc": "2026-11-05T18:55:21Z",
+    "crs_key": "EPSG:32630",
+    "datum_status": "VERIFIED",
+    "geometry_build_id": 10,
+    "geometry_status": "PROVISIONAL_RELATIVE",
+    "geometry_version_id": "GEOM-10-1",
+    "receipt_id": 1,
+    "vertical_basis": "RELATIVE_TO_COLLAR",
+    "z_absolute_used": 0
+  },
+  "label_version": {
+    "ambiguous_n": 81,
+    "binary_n": 1829,
+    "definition_sha256": "d7a8043ed70dcc76e34a084c6b723dd428c98162ae451c53428d2f64e1a4d628",
+    "excluded_states_json": "[\"AMBIGUOUS\", \"UNRESOLVED\"]",
+    "frozen_utc": "2026-11-05T18:55:21Z",
+    "label_version_id": "LABEL-DESIGN_8_2_v1-1",
+    "negative_n": 1304,
+    "negative_state": "NEGATIVE",
+    "positive_n": 525,
+    "positive_state": "POSITIVE",
+    "receipt_id": 1,
+    "rule_id": "DESIGN_8_2_v1",
+    "rule_status": "APPROVED",
+    "unresolved_n": 0
+  },
+  "model_artifacts": {
+    "bytes": 33465,
+    "count": 30
+  },
+  "objective": 3,
+  "output_hashes": [
+    {
+      "bytes": 113750,
+      "path": "figures/objective_3/O3_F01_outer_folds.svg",
+      "sha256": "9dedd3bbff0bf6afef7b41a7617eb7152468af1aac9b169a525b4812f2b9bc1b"
+    },
+    {
+      "bytes": 26515,
+      "path": "figures/objective_3/O3_F01_outer_folds.pdf",
+      "sha256": "eef805eed19840f8ffba4f6073448df9f0e04be2dab62e5e77b5c014996c73a6"
+    },
+    {
+      "bytes": 167573,
+      "path": "figures/objective_3/O3_F01_outer_folds.png",
+      "sha256": "a1f8c77c1314751ee4b7813245e3f1ee8045f4922acc99b697ba73906949d0ef"
+    },
+    {
+      "bytes": 304983,
+      "path": "figures/objective_3/O3_F02_predictor_support.svg",
+      "sha256": "e8e92d7068a3143606430abc0ec6b10dd3d03c4dfc0e081389e87ce4bdf5be16"
+    },
+    {
+      "bytes": 27838,
+      "path": "figures/objective_3/O3_F02_predictor_support.pdf",
+      "sha256": "4eba75e90c3ba363056be5453341575aa2fe20322d2acae665db1b3a0c11f00b"
+    },
+    {
+      "bytes": 162864,
+      "path": "figures/objective_3/O3_F02_predictor_support.png",
+      "sha256": "5b88c1d4827091a35e76f3482910af47a42ad1466ad4716f52aff0b0dadbefea"
+    },
+    {
+      "bytes": 705779,
+      "path": "figures/objective_3/O3_F04_m2_sections.svg",
+      "sha256": "c0b75b0b264947de8dd96150ae9e7693cab24c154d2e036fb13bc9d199720b74"
+    },
+    {
+      "bytes": 51880,
+      "path": "figures/objective_3/O3_F04_m2_sections.pdf",
+      "sha256": "d625f2880a0d8c9efcec7f7273e76dbe15ffb17947e69d8ed86b5ecf8d804570"
+    },
+    {
+      "bytes": 824708,
+      "path": "figures/objective_3/O3_F04_m2_sections.png",
+      "sha256": "4b815bdb4714d2ddc206d65ab8cbbab24d8f5ee07f65dc0bb2545132820cbd25"
+    },
+    {
+      "bytes": 322187,
+      "path": "figures/objective_3/O3_F05_m3_sections.svg",
+      "sha256": "1598290cf150f1742dbad7a45631ba79047dffe1a96fff324096e2af998448db"
+    },
+    {
+      "bytes": 35007,
+      "path": "figures/objective_3/O3_F05_m3_sections.pdf",
+      "sha256": "e96edc325e9ec012240501bc8b55eec238d8763b229e2718bc82286b392c22be"
+    },
+    {
+      "bytes": 477627,
+      "path": "figures/objective_3/O3_F05_m3_sections.png",
+      "sha256": "086060e39bfedf5bc0e2dee2cb1ffcd9cc3ac809a464416da075667404d44361"
+    },
+    {
+      "bytes": 106979,
+      "path": "figures/objective_3/O3_F06_residual_variograms.svg",
+      "sha256": "7f00e97eba4bfd73eb4cfb7f21f136a1a3839199e7529b42b71193092c8ca294"
+    },
+    {
+      "bytes": 26324,
+      "path": "figures/objective_3/O3_F06_residual_variograms.pdf",
+      "sha256": "e4d8299ff6fb3202b81a9ecdf411e6ae2f3e0b3e4fed8184dd7d7fff7ece66dc"
+    },
+    {
+      "bytes": 153194,
+      "path": "figures/objective_3/O3_F06_residual_variograms.png",
+      "sha256": "4ed458d9a5384b71dc373c9a42cb6ddf41b9e2fc94c1c64cc38ccdc7f74a71ac"
+    },
+    {
+      "bytes": 4810,
+      "path": "tables/objective_3/O3_T01_model_support.csv",
+      "sha256": "06b1a7a05b65a3b1e9f8d18522bd5d48a57bb474174731c7e6c64b0e8650cfdc"
+    },
+    {
+      "bytes": 5885,
+      "path": "tables/objective_3/O3_T01_model_support.md",
+      "sha256": "ff1e07e97bf9443e8fb4aef03d1c1eb69060b6d300a524f88c772f6c2bf0e3f6"
+    },
+    {
+      "bytes": 6091,
+      "path": "tables/objective_3/O3_T01_model_support.tex",
+      "sha256": "f7beca753b992a7e1129ec7683a6af7f70c5e1b0ed1fe85d1dc0f534467cc07c"
+    },
+    {
+      "bytes": 14925,
+      "path": "tables/objective_3/O3_T02_fit_diagnostics.csv",
+      "sha256": "190abf4b8644e917b34e2ae3a069e357aceff55f3d5f454340c78a74a0027b83"
+    },
+    {
+      "bytes": 17031,
+      "path": "tables/objective_3/O3_T02_fit_diagnostics.md",
+      "sha256": "4c5d0cbd0b573c47c9b7d14f828dde8de6754d87588f62374ac7d61d283acd41"
+    },
+    {
+      "bytes": 17579,
+      "path": "tables/objective_3/O3_T02_fit_diagnostics.tex",
+      "sha256": "b9f03aee881fb936048502651a2ee5d8bedc561f66e83c5f3c3b4cd145442319"
+    },
+    {
+      "bytes": 6867,
+      "path": "tables/objective_3/O3_T03_completeness_leakage.csv",
+      "sha256": "64fb883a8cfc5bea77f9629af31f2604c1187b7c780c5123eb67bb34d7c3b6b6"
+    },
+    {
+      "bytes": 8852,
+      "path": "tables/objective_3/O3_T03_completeness_leakage.md",
+      "sha256": "2f6b63b51f73d7e09bec374a6e9ceece31d1e33a1276ba7ac2d2103fb53b828e"
+    },
+    {
+      "bytes": 9022,
+      "path": "tables/objective_3/O3_T03_completeness_leakage.tex",
+      "sha256": "0ac5174cb594489b26c51786e7ef4b5f674e3c9125cea2566b03046a212bda8e"
+    },
+    {
+      "bytes": 7380,
+      "path": "tables/objective_3/O3_T04_artifact_registry.csv",
+      "sha256": "91cc5db6fc8fcf142922e3d424d6e4c46ece9c81a92abbdf7a6c39a7532471c5"
+    },
+    {
+      "bytes": 8535,
+      "path": "tables/objective_3/O3_T04_artifact_registry.md",
+      "sha256": "34be9e0f3e061eb39f5ef92976c418a20351359dc1c0d4ccf37f6ce472c17d44"
+    },
+    {
+      "bytes": 8804,
+      "path": "tables/objective_3/O3_T04_artifact_registry.tex",
+      "sha256": "e08eee14db97f11b216cdf1141ab7270dc6ce34042d3bcb258d21f2493ed3801"
+    },
+    {
+      "bytes": 942,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_fold1.json",
+      "sha256": "c91374bbd127669db191efe1e09d5b7dc786a94f9746bede8880d3b79319a1a2"
+    },
+    {
+      "bytes": 1021,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_fold1.json",
+      "sha256": "ad5b4828ba43cd85583ef32c42243287903b13e15c9740aa971da0b11901bea1"
+    },
+    {
+      "bytes": 1085,
+      "path": "reports/objective_3/artifacts/M2_RF_fold1.json",
+      "sha256": "1857205a65f8e4bf00fe4c4087db839bc4351023715479354886546ccbfb66eb"
+    },
+    {
+      "bytes": 1127,
+      "path": "reports/objective_3/artifacts/M2_HGB_fold1.json",
+      "sha256": "9a4a34ee8b4dbc6ac0b465498a7ece3650fae39375bf191f9db7ee97e854e8d7"
+    },
+    {
+      "bytes": 1309,
+      "path": "reports/objective_3/artifacts/M1_IK_fold1.json",
+      "sha256": "a3eae4cdd4de5e0da3c541e98e22dd931cb13666407f6cb028ffba36a43a76d5"
+    },
+    {
+      "bytes": 1210,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_fold1.json",
+      "sha256": "4bbbe61787885b5bf90401995bacec66e38bd588300ae6237def4416e1e7ed65"
+    },
+    {
+      "bytes": 942,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_fold2.json",
+      "sha256": "3125d40fb7c98faff94c5a7a5127075b1b341c288036d6cdeee02cd84f7eaf90"
+    },
+    {
+      "bytes": 1024,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_fold2.json",
+      "sha256": "64d14961f9bc6b66a0890b9051032b87c52e29475bf6dfd7a91adf96a0b91233"
+    },
+    {
+      "bytes": 1084,
+      "path": "reports/objective_3/artifacts/M2_RF_fold2.json",
+      "sha256": "95897738c1992c42eef013d26d02de02b6fa67426f5cb3522f1946b45efb6fe4"
+    },
+    {
+      "bytes": 1126,
+      "path": "reports/objective_3/artifacts/M2_HGB_fold2.json",
+      "sha256": "1e70a906447c84a63be8e3704cead528c7f04fc5658b87e05ff5c72868d00c37"
+    },
+    {
+      "bytes": 1305,
+      "path": "reports/objective_3/artifacts/M1_IK_fold2.json",
+      "sha256": "d085b253d54e34d98235d466bcbfee634e216a73f56e67110c9dd3ded8f30c55"
+    },
+    {
+      "bytes": 1209,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_fold2.json",
+      "sha256": "e200db36027aaed83d21323abdc234985e6a3069971d2c4e0491ea19df3136f4"
+    },
+    {
+      "bytes": 942,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_fold3.json",
+      "sha256": "d3ac42a9ed3d15fd2f9f4f95f387862090a956045e7d7a9b3302031c5af56ba4"
+    },
+    {
+      "bytes": 1022,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_fold3.json",
+      "sha256": "f58b64675db12398ad50974cb994c7e33e58b4c82e07f6d7ff7c3384b16e4711"
+    },
+    {
+      "bytes": 1087,
+      "path": "reports/objective_3/artifacts/M2_RF_fold3.json",
+      "sha256": "81e437e5860167a6acd929e5bae65a5128dcc75913ba2d5a3fc89f1593b1ddf2"
+    },
+    {
+      "bytes": 1126,
+      "path": "reports/objective_3/artifacts/M2_HGB_fold3.json",
+      "sha256": "48f0b7d9c8a97c47e83275661fe519cab7eeb46d2c82ee28211d373925081a8a"
+    },
+    {
+      "bytes": 1307,
+      "path": "reports/objective_3/artifacts/M1_IK_fold3.json",
+      "sha256": "8f9d9fa5ad906250dbe089dbc5e51b570055f473b272a38c32bfee1f586b3b8a"
+    },
+    {
+      "bytes": 1209,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_fold3.json",
+      "sha256": "079b68bdc78c78b77f0d429cbc2078f5af01beb0d964ef3861ecb1c34ed82033"
+    },
+    {
+      "bytes": 943,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_fold4.json",
+      "sha256": "715b714f02c882ecc79bd8c4c74aa70609a58c5520482ffdb0e4600b0d2c3dc5"
+    },
+    {
+      "bytes": 1022,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_fold4.json",
+      "sha256": "17153da64da817997c351d8b1d6095ec77dbbcec06c036bf33cc948b7a5236bf"
+    },
+    {
+      "bytes": 1085,
+      "path": "reports/objective_3/artifacts/M2_RF_fold4.json",
+      "sha256": "590f80b3066cafd0f2db4c556f7e92a61a1e9804899dffe4579090f3b41a6604"
+    },
+    {
+      "bytes": 1125,
+      "path": "reports/objective_3/artifacts/M2_HGB_fold4.json",
+      "sha256": "e905f6d565ef820760b6cf4844ad6c1404ff03f88a2df30c915dba251aa80724"
+    },
+    {
+      "bytes": 1307,
+      "path": "reports/objective_3/artifacts/M1_IK_fold4.json",
+      "sha256": "c719d11fcfe38a3026be2bf52c9f956e93476e7a27caeee21ec66181ecace6c3"
+    },
+    {
+      "bytes": 1210,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_fold4.json",
+      "sha256": "f35cb8723ecec19d1e65ece7a92180691ea8d41758e5963e715910b07a04bd06"
+    },
+    {
+      "bytes": 942,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_fold5.json",
+      "sha256": "629774922ceb0c64ed21a554dfda2fa0eef76d44f8fc2471ed1c3e63a3780b08"
+    },
+    {
+      "bytes": 1021,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_fold5.json",
+      "sha256": "0098ab3c095bd79bda93e5c386becf65838a5151f93441fc91455340c4180e38"
+    },
+    {
+      "bytes": 1089,
+      "path": "reports/objective_3/artifacts/M2_RF_fold5.json",
+      "sha256": "7f1030097f0c5d0ff8cd4214d11ae32ca4288127ff7b38732f7714409d63985d"
+    },
+    {
+      "bytes": 1128,
+      "path": "reports/objective_3/artifacts/M2_HGB_fold5.json",
+      "sha256": "450ed8a1d159fc9b05bf32f47707b6e236b4038085eae89d86a3fb556aa906b5"
+    },
+    {
+      "bytes": 1306,
+      "path": "reports/objective_3/artifacts/M1_IK_fold5.json",
+      "sha256": "10476e1d277e4718f4ffce641a2849ad84fbfc34b5cc5b6975cd4d3bffdba89f"
+    },
+    {
+      "bytes": 1210,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_fold5.json",
+      "sha256": "d78a6f57503eda2402fc1ccae0432735c2b8a84d6ebaf7f7a73ed15d323bcc48"
+    }
+  ],
+  "predictions": [
+    {
+      "clipped": 0,
+      "family_id": "BASE_LOGISTIC",
+      "n": 1829,
+      "pmax": 0.9188705792570311,
+      "pmin": 0.034652356189239966
+    },
+    {
+      "clipped": 0,
+      "family_id": "BASE_PREVALENCE",
+      "n": 1829,
+      "pmax": 0.35298196948682387,
+      "pmin": 0.22
+    },
+    {
+      "clipped": 0,
+      "family_id": "M2_HGB",
+      "n": 1829,
+      "pmax": 0.8011520571228079,
+      "pmin": 0.0197887601704338
+    },
+    {
+      "clipped": 0,
+      "family_id": "M2_RF",
+      "n": 1829,
+      "pmax": 0.6681832218081208,
+      "pmin": 0.04907307957803926
+    },
+    {
+      "clipped": 0,
+      "family_id": "M3_HYBRID",
+      "n": 1829,
+      "pmax": 0.6681832218081208,
+      "pmin": 0.04907307957803926
+    }
+  ],
+  "runs": {
+    "import": 1,
+    "splits": 2,
+    "train": 3,
+    "verify": 9
+  },
+  "schema_version": "O3-SCHEMA-2026.11.05-1",
+  "split_audit": [
+    {
+      "both_classes_test": 1,
+      "both_classes_train": 1,
+      "disjoint": 1,
+      "fold_id": 1,
+      "min_train_test_collar_distance_m": 556.5770386927582,
+      "n_test": 84,
+      "n_train": 1745,
+      "reason": "1 test line(s); 3 test holes; minimum collar distance between test and training holes 556.6 m",
+      "split_plan_id": "O3-SPLIT-LODO-1",
+      "status": "PASS",
+      "test_holes": 3,
+      "test_lines": 1,
+      "test_positive": 29,
+      "train_holes": 68,
+      "train_lines": 4,
+      "train_positive": 496
+    },
+    {
+      "both_classes_test": 1,
+      "both_classes_train": 1,
+      "disjoint": 1,
+      "fold_id": 2,
+      "min_train_test_collar_distance_m": 453.55843063490727,
+      "n_test": 429,
+      "n_train": 1400,
+      "reason": "1 test line(s); 13 test holes; minimum collar distance between test and training holes 453.6 m",
+      "split_plan_id": "O3-SPLIT-LODO-1",
+      "status": "PASS",
+      "test_holes": 13,
+      "test_lines": 1,
+      "test_positive": 217,
+      "train_holes": 58,
+      "train_lines": 4,
+      "train_positive": 308
+    },
+    {
+      "both_classes_test": 1,
+      "both_classes_train": 1,
+      "disjoint": 1,
+      "fold_id": 3,
+      "min_train_test_collar_distance_m": 488.4096641140509,
+      "n_test": 528,
+      "n_train": 1301,
+      "reason": "1 test line(s); 21 test holes; minimum collar distance between test and training holes 488.4 m",
+      "split_plan_id": "O3-SPLIT-LODO-1",
+      "status": "PASS",
+      "test_holes": 21,
+      "test_lines": 1,
+      "test_positive": 130,
+      "train_holes": 50,
+      "train_lines": 4,
+      "train_positive": 395
+    },
+    {
+      "both_classes_test": 1,
+      "both_classes_train": 1,
+      "disjoint": 1,
+      "fold_id": 4,
+      "min_train_test_collar_distance_m": 453.55843063490727,
+      "n_test": 401,
+      "n_train": 1428,
+      "reason": "1 test line(s); 15 test holes; minimum collar distance between test and training holes 453.6 m",
+      "split_plan_id": "O3-SPLIT-LODO-1",
+      "status": "PASS",
+      "test_holes": 15,
+      "test_lines": 1,
+      "test_positive": 133,
+      "train_holes": 56,
+      "train_lines": 4,
+      "train_positive": 392
+    },
+    {
+      "both_classes_test": 1,
+      "both_classes_train": 1,
+      "disjoint": 1,
+      "fold_id": 5,
+      "min_train_test_collar_distance_m": 488.4096641140509,
+      "n_test": 387,
+      "n_train": 1442,
+      "reason": "1 test line(s); 19 test holes; minimum collar distance between test and training holes 488.4 m",
+      "split_plan_id": "O3-SPLIT-LODO-1",
+      "status": "PASS",
+      "test_holes": 19,
+      "test_lines": 1,
+      "test_positive": 16,
+      "train_holes": 52,
+      "train_lines": 4,
+      "train_positive": 509
+    }
+  ],
+  "split_plan": {
+    "frozen_utc": "2026-11-05T18:55:22Z",
+    "method": "LEAVE_ONE_DRILL_LINE_OUT",
+    "n_folds": 5,
+    "notes": "",
+    "plan_sha256": "e1193a349fcd34264519672cb3de9854b19e984a21b21d784b011220e9888c1f",
+    "primary_plan": 1,
+    "receipt_id": 1,
+    "seed": 20261105,
+    "split_plan_id": "O3-SPLIT-LODO-1"
+  },
+  "tables": [
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 39,
+      "status": "GENERATED",
+      "table_id": "O3-T01",
+      "title": "Model definitions, predictors, target version and sample support"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 70,
+      "status": "GENERATED",
+      "table_id": "O3-T02",
+      "title": "Split-by-split hyperparameters, variogram and calibration diagnostics"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 61,
+      "status": "GENERATED",
+      "table_id": "O3-T03",
+      "title": "Out-of-fold completeness and leakage audit"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 31,
+      "status": "GENERATED",
+      "table_id": "O3-T04",
+      "title": "Model artifact and reproducibility registry"
+    }
+  ],
+  "target": {
+    "ambiguous_n": 81,
+    "binary_n": 1829,
+    "created_utc": "2026-11-05T18:55:21Z",
+    "excluded_states_json": "[\"AMBIGUOUS\", \"UNRESOLVED\"]",
+    "label_rule_id": "DESIGN_8_2_v1",
+    "label_rule_status": "APPROVED",
+    "negative_n": 1304,
+    "negative_state": "NEGATIVE",
+    "positive_n": 525,
+    "positive_state": "POSITIVE",
+    "receipt_id": 1,
+    "target_id": "TARGET-DESIGN_8_2_v1-1",
+    "unresolved_n": 0
+  },
+  "upstream": {
+    "objective_1": {
+      "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",
+      "dataset_version_id": 10,
+      "dataset_version_key": "55dead7da64cac14b0d79569e460739f8b9a217b17425a3e3ff2610649940248",
+      "path": "C:/Users/ThinkPad P1 G4/Documents/Joseph_Thesis/database/kambale_thesis.sqlite",
+      "row_count": 1910
+    },
+    "objective_2": {
+      "candidate_family": "NONE",
+      "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",
+      "handoff_id": 1,
+      "handoff_status": "NOT_IDENTIFIABLE",
+      "path": "C:/Users/ThinkPad P1 G4/Documents/Joseph_Thesis/database/kambale_obj2_spatial.sqlite",
+      "receipt_id": 1
+    }
+  },
+  "working_tree_committed": false
+}

@@ -1,0 +1,52 @@
+{
+  "candidate_run_id": "M1_IK",
+  "chosen_model": null,
+  "chosen_params": null,
+  "feature_names": [
+    "easting_m",
+    "northing_m",
+    "z_relative_m"
+  ],
+  "fold_id": 3,
+  "kriging": {
+    "clip_to_unit_interval": true,
+    "depth_band": "SAME_AS_VARIOGRAM",
+    "estimator": "SIMPLE_KRIGING",
+    "fallback_when_unsupported": "TRAINING_MEAN",
+    "jitter_fraction_of_sill": 1e-08,
+    "max_neighbours": 200,
+    "mean": "TRAINING_PREVALENCE",
+    "min_neighbours": 5
+  },
+  "seed": 20261105,
+  "software": {
+    "numpy": "2.4.6",
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.0"
+  },
+  "training_id_digest": "a4c285f149f2b3232ef7cedfc3e9c95538e89d411fa3015528c767e881b3d47f",
+  "training_n": 1301,
+  "variogram": {
+    "exponential": {
+      "objective": 3697.0390853364033,
+      "params": [
+        0.13569216954899677,
+        1.0021045184802007e-11,
+        10.000760260699998
+      ],
+      "stability": "NOT_ASSESSED",
+      "status": "NOT_IDENTIFIABLE"
+    },
+    "spherical": {
+      "objective": 3697.039085366059,
+      "params": [
+        0.13569207953224535,
+        4.198125680760326e-08,
+        10.092605079796437
+      ],
+      "stability": "NOT_ASSESSED",
+      "status": "NOT_IDENTIFIABLE"
+    }
+  }
+}

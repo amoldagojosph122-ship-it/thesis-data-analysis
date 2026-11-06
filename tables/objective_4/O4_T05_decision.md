@@ -1,0 +1,13 @@
+# O4-T05. Final model-selection decision and handoff
+
+The decision policy was predeclared. An INCONCLUSIVE label means the point estimate selected the model but the uncertainty or fold consistency does not support a credible improvement claim.
+Source: sql/objective_4/tables/O4-T05.sql, receipt 1, 6 rows.
+
+| rank | model_id | role | improvement_status | selection_basis | delta_brier | ci_low | ci_high | fold_consistency | calibration_status | discrimination_status | coverage | reason | handoff_receipt_sha256 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | M2_RF | SELECTED | INCONCLUSIVE | POINT_ESTIMATE_WITH_CAVEAT | -0.000302 | -0.013688 | 0.011983 | 3 | ACCEPTABLE | NOT_WORSE | 1 | selected vs comparator: delta Brier -0.000302; 95% hole-bootstrap [-0.013688, 0.011983]; selected better in 3/5 lines; calibration ACCEPTABLE; discrimination NOT_WORSE | 449a7d2966bdf54ebeae1add16463d669e7ba9257f63a1a2a39e152d2c0a1f32 |
+| 2 | BASE_LOGISTIC | COMPARATOR | INCONCLUSIVE | NOT_SELECTED | 0.000302 | -0.011983 | 0.013688 |  | ACCEPTABLE | WORSE | 1 | compared with selected M2_RF: delta Brier 0.000302; calibration ACCEPTABLE; discrimination WORSE |  |
+| 3 | M2_HGB | REJECTED | INCONCLUSIVE | NOT_SELECTED | 0.005965 | -0.005874 | 0.017428 |  | ACCEPTABLE | WORSE | 1 | compared with selected M2_RF: delta Brier 0.005965; calibration ACCEPTABLE; discrimination WORSE |  |
+| 4 | BASE_PREVALENCE | REJECTED | NO_IMPROVEMENT | NOT_SELECTED | 0.05561 | 0.031441 | 0.081147 |  | NOT_ACCEPTABLE | WORSE | 1 | compared with selected M2_RF: delta Brier 0.055610; calibration NOT_ACCEPTABLE; discrimination WORSE |  |
+|  | M1_IK | NOT_COMPARABLE | NOT_COMPARABLE | NOT_RANKED |  |  |  |  | UNDEFINED | UNDEFINED | 0 | M1 has no prediction in any fold; it is reported as a coverage failure and is not comparable |  |
+|  | M3_HYBRID | NOT_COMPARABLE | NOT_COMPARABLE | NOT_RANKED |  |  |  |  | ACCEPTABLE | IDENTICAL_TO_M2_RF | 1 | M3 is the recorded ML-only fallback and its predictions are identical to M2_RF; it is not a separate hybrid candidate |  |

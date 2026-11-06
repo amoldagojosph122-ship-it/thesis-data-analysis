@@ -1,0 +1,51 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O3-T01. Model definitions, predictors, target version and sample support. Predictors are restricted to the three safe coordinates; target-derived and logged-only fields are listed as non-predictors. Sample support is the outer training fold, never the held-out line. Receipt 1.}
+\label{tab:O3-T01}
+\begin{tabular}{llp{0.34\linewidth}lp{0.34\linewidth}lll}
+\toprule
+item\_type & item\_id & item & category & detail & units & status & n \\
+\midrule
+FEATURE & F\_BINARY & in\_binary\_target & TARGET\_DERIVED & Direct target. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_COMMENT & comment\_raw & TARGET\_DERIVED & Label evidence. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_DEPTHFROM & depth\_from\_m & LOG\_ONLY & Redundant with z\_relative\_m and tied to sampling geometry. & m & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_DEPTHTO & depth\_to\_m & LOG\_ONLY & Redundant with z\_relative\_m and tied to sampling geometry. & m & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_DESIGNLABEL & design\_label & TARGET\_DERIVED & Direct target. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_EASTING & easting\_m & SAFE & Planar coordinate; not derived from the target. & m & AVAILABLE\_AT\_PREDICTION & 0 \\
+FEATURE & F\_GRMIN & has\_gr\_mineral & TARGET\_DERIVED & Label evidence. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_HOLE & hole\_id & IDENTIFIER & Using it would memorise holes and leak the spatial split. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_INDICATOR & indicator & TARGET\_DERIVED & Direct target. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_INTERVALID & upstream\_interval\_id & IDENTIFIER & Would memorise individual intervals. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_INTERVALKEY & upstream\_interval\_key & IDENTIFIER & Would memorise individual intervals. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_LABEL & label\_state & TARGET\_DERIVED & Direct target. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_LENGTH & interval\_length\_m & LOG\_ONLY & No predictive content. & m & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_LINE & line\_code & IDENTIFIER & Using it would leak the held-out line identity. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_MID & midpoint\_m & LOG\_ONLY & Redundant with z\_relative\_m and tied to sampling geometry. & m & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_NEGIND & negative\_indicators & TARGET\_DERIVED & Label evidence. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_NORTHING & northing\_m & SAFE & Planar coordinate; not derived from the target. & m & AVAILABLE\_AT\_PREDICTION & 0 \\
+FEATURE & F\_PATTERN & evidence\_pattern & TARGET\_DERIVED & Label evidence. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_POSIND & positive\_indicators & TARGET\_DERIVED & Label evidence. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_ROCK & rock\_code\_raw & TARGET\_DERIVED & The approved rule classifies graphite from rock type and mineral evidence. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_ROCKSTATUS & rock\_code\_status & TARGET\_DERIVED & Rock-code validity is part of the label rule. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_SGS & is\_sgs & TARGET\_DERIVED & Label evidence. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_SUPPORT & support\_length\_m & LOG\_ONLY & No predictive content. & m & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_WEATHER & weathering\_code & LOG\_ONLY & Not a mapped covariate; using it would not be deployable. &  & NOT\_AVAILABLE & 0 \\
+FEATURE & F\_ZREL & z\_relative\_m & SAFE & Relative vertical position; z\_absolute\_m is never used. & m & AVAILABLE\_AT\_PREDICTION & 0 \\
+GEOMETRY & GEOM-10-1 & 10 & PROVISIONAL\_RELATIVE & CRS EPSG:32630; datum VERIFIED; vertical RELATIVE\_TO\_COLLAR; z\_absolute\_used=0 &  & VERIFIED & 0 \\
+MODEL & BASE\_LOGISTIC & Logistic regression & BASELINE & L2 logistic regression on the three safe coordinates, with standardisation refitted inside each fold. &  &  & 0 \\
+MODEL & BASE\_PREVALENCE & Training prevalence & BASELINE & Constant probability equal to the training-fold prevalence. Sanity baseline for every fold. &  &  & 0 \\
+MODEL & M1\_IK & Indicator kriging & M1 & Simple indicator kriging with a variogram and kriging neighbourhood fitted on the outer training fold only. &  &  & 0 \\
+MODEL & M2\_HGB & Gradient boosting & M2 & Histogram gradient boosting on the three safe coordinates. Audited fallback for XGBoost, which is not installed. &  &  & 0 \\
+MODEL & M2\_RF & Random forest & M2 & Random forest on the three safe coordinates. Hyperparameters selected by inner whole-hole CV. &  &  & 0 \\
+MODEL & M3\_HYBRID & Hybrid residual model & M3 & ML trend from the selected M2 candidate plus a kriged residual from an inner cross-fitted residual variogram. When the residual variogram is not supported, the run is recorded as an ML-only fallback, not a hybrid success. &  &  & 0 \\
+SAMPLE & BASE\_LOGISTIC & BASE\_LOGISTIC & FOLD\_SUMMARY & training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 & rows & OBSERVED & 7316 \\
+SAMPLE & BASE\_PREVALENCE & BASE\_PREVALENCE & FOLD\_SUMMARY & training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 & rows & OBSERVED & 7316 \\
+SAMPLE & M1\_IK & M1\_IK & FOLD\_SUMMARY & training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 & rows & OBSERVED & 7316 \\
+SAMPLE & M2\_HGB & M2\_HGB & FOLD\_SUMMARY & training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 & rows & OBSERVED & 7316 \\
+SAMPLE & M2\_RF & M2\_RF & FOLD\_SUMMARY & training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 & rows & OBSERVED & 7316 \\
+SAMPLE & M3\_HYBRID & M3\_HYBRID & FOLD\_SUMMARY & training rows 1301 to 1745; training positive 308 to 509; test rows 84 to 528; test positive 16 to 217; folds 5 & rows & OBSERVED & 7316 \\
+TARGET & TARGET-DESIGN\_8\_2\_v1-1 & DESIGN\_8\_2\_v1 & APPROVED & positive=POSITIVE; negative=NEGATIVE; excluded=["AMBIGUOUS", "UNRESOLVED"] & intervals & APPROVED & 1829 \\
+\bottomrule
+\end{tabular}
+\end{table}
