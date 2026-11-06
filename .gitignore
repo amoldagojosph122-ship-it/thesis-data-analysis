@@ -224,6 +224,7 @@ __marimo__/
 *.xlsm
 *.sqlite
 *.sqlite-journal
+*.sqlite.*
 data/
 
 # Word documents: source material and generated forms, not repository content
