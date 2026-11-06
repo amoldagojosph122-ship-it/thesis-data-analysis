@@ -1,6 +1,6 @@
-# Objective 4: blocked, skipped, warned and deferred items
+# Objective 4 blocked, skipped, warned and deferred items: TIER_1_EXTRAPOLATION
 
-Gate results are from VERIFY run 8.
+Gate results are from VERIFY run 5.
 
 ## Gates with a warning or a stop
 
@@ -8,9 +8,17 @@ Gate results are from VERIFY run 8.
 
 ## Model applicability
 
-- M1_IK: 0 predictions and 1829 explicit failures; coverage 0; not comparable.
-- M3_HYBRID: 1829 predictions; recorded as the ML-only fallback identical to M2_RF; not a separate hybrid candidate.
-- The four feasible models cover every held-out interval.
+- BASE_LOGISTIC: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- BASE_LOGISTIC_WF: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- BASE_PREVALENCE: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- M1_IK: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- M2_HGB: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- M2_HGB_WF: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- M2_RF: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- M2_RF_WF: 1829 of 1829 predicted; coverage 1.000; identity DISTINCT; ranked.
+- M2_SEL: 1829 of 1829 predicted; coverage 1.000; identity IDENTICAL_TO to M2_RF; not ranked.
+- M2_WF_SEL: 1829 of 1829 predicted; coverage 1.000; identity IDENTICAL_TO to M2_RF_WF; not ranked.
+- M3_HYBRID: 1829 of 1829 predicted; coverage 1.000; identity IDENTICAL_TO to M2_WF_SEL; not ranked.
 
 ## Deferred work
 

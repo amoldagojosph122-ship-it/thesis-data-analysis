@@ -1,7 +1,7 @@
 -- O4-F07 coverage and missing-prediction plot.
 -- name: coverage
 SELECT c.model_id, c.n_expected, c.n_predicted, c.n_failed, c.coverage, c.status,
-       r.role, r.comparable, r.fallback_identical_to
+       r.role, r.comparable, r.identity_status, r.identical_to
 FROM prediction_coverage c JOIN candidate_registry r ON r.model_id = c.model_id
 ORDER BY r.comparable DESC, c.coverage DESC, c.model_id;
 -- name: coverage_by_line

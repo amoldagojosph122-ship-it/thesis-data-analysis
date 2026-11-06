@@ -14,8 +14,8 @@ JOIN candidate_registry r ON r.model_id = p.model_id
 WHERE e.in_common_cohort = 1 AND r.comparable = 1
 GROUP BY p.model_id, e.line_code
 ORDER BY p.model_id, e.line_code;
--- name: paired
-SELECT pair_id, delta_brier, ci_low, ci_high, status
-FROM paired_differences
-WHERE scope = 'POOLED' AND weighting = 'INTERVAL' AND pair_id IN ('LOG_vs_RF', 'RF_vs_HGB')
-ORDER BY pair_id;
+-- name: identities
+SELECT model_id, identical_to, role
+FROM candidate_registry
+WHERE identity_status = 'IDENTICAL_TO'
+ORDER BY model_id;

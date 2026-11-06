@@ -1,5 +1,5 @@
 -- Objective 4 schema: independent spatial validation and probability-based performance.
--- O4-SCHEMA-2026.11.05-1. Objective 4 reads Objective 1, 2 and 3 read-only and writes only this database.
+-- O4-SCHEMA-2026.11.06-1. Objective 4 reads Objective 1, 2 and 3 read-only and writes only one tier's database.
 
 PRAGMA foreign_keys = ON;
 
@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS source_receipts (
     o3_receipt_id                   INTEGER NOT NULL,
     o3_config_version               TEXT    NOT NULL,
     o3_code_version                 TEXT    NOT NULL,
+    tier                            TEXT    NOT NULL CHECK (tier IN ('TIER_1_EXTRAPOLATION','TIER_2_INTERPOLATION')),
     o3_split_plan_id                TEXT    NOT NULL,
     o3_split_plan_sha256            TEXT    NOT NULL,
     o3_prediction_snapshot_sha256   TEXT    NOT NULL,
@@ -52,15 +53,33 @@ CREATE TABLE IF NOT EXISTS stage_runs (
     note            TEXT    NOT NULL
 );
 
+-- Coverage and identity are separate. identity_status is DISTINCT or IDENTICAL_TO; identical_to names the nearest
+-- earlier feasible model whose calibrated probabilities equal this model's on every common observation (the reference
+-- for the identity). comparable = 1 only for a distinct feasible model; identical models are never ranked.
 CREATE TABLE IF NOT EXISTS candidate_registry (
     model_id              TEXT    PRIMARY KEY,
     family_id             TEXT    NOT NULL,
     role                  TEXT    NOT NULL CHECK (role IN ('BASELINE','M1','M2','M3')),
     description           TEXT    NOT NULL,
-    coverage_status       TEXT    NOT NULL CHECK (coverage_status IN ('FULL','PARTIAL','NONE','FALLBACK_IDENTICAL')),
+    coverage_status       TEXT    NOT NULL CHECK (coverage_status IN ('FULL','PARTIAL','NONE')),
+    identity_status       TEXT    NOT NULL CHECK (identity_status IN ('DISTINCT','IDENTICAL_TO')),
+    identical_to          TEXT,
     comparable            INTEGER NOT NULL CHECK (comparable IN (0,1)),
-    fallback_identical_to TEXT,
-    note                  TEXT    NOT NULL
+    note                  TEXT    NOT NULL,
+    CHECK ((identity_status = 'IDENTICAL_TO') = (identical_to IS NOT NULL))
+);
+
+-- Every unordered pair of feasible models, earlier model first. max_abs_difference is NULL when no common observation
+-- exists for the pair. identical = 1 when every common difference is within tolerance.
+CREATE TABLE IF NOT EXISTS model_identities (
+    model_a             TEXT    NOT NULL REFERENCES candidate_registry (model_id),
+    model_b             TEXT    NOT NULL REFERENCES candidate_registry (model_id),
+    n_common            INTEGER NOT NULL CHECK (n_common >= 0),
+    max_abs_difference  REAL,
+    tolerance           REAL    NOT NULL,
+    identical           INTEGER NOT NULL CHECK (identical IN (0,1)),
+    PRIMARY KEY (model_a, model_b),
+    CHECK (model_a <> model_b)
 );
 
 CREATE TABLE IF NOT EXISTS evaluation_population (
@@ -109,7 +128,7 @@ CREATE TABLE IF NOT EXISTS prediction_coverage (
     n_predicted    INTEGER NOT NULL CHECK (n_predicted >= 0),
     n_failed       INTEGER NOT NULL CHECK (n_failed >= 0),
     coverage       REAL    NOT NULL CHECK (coverage BETWEEN 0 AND 1),
-    status         TEXT    NOT NULL CHECK (status IN ('FULL','PARTIAL','NONE','FALLBACK_IDENTICAL')),
+    status         TEXT    NOT NULL CHECK (status IN ('FULL','PARTIAL','NONE')),
     reason         TEXT    NOT NULL
 );
 
@@ -234,8 +253,10 @@ CREATE TABLE IF NOT EXISTS paired_differences (
     ci_low_line    REAL,
     ci_high_line   REAL,
     ci_design      TEXT,
+    power_label    TEXT    CHECK (power_label IS NULL OR power_label IN ('RESOLVED','UNRESOLVED','IDENTICAL','NOT_ESTIMABLE')),
+    detectable_half_width REAL,
     n              INTEGER NOT NULL CHECK (n >= 0),
-    status         TEXT    NOT NULL CHECK (status IN ('DEFINED','UNDEFINED','NOT_ESTIMABLE')),
+    status         TEXT    NOT NULL CHECK (status IN ('DEFINED','UNDEFINED','NOT_ESTIMABLE','IDENTICAL')),
     reason         TEXT    NOT NULL,
     PRIMARY KEY (pair_id, scope, fold_id, line_code, weighting)
 );
@@ -286,6 +307,9 @@ CREATE TABLE IF NOT EXISTS comparison_decisions (
 
 CREATE TABLE IF NOT EXISTS locked_handoff_receipts (
     receipt_id           INTEGER PRIMARY KEY,
+    tier                 TEXT    NOT NULL CHECK (tier IN ('TIER_1_EXTRAPOLATION','TIER_2_INTERPOLATION')),
+    config_version       TEXT    NOT NULL,
+    claim                TEXT    NOT NULL,
     selected_model_id    TEXT    NOT NULL REFERENCES candidate_registry (model_id),
     decision_id          INTEGER NOT NULL REFERENCES comparison_decisions (decision_id),
     target_receipt_id    INTEGER NOT NULL REFERENCES source_receipts (receipt_id),
@@ -387,7 +411,7 @@ WHERE p.in_common_cohort = 1;
 
 CREATE VIEW IF NOT EXISTS v_prediction_coverage_summary AS
 SELECT c.model_id, c.n_expected, c.n_predicted, c.n_failed, c.coverage, c.status, c.reason,
-       r.comparable, r.fallback_identical_to
+       r.comparable, r.identity_status, r.identical_to
 FROM prediction_coverage c JOIN candidate_registry r ON r.model_id = c.model_id;
 
 CREATE VIEW IF NOT EXISTS v_pooled_metrics_primary AS

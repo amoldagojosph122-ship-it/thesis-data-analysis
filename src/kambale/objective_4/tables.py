@@ -14,22 +14,27 @@ from kambale.objective_4.figures import load_queries
 
 TABLES = OrderedDict([
     ("O4-T01", ("Main evaluation summary", "O4_T01_evaluation_summary", "O4-T01.sql",
-                "Brier is the primary endpoint; the equal-hole weighting is a sensitivity analysis. Coverage is the "
-                "share of held-out intervals with a prediction. M1 has no prediction; M3 is the fallback identical to "
-                "M2_RF and is not ranked.")),
+                "Brier is the primary endpoint; the equal-hole weighting is a sensitivity analysis. Coverage is the share "
+                "of held-out intervals with a prediction. identity_status marks a model whose calibrated predictions equal "
+                "an earlier feasible model's on every common interval (identical_to names it); identical models are not "
+                "ranked.")),
     ("O4-T02", ("Fold-by-fold scores", "O4_T02_fold_scores", "O4-T02.sql",
-                "Each row is one held-out line. Metrics are interval-weighted; AUC is undefined for a one-class fold "
-                "and is left empty. Thresholds are the frozen Objective 3 values.")),
+                "Each row is one held-out fold: a drill line in tier 1, an interleaved hole fold in tier 2. Metrics are "
+                "interval-weighted; AUC is undefined for a one-class fold and is left empty. Thresholds are the frozen "
+                "Objective 3 values.")),
     ("O4-T03", ("Confusion matrices and threshold provenance", "O4_T03_confusion", "O4-T03.sql",
                 "The pooled matrix sums the fold-specific confusion counts; the threshold is therefore NULL and the "
                 "source records that the fold-specific thresholds were summed.")),
     ("O4-T04", ("Paired difference uncertainty and weighting sensitivity", "O4_T04_paired_uncertainty", "O4-T04.sql",
-                "Sign convention: delta Brier = Brier(model_a) - Brier(model_b); negative means model_a is better. "
-                "The primary interval is the 95% hole-cluster bootstrap; the line-level interval is a five-line "
-                "sensitivity analysis.")),
+                "Sign convention: difference = Brier(model_b) minus Brier(model_a); negative means model_b has the lower "
+                "Brier. power_label: RESOLVED when the 95% hole-cluster interval excludes zero; UNRESOLVED when it includes "
+                "zero, with detectable_half_width the smallest difference this design could have detected; IDENTICAL when "
+                "the two models are the same predictions (no interval). The line-level interval is a sensitivity analysis.")),
     ("O4-T05", ("Final model-selection decision and handoff", "O4_T05_decision", "O4-T05.sql",
-                "The decision policy was predeclared. An INCONCLUSIVE label means the point estimate selected the "
-                "model but the uncertainty or fold consistency does not support a credible improvement claim.")),
+                "The decision policy was predeclared. Rank 1 is the selected model and rank 2 the comparator; identical "
+                "models are NOT_COMPARABLE with their identity. For the selected model delta_brier is selected minus "
+                "comparator; for other rows it is the model minus the selected model. INCONCLUSIVE means the point estimate "
+                "selected the model but the uncertainty or fold consistency does not support a credible improvement.")),
 ])
 WIDE_TEXT = {"reason", "notes", "definition", "detail"}
 TEX_SPECIAL = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_", "{": r"\{",

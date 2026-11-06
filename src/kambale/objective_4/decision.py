@@ -1,4 +1,9 @@
-"""Predeclared model-comparison decision and the locked Objective 5 handoff."""
+"""Predeclared model-comparison decision and the locked Objective 5 handoff, per evaluation tier.
+
+Eligible models are the DISTINCT feasible models with FULL coverage and a defined pooled interval Brier score. The lowest
+is selected; the next lowest is the comparator. Any model identical to an earlier feasible model is reported as
+NOT_COMPARABLE with its identity, never ranked. The improvement rule is applied exactly as predeclared in the config.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +11,61 @@ import json
 
 import numpy as np
 
-from kambale.objective_4.config import sha256_text, utc_now
+from kambale.objective_4.config import StopError, sha256_text
+
+TIER_TEXT = {
+    "TIER_1_EXTRAPOLATION": {
+        "domain": ("held-out intervals of a whole undrilled drill line predicted from the other drill lines; relative "
+                   "geometry only; not a distant prospect beyond the sampled lines and not an absolute-elevation volume"),
+        "caveat": ("Internal spatially held-out validation on five drill lines: extrapolation to an unseen line, not an "
+                   "external prospective campaign."),
+    },
+    "TIER_2_INTERPOLATION": {
+        "domain": ("held-out intervals inside drilled holes of an approved line, predicted from neighbouring holes at about "
+                   "one hole spacing; relative geometry only; not a different line, not a distant prospect and not an "
+                   "absolute-elevation volume"),
+        "caveat": ("Internal spatially held-out validation between drilled holes: interpolation at one hole spacing, not an "
+                   "external prospective campaign."),
+    },
+}
+
+
+def improvement_status(point, lo, hi, folds_better, fold_min, calibration_ok, discrimination_ok, coverage_ok):
+    """Predeclared rule for the selected model against its comparator; the difference is selected minus comparator.
+
+    Returns (status, reason). SUPPORTED_IMPROVEMENT needs every condition. NO_IMPROVEMENT when the point estimate is
+    non-negative or the interval lies above zero. INCONCLUSIVE otherwise (interval includes zero, fold consistency below
+    the minimum, or a secondary criterion fails), with the failed criteria named.
+    """
+    if point is None or lo is None or hi is None:
+        return "INCONCLUSIVE", "no hole-cluster bootstrap interval for the selected pair"
+    if point >= 0:
+        return "NO_IMPROVEMENT", "point estimate non-negative"
+    failed = []
+    if not hi < 0:
+        failed.append("interval includes zero")
+    if folds_better < fold_min:
+        failed.append(f"selected better in {folds_better} of 5 folds (minimum {fold_min})")
+    if not calibration_ok:
+        failed.append("calibration slope or intercept outside the acceptable range")
+    if not discrimination_ok:
+        failed.append("ROC-AUC worse than the comparator by more than the margin")
+    if not coverage_ok:
+        failed.append("coverage below the threshold")
+    if not failed:
+        return "SUPPORTED_IMPROVEMENT", "every predeclared condition is met"
+    if lo > 0:
+        return "NO_IMPROVEMENT", "interval entirely above zero"
+    return "INCONCLUSIVE", "; ".join(failed)
+
+
+def comparator_status(lo, hi):
+    """Status of a non-selected eligible model against the selected model (difference is model minus selected)."""
+    if lo is None or hi is None:
+        return "INCONCLUSIVE", "no hole-cluster bootstrap interval"
+    if lo > 0:
+        return "NO_IMPROVEMENT", "resolved: the selected model has the lower Brier (interval above zero)"
+    return "INCONCLUSIVE", "unresolved: the interval includes zero"
 
 
 def _metric(conn, model, metric_id, weighting="INTERVAL"):
@@ -21,17 +80,20 @@ def _fold_brier(conn, model, fold):
     return row["value"] if row else None
 
 
-def _ci(conn, config, selected, comparator):
+def _brier_interval(conn, config, a, b):
+    """Point difference and hole-cluster interval for Brier(b) minus Brier(a), from the stored replicates."""
+    va, vb = _metric(conn, a, "BRIER")["value"], _metric(conn, b, "BRIER")["value"]
+    point = (vb - va) if va is not None and vb is not None else None
     rows = conn.execute("SELECT model_a, model_b, delta_brier_interval FROM bootstrap_replicates "
                         "WHERE design_id = 'O4-BOOT-HOLE' AND ((model_a = ? AND model_b = ?) OR "
-                        "(model_a = ? AND model_b = ?))", (selected, comparator, comparator, selected)).fetchall()
+                        "(model_a = ? AND model_b = ?))", (a, b, b, a)).fetchall()
     if not rows:
-        return None, None, None
-    flip = rows[0]["model_a"] != selected
-    deltas = np.array([(-1.0 if flip else 1.0) * r["delta_brier_interval"] for r in rows], dtype=float)
+        return point, None, None
+    # Stored replicates are Brier(stored b) minus Brier(stored a); flip the sign when the stored order is reversed.
+    sign = 1.0 if rows[0]["model_a"] == a else -1.0
+    deltas = np.array([sign * r["delta_brier_interval"] for r in rows], dtype=float)
     lo = (1.0 - float(config["evaluation"]["bootstrap"]["confidence"])) / 2.0 * 100.0
-    hi = 100.0 - lo
-    return float(np.percentile(deltas, lo)), float(np.percentile(deltas, hi)), int(deltas.size)
+    return point, float(np.percentile(deltas, lo)), float(np.percentile(deltas, 100.0 - lo))
 
 
 def _calibration(conn, config, model):
@@ -45,9 +107,9 @@ def _calibration(conn, config, model):
     return ("ACCEPTABLE" if ok else "NOT_ACCEPTABLE"), ok
 
 
-def _discrimination(conn, config, selected, comparator):
-    a = _metric(conn, selected, "ROC_AUC")
-    b = _metric(conn, comparator, "ROC_AUC")
+def _discrimination(conn, config, model, other):
+    a = _metric(conn, model, "ROC_AUC")
+    b = _metric(conn, other, "ROC_AUC")
     if a["status"] != "DEFINED" or b["status"] != "DEFINED":
         return "UNDEFINED", False
     margin = float(config["evaluation"]["discrimination_margin_auc"])
@@ -55,108 +117,120 @@ def _discrimination(conn, config, selected, comparator):
     return ("NOT_WORSE" if ok else "WORSE"), ok
 
 
-def _status(conn, config, model, selected, comparator, is_selected):
-    cov = conn.execute("SELECT coverage FROM prediction_coverage WHERE model_id = ?", (model,)).fetchone()
-    coverage = float(cov["coverage"]) if cov else 0.0
-    if coverage < float(config["evaluation"]["coverage_threshold"]):
-        return "NOT_COMPARABLE", None, None, None, None, coverage, "coverage below the threshold"
-    if is_selected:
-        delta = _metric(conn, selected, "BRIER")["value"] - _metric(conn, comparator, "BRIER")["value"]
-        fold_better = sum(1 for f in range(1, 6)
-                          if (_fold_brier(conn, selected, f) is not None and _fold_brier(conn, comparator, f) is not None
-                              and _fold_brier(conn, selected, f) < _fold_brier(conn, comparator, f)))
-        cal_status, cal_ok = _calibration(conn, config, selected)
-        disc_status, disc_ok = _discrimination(conn, config, selected, comparator)
-        lo, hi, n = _ci(conn, config, selected, comparator)
-        if lo is None:
-            return "INCONCLUSIVE", delta, None, None, fold_better, coverage, "no bootstrap replicates for the selected pair"
-        if hi < 0 and fold_better >= int(config["evaluation"]["fold_consistency_min"]) and cal_ok and disc_ok:
-            status = "SUPPORTED_IMPROVEMENT"
-        elif lo <= 0 <= hi or fold_better < int(config["evaluation"]["fold_consistency_min"]):
-            status = "INCONCLUSIVE"
-        else:
-            status = "NO_IMPROVEMENT"
-        return status, delta, lo, hi, fold_better, coverage, (
-            f"selected vs comparator: delta Brier {delta:.6f}; 95% hole-bootstrap [{lo:.6f}, {hi:.6f}]; "
-            f"selected better in {fold_better}/5 lines; calibration {cal_status}; discrimination {disc_status}")
-    # Comparator or rejected model: compare against the selected model.
-    delta = _metric(conn, model, "BRIER")["value"] - _metric(conn, selected, "BRIER")["value"]
-    lo, hi, n = _ci(conn, config, model, selected)
-    cal_status, _ = _calibration(conn, config, model)
-    disc_status, _ = _discrimination(conn, config, model, selected)
-    if lo is None:
-        status = "INCONCLUSIVE"
-    elif lo > 0:
-        status = "NO_IMPROVEMENT"
-    elif lo <= 0 <= hi:
-        status = "INCONCLUSIVE"
-    else:
-        status = "NO_IMPROVEMENT"
-    return status, delta, lo, hi, None, coverage, (
-        f"compared with selected {selected}: delta Brier {delta:.6f}; calibration {cal_status}; "
-        f"discrimination {disc_status}")
+def _fmt(value, digits=6):
+    return "n/a" if value is None else f"{value:.{digits}f}"
 
 
 def write(conn, config, receipt, created):
-    feasible = list(config["evaluation"]["decision"]["feasible_models"])
-    brier = {m: _metric(conn, m, "BRIER") for m in feasible}
-    usable = [m for m in feasible if brier[m]["status"] == "DEFINED" and brier[m]["value"] is not None]
-    if len(usable) < 2:
-        raise RuntimeError("fewer than two feasible models have a defined Brier score")
-    ranked = sorted(usable, key=lambda m: (brier[m]["value"], m))
+    ev = config["evaluation"]
+    feasible = list(ev["models"]["feasible"])
+    threshold = float(ev["coverage_threshold"])
+    fold_min = int(ev["fold_consistency_min"])
+    tier = config["tier"]
+    if receipt["o3_split_plan_id"] != config["paths"]["o3_split_plan_id"]:
+        raise StopError(f"receipt split plan {receipt['o3_split_plan_id']} differs from the config split plan "
+                        f"{config['paths']['o3_split_plan_id']}")
+    reg = {r["model_id"]: dict(r) for r in conn.execute("SELECT * FROM candidate_registry")}
+    cov = {r["model_id"]: dict(r) for r in conn.execute("SELECT * FROM prediction_coverage")}
+    brier = {m: _metric(conn, m, "BRIER") for m in reg}
+    eligible = [m for m in feasible if m in reg and reg[m]["identity_status"] == "DISTINCT"
+                and cov[m]["status"] == "FULL" and brier[m]["status"] == "DEFINED" and brier[m]["value"] is not None]
+    if len(eligible) < 2:
+        raise RuntimeError("fewer than two distinct full-coverage feasible models have a defined Brier score")
+    ranked = sorted(eligible, key=lambda m: (brier[m]["value"], m))
     selected, comparator = ranked[0], ranked[1]
+    sel_brier_fold_better = None
+
+    order = ranked + [m for m in feasible if m in reg and m not in ranked] + sorted(m for m in reg if m not in feasible)
     rows = []
-    for rank, m in enumerate(ranked, start=1):
-        role = "SELECTED" if m == selected else "COMPARATOR" if m == comparator else "REJECTED"
-        status, delta, lo, hi, consistency, coverage, reason = _status(
-            conn, config, m, selected, comparator, m == selected)
-        cal_status, _ = _calibration(conn, config, m)
-        disc_status, _ = _discrimination(conn, config, m, comparator if m == selected else selected)
-        basis = ("SUPPORTED" if status == "SUPPORTED_IMPROVEMENT" else
-                 "POINT_ESTIMATE_WITH_CAVEAT" if m == selected else "NOT_SELECTED")
-        rows.append((m, role, rank, status, basis, delta, lo, hi, consistency, cal_status, disc_status, coverage, reason))
-    for m in ("M1_IK", "M3_HYBRID"):
-        cov = conn.execute("SELECT coverage FROM prediction_coverage WHERE model_id = ?", (m,)).fetchone()
-        coverage = float(cov["coverage"]) if cov else 0.0
-        reason = ("M1 has no prediction in any fold; it is reported as a coverage failure and is not comparable"
-                  if m == "M1_IK" else
-                  "M3 is the recorded ML-only fallback and its predictions are identical to M2_RF; it is not a "
-                  "separate hybrid candidate")
-        if m == "M3_HYBRID":
-            cal_status, _ = _calibration(conn, config, m)
-            disc_status = "IDENTICAL_TO_M2_RF"
-        else:
-            cal_status, disc_status = "UNDEFINED", "UNDEFINED"
-        rows.append((m, "NOT_COMPARABLE", None, "NOT_COMPARABLE", "NOT_RANKED", None, None, None, None,
-                     cal_status, disc_status, coverage, reason))
+    for m in order:
+        r = reg[m]
+        cal_status, cal_ok = _calibration(conn, config, m)
+        coverage = float(cov[m]["coverage"]) if m in cov else 0.0
+        if m not in ranked:
+            if r["identity_status"] == "IDENTICAL_TO":
+                reason = f"identical to {r['identical_to']} on every common observation; reported, not ranked"
+                disc = f"IDENTICAL_TO_{r['identical_to']}"
+            elif m not in feasible:
+                reason = "not in the predeclared feasible set; reported only"
+                disc = "UNDEFINED"
+            elif cov[m]["status"] != "FULL" or coverage < threshold:
+                reason = f"coverage {coverage:.3f} ({cov[m]['status']}) is not full coverage"
+                disc = "UNDEFINED"
+            else:
+                reason = "no defined pooled Brier score"
+                disc = "UNDEFINED"
+            rows.append((m, "NOT_COMPARABLE", None, "NOT_COMPARABLE", "NOT_RANKED", None, None, None, None, cal_status,
+                         disc, coverage, reason))
+            continue
+        rank = ranked.index(m) + 1
+        if m == selected:
+            role = "SELECTED"
+            point, lo, hi = _brier_interval(conn, config, comparator, selected)
+            folds_better = sum(1 for f in range(1, 6) if _fold_brier(conn, selected, f) is not None and
+                               _fold_brier(conn, comparator, f) is not None and
+                               _fold_brier(conn, selected, f) < _fold_brier(conn, comparator, f))
+            sel_brier_fold_better = folds_better
+            disc_status, disc_ok = _discrimination(conn, config, selected, comparator)
+            status, why = improvement_status(point, lo, hi, folds_better, fold_min, cal_ok, disc_ok,
+                                             coverage >= threshold)
+            basis = "SUPPORTED" if status == "SUPPORTED_IMPROVEMENT" else "POINT_ESTIMATE_WITH_CAVEAT"
+            reason = (f"lowest pooled interval Brier among distinct full-coverage models; against comparator "
+                      f"{comparator}: delta Brier (selected minus comparator) {_fmt(point)}, 95% hole-cluster interval "
+                      f"[{_fmt(lo)}, {_fmt(hi)}], selected better in {folds_better} of 5 folds; calibration "
+                      f"{cal_status}; discrimination {disc_status}; {why}")
+            rows.append((m, role, rank, status, basis, point, lo, hi, folds_better, cal_status, disc_status, coverage,
+                         reason))
+            continue
+        role = "COMPARATOR" if m == comparator else "REJECTED"
+        point, lo, hi = _brier_interval(conn, config, selected, m)
+        status, why = comparator_status(lo, hi)
+        disc_status, _ = _discrimination(conn, config, m, selected)
+        reason = (f"vs selected {selected}: delta Brier (model minus selected) {_fmt(point)}, 95% hole-cluster interval "
+                  f"[{_fmt(lo)}, {_fmt(hi)}]; {why}")
+        rows.append((m, role, rank, status, "NOT_SELECTED", point, lo, hi, None, cal_status, disc_status, coverage,
+                     reason))
+
     for r in rows:
         conn.execute("INSERT INTO comparison_decisions (model_id, role, rank, improvement_status, selection_basis, "
                      "delta_brier, ci_low, ci_high, fold_consistency, calibration_status, discrimination_status, coverage, "
                      "reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", r)
-    selected_row = conn.execute("SELECT decision_id FROM comparison_decisions WHERE model_id = ? AND role = 'SELECTED'",
-                                (selected,)).fetchone()
+    selected_row = conn.execute("SELECT decision_id, improvement_status FROM comparison_decisions WHERE model_id = ? AND "
+                                "role = 'SELECTED'", (selected,)).fetchone()
+    text = TIER_TEXT[tier]
+    m3 = reg.get("M3_HYBRID")
+    if m3 is None:
+        hybrid_note = ""
+    elif m3["identity_status"] == "IDENTICAL_TO":
+        hybrid_note = (f" M3_HYBRID is identical to {m3['identical_to']} on every common observation, so its residual "
+                       "kriging adds no skill in this evaluation; no hybrid advantage is claimed.")
+    else:
+        hybrid_note = " M3_HYBRID is distinct from its trend component on the common cohort."
     handoff = {
+        "tier": tier,
+        "config_version": config["config_version"],
+        "claim": config["claim"].strip(),
         "selected_model_id": selected,
         "decision_id": selected_row["decision_id"],
         "target_receipt_id": receipt["receipt_id"],
         "split_plan_id": receipt["o3_split_plan_id"],
         "split_plan_sha256": receipt["o3_split_plan_sha256"],
-        "metric_reference": "O4-T01 and O4-T02; pooled interval-weighted Brier is the primary endpoint",
+        "metric_reference": "pooled interval-weighted Brier is the primary endpoint; see the tier's O4-T01, O4-T02 and "
+                            "O4-T05 tables",
         "calibration_policy": "Objective 3 calibration only; Objective 4 diagnostics are not applied",
-        "allowed_domain": "held-out intervals in existing holes on an approved drill line; relative geometry; "
-                          "not a distant prospect and not an absolute-elevation volume",
-        "caveats": "Internal spatially held-out validation on five drill lines, not an external prospective campaign. "
-                   "Only easting, northing and relative Z are predictors. M1 is not estimable; M3 is the ML-only "
-                   "fallback. No grade, tonnage or resource is estimated.",
+        "allowed_domain": text["domain"],
+        "caveats": text["caveat"] + " Only easting, northing and relative Z are predictors. No grade, tonnage or "
+                   "resource is estimated." + hybrid_note,
         "created_utc": created,
     }
     handoff_sha = sha256_text(json.dumps(handoff, sort_keys=True, separators=(",", ":")))
-    conn.execute("INSERT INTO locked_handoff_receipts (selected_model_id, decision_id, target_receipt_id, split_plan_id, "
-                 "split_plan_sha256, metric_reference, calibration_policy, allowed_domain, caveats, created_utc, "
-                 "receipt_sha256) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                 (handoff["selected_model_id"], handoff["decision_id"], handoff["target_receipt_id"],
-                  handoff["split_plan_id"], handoff["split_plan_sha256"], handoff["metric_reference"],
-                  handoff["calibration_policy"], handoff["allowed_domain"], handoff["caveats"],
-                  handoff["created_utc"], handoff_sha))
+    conn.execute("INSERT INTO locked_handoff_receipts (tier, config_version, claim, selected_model_id, decision_id, "
+                 "target_receipt_id, split_plan_id, split_plan_sha256, metric_reference, calibration_policy, "
+                 "allowed_domain, caveats, created_utc, receipt_sha256) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                 (handoff["tier"], handoff["config_version"], handoff["claim"], handoff["selected_model_id"],
+                  handoff["decision_id"], handoff["target_receipt_id"], handoff["split_plan_id"],
+                  handoff["split_plan_sha256"], handoff["metric_reference"], handoff["calibration_policy"],
+                  handoff["allowed_domain"], handoff["caveats"], handoff["created_utc"], handoff_sha))
     return {"selected_model_id": selected, "comparator": comparator, "ranked": ranked,
-            "brier": {m: brier[m]["value"] for m in ranked}, "handoff_sha256": handoff_sha}
+            "brier": {m: brier[m]["value"] for m in ranked}, "status": selected_row["improvement_status"],
+            "folds_better": sel_brier_fold_better, "handoff_sha256": handoff_sha}

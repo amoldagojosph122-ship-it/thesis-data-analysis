@@ -2,20 +2,39 @@
 
 The module reads the frozen snapshot and writes only derived evaluation rows. It never changes a prediction and never
 recalibrates on held-out labels.
+
+Sign convention for every paired difference: delta = metric(model_b) - metric(model_a). A negative Brier difference means
+model_b has the lower Brier score.
 """
 
 from __future__ import annotations
 
-import json
-
 import numpy as np
 
 from kambale.objective_4 import metrics
-from kambale.objective_4.config import O3_DB_PATH, O4_CONFIG_PATH, O4_DB_PATH, StopError, code_commit, load_config, utc_now
-from kambale.objective_4.db import connect_o4, connect_readonly
+from kambale.objective_4.config import O4_CONFIG_PATH, O4_DB_PATH, StopError, code_commit, load_config, utc_now
+from kambale.objective_4.db import connect_o4
 
 METRICS = ("BRIER", "LOG_LOSS", "ROC_AUC", "PR_AUC", "ECE")
 WEIGHTINGS = ("INTERVAL", "EQUAL_HOLE")
+IDENTITY_TOLERANCE = 1e-12
+
+
+def power_label(ci_low, ci_high, identical: bool):
+    """RESOLVED when the hole-cluster interval excludes zero; UNRESOLVED when it includes zero, with the half-width as
+    the smallest difference the design could have detected; IDENTICAL when the two models are the same predictions."""
+    if identical:
+        return "IDENTICAL", None
+    if ci_low is None or ci_high is None:
+        return "NOT_ESTIMABLE", None
+    if ci_low > 0 or ci_high < 0:
+        return "RESOLVED", None
+    return "UNRESOLVED", (ci_high - ci_low) / 2.0
+
+
+def _identical_keys(conn):
+    return {frozenset((r["model_a"], r["model_b"])) for r in conn.execute(
+        "SELECT model_a, model_b FROM model_identities WHERE identical = 1")}
 
 
 def _arrays(conn):
@@ -33,15 +52,18 @@ def _arrays(conn):
     models = [r["model_id"] for r in conn.execute("SELECT model_id FROM candidate_registry ORDER BY model_id")]
     coverage = {r["model_id"]: dict(r) for r in conn.execute("SELECT * FROM prediction_coverage")}
     candidates = {r["model_id"]: dict(r) for r in conn.execute("SELECT * FROM candidate_registry")}
-    data = {}
+    data, no_eval_reason = {}, {}
     for m in models:
         rows = [dict(r) for r in conn.execute(
             "SELECT observation_id, p_raw, p_calibrated, selected_probability, threshold, predicted_class, fold_id "
             "FROM prediction_snapshot WHERE model_id = ? ORDER BY observation_id", (m,))]
-        if not rows:
-            data[m] = {"n": 0, "ids": [], "p": np.array([]), "threshold": {}}
-            continue
         local = {r["observation_id"]: r for r in rows}
+        if not rows or any(oid not in local for oid in ids):
+            # A model without a prediction for every common interval is not evaluated on the common cohort.
+            data[m] = {"n": 0, "ids": [], "p": np.array([]), "threshold": {}}
+            no_eval_reason[m] = (f"no common-cohort predictions ({coverage[m]['n_predicted']} of "
+                                 f"{coverage[m]['n_expected']} held-out intervals; {coverage[m]['status']})")
+            continue
         p = np.array([local[oid]["selected_probability"] for oid in ids], dtype=float)
         thr = {}
         for r in rows:
@@ -49,7 +71,7 @@ def _arrays(conn):
         data[m] = {"n": len(rows), "ids": ids, "p": p, "threshold": thr}
     return {"pop": pop, "ids": ids, "y": y, "w_int": w_int, "w_hole": w_hole, "fold": fold, "line": line,
             "hole": hole, "depth": depth, "index": idx, "models": models, "coverage": coverage,
-            "candidates": candidates, "data": data}
+            "candidates": candidates, "data": data, "no_eval_reason": no_eval_reason}
 
 
 def _metric_value(metric_id, y, p, w, threshold, eps):
@@ -73,23 +95,23 @@ def _write_metrics(conn, cfg, arr):
     edges = [float(x) for x in cfg["evaluation"]["calibration_bins"]]
     min_n = int(cfg["evaluation"]["calibration_min_bin_n"])
     y = arr["y"]
+    folds = sorted(set(arr["fold"].tolist()))
     for m in arr["models"]:
         d = arr["data"][m]
-        cov = arr["coverage"][m]
         if d["n"] == 0:
+            reason = arr["no_eval_reason"].get(m, "no prediction")
             for weighting in WEIGHTINGS:
                 for metric_id in METRICS:
                     conn.execute("INSERT INTO pooled_metrics (model_id, weighting, metric_id, value, status, n, n_positive, "
                                  "reason) VALUES (?, ?, ?, NULL, 'NOT_ESTIMABLE', 0, 0, ?)",
-                                 (m, weighting, metric_id, f"no prediction; {cov['n_failed']} explicit failures"))
-                for fold in sorted(set(arr["fold"].tolist())):
+                                 (m, weighting, metric_id, reason))
+                for fold in folds:
                     for metric_id in METRICS:
                         conn.execute("INSERT INTO fold_metrics (model_id, fold_id, weighting, metric_id, value, status, n, "
                                      "n_positive, reason) VALUES (?, ?, ?, ?, NULL, 'NOT_ESTIMABLE', 0, 0, ?)",
-                                     (m, fold, weighting, metric_id, "no prediction in this fold"))
+                                     (m, fold, weighting, metric_id, reason))
             conn.execute("INSERT INTO calibration_diagnostics (model_id, n, intercept, slope, status, reason) "
-                         "VALUES (?, 0, NULL, NULL, 'NOT_ESTIMABLE', ?)",
-                         (m, f"no prediction; {cov['n_failed']} explicit failures"))
+                         "VALUES (?, 0, NULL, NULL, 'NOT_ESTIMABLE', ?)", (m, reason))
             continue
         p = d["p"]
         for weighting in WEIGHTINGS:
@@ -99,7 +121,7 @@ def _write_metrics(conn, cfg, arr):
                 conn.execute("INSERT INTO pooled_metrics (model_id, weighting, metric_id, value, status, n, n_positive, "
                              "reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                              (m, weighting, metric_id, value, status, int(y.size), int(y.sum()), reason))
-            for fold in sorted(set(arr["fold"].tolist())):
+            for fold in folds:
                 mask = arr["fold"] == fold
                 for metric_id in METRICS:
                     value, status, reason = _metric_value(metric_id, y[mask], p[mask], w[mask], 0.5, eps)
@@ -137,12 +159,11 @@ def _confusion_from_counts(tp, fp, tn, fn):
 def _write_confusions(conn, arr):
     for m in arr["models"]:
         d = arr["data"][m]
-        cov = arr["coverage"][m]
         if d["n"] == 0:
             conn.execute("INSERT INTO class_confusion_matrices (model_id, scope, fold_id, threshold, threshold_source, "
                          "tp, fp, tn, fn, precision, recall, specificity, balanced_accuracy, f1, mcc, status, reason) "
-                         "VALUES (?, 'POOLED', 0, NULL, 'NO_PREDICTION', 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, "
-                         "'UNDEFINED', ?)", (m, f"no prediction; {cov['n_failed']} explicit failures"))
+                         "VALUES (?, 'POOLED', 0, NULL, 'NO_COMMON_COHORT_PREDICTION', 0, 0, 0, 0, NULL, NULL, NULL, NULL, "
+                         "NULL, NULL, 'UNDEFINED', ?)", (m, arr["no_eval_reason"].get(m, "no prediction")))
             continue
         totals = [0, 0, 0, 0]
         for fold in sorted(set(arr["fold"].tolist())):
@@ -211,7 +232,7 @@ def _write_spatial_errors(conn, arr, cfg):
                              (n, mean, *key))
 
 
-def _pair_rows(conn, arr, pair, mask, scope, fold_id, line_code):
+def _pair_rows(conn, arr, pair, mask, scope, fold_id, line_code, identical, status_override=None):
     a, b = pair["model_a"], pair["model_b"]
     da, db = arr["data"][a], arr["data"][b]
     if da["n"] == 0 or db["n"] == 0 or not np.any(mask):
@@ -232,59 +253,83 @@ def _pair_rows(conn, arr, pair, mask, scope, fold_id, line_code):
         if spa != "DEFINED" or spb != "DEFINED":
             reason.append("PR-AUC undefined in this subset")
         status = "DEFINED" if not reason else "UNDEFINED"
+        note = "both models defined on this subset"
+        if identical:
+            status, note = "IDENTICAL", "identical predictions on every common observation; no interval"
+        elif reason:
+            note = "; ".join(reason)
         conn.execute("INSERT INTO paired_differences (pair_id, model_a, model_b, scope, fold_id, line_code, weighting, "
                      "delta_brier, delta_log_loss, delta_roc_auc, delta_pr_auc, n, status, reason) "
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                     (pair["pair_id"], a, b, scope, fold_id, line_code, weighting, ba - bb, la - lb,
-                      (auca - aucb) if auca is not None and aucb is not None else None,
-                      (apa - apb) if apa is not None and apb is not None else None,
-                      int(np.sum(mask)), status, "; ".join(reason) or "both models defined on this subset"))
+                     (pair["pair_id"], a, b, scope, fold_id, line_code, weighting, bb - ba, lb - la,
+                      (aucb - auca) if auca is not None and aucb is not None else None,
+                      (apb - apa) if apa is not None and apb is not None else None,
+                      int(np.sum(mask)), status_override or status, note))
 
 
 def _write_pairs(conn, cfg, arr):
+    identical = _identical_keys(conn)
     for pair in cfg["evaluation"]["pairs"]:
-        if pair["model_a"] not in arr["data"] or pair["model_b"] not in arr["data"]:
+        if arr["data"][pair["model_a"]]["n"] == 0 or arr["data"][pair["model_b"]]["n"] == 0:
+            reason = "; ".join(f"{m}: {arr['no_eval_reason'][m]}" for m in (pair["model_a"], pair["model_b"])
+                               if m in arr["no_eval_reason"])
+            for weighting in WEIGHTINGS:
+                conn.execute("INSERT INTO paired_differences (pair_id, model_a, model_b, scope, fold_id, line_code, weighting, "
+                             "delta_brier, delta_log_loss, delta_roc_auc, delta_pr_auc, n, status, reason) "
+                             "VALUES (?, ?, ?, 'POOLED', 0, '', ?, NULL, NULL, NULL, NULL, 0, 'NOT_ESTIMABLE', ?)",
+                             (pair["pair_id"], pair["model_a"], pair["model_b"], weighting, reason))
             continue
-        _pair_rows(conn, arr, pair, np.ones(arr["y"].size, dtype=bool), "POOLED", 0, "")
+        same = frozenset((pair["model_a"], pair["model_b"])) in identical
+        override = "IDENTICAL" if same else None
+        _pair_rows(conn, arr, pair, np.ones(arr["y"].size, dtype=bool), "POOLED", 0, "", same, override)
         for fold in sorted(set(arr["fold"].tolist())):
-            _pair_rows(conn, arr, pair, arr["fold"] == fold, "FOLD", int(fold), "")
+            _pair_rows(conn, arr, pair, arr["fold"] == fold, "FOLD", int(fold), "", same, override)
         for line in sorted(set(arr["line"].tolist())):
-            _pair_rows(conn, arr, pair, arr["line"] == line, "LINE", 0, str(line))
+            _pair_rows(conn, arr, pair, arr["line"] == line, "LINE", 0, str(line), same, override)
 
 
-def _update_pair_ci(conn, cfg):
-    lo_q = (1.0 - float(cfg["evaluation"]["bootstrap"]["confidence"])) / 2.0 * 100.0
-    hi_q = 100.0 - lo_q
+def _bootstrap_pairs(conn, cfg):
+    """Every configured pair that is not an identity, then every other pair of distinct full-coverage feasible models
+    (auxiliary pairs), so that the decision's comparator interval is available whichever model is second."""
+    identical = _identical_keys(conn)
+    feasible = list(cfg["evaluation"]["models"]["feasible"])
+    status = {r["model_id"]: r["status"] for r in conn.execute("SELECT model_id, status FROM prediction_coverage")}
+    ident = {r["model_id"]: r["identity_status"] for r in conn.execute("SELECT model_id, identity_status FROM candidate_registry")}
+    out, seen = [], set()
     for pair in cfg["evaluation"]["pairs"]:
-        for design_id, cols in (("O4-BOOT-HOLE", ("ci_low", "ci_high")), ("O4-BOOT-LINE", ("ci_low_line", "ci_high_line"))):
-            rows = conn.execute("SELECT delta_brier_interval FROM bootstrap_replicates WHERE design_id = ? AND pair_id = ?",
-                                (design_id, pair["pair_id"])).fetchall()
-            if not rows:
+        key = frozenset((pair["model_a"], pair["model_b"]))
+        if key in identical or pair["model_a"] == pair["model_b"] or key in seen:
+            continue
+        out.append(dict(pair))
+        seen.add(key)
+    distinct = [m for m in feasible if status.get(m) == "FULL" and ident.get(m) == "DISTINCT"]
+    for i, a in enumerate(distinct):
+        for b in distinct[i + 1:]:
+            key = frozenset((a, b))
+            if key in identical or key in seen:
                 continue
-            values = np.array([r[0] for r in rows], dtype=float)
-            lo, hi = float(np.percentile(values, lo_q)), float(np.percentile(values, hi_q))
-            conn.execute(f"UPDATE paired_differences SET {cols[0]} = ?, {cols[1]} = ?, ci_design = ? "
-                         "WHERE pair_id = ? AND scope = 'POOLED' AND weighting = 'INTERVAL'",
-                         (lo, hi, "HOLE_CLUSTER; line sensitivity in ci_low_line/ci_high_line", pair["pair_id"]))
+            out.append({"pair_id": f"AUX_{a}__{b}", "model_a": a, "model_b": b, "auxiliary": True})
+            seen.add(key)
+    return out
 
 
 def _bootstrap(conn, cfg, arr):
     n_rep = int(cfg["evaluation"]["bootstrap"]["n_replicates"])
     seed = int(cfg["evaluation"]["bootstrap"]["seed"])
-    confidence = float(cfg["evaluation"]["bootstrap"]["confidence"])
-    pairs = cfg["evaluation"]["pairs"]
-    designs = (("O4-BOOT-HOLE", "HOLE_CLUSTER", arr["hole"], int(cfg["evaluation"]["bootstrap"]["seed"])),
-               ("O4-BOOT-LINE", "LINE_CLUSTER", arr["line"], int(cfg["evaluation"]["bootstrap"]["seed"]) + 1))
+    pairs = _bootstrap_pairs(conn, cfg)
+    designs = (("O4-BOOT-HOLE", "HOLE_CLUSTER", arr["hole"], seed),
+               ("O4-BOOT-LINE", "LINE_CLUSTER", arr["line"], seed + 1))
     for design_id, method, units, design_seed in designs:
         uniq = sorted(set(units.tolist()))
         idx_by_unit = {u: np.where(units == u)[0] for u in uniq}
         conn.execute("INSERT INTO resampling_designs (design_id, method, unit, n_units, n_replicates, seed, notes) "
                      "VALUES (?, ?, ?, ?, ?, ?, ?)",
                      (design_id, method, "hole" if method == "HOLE_CLUSTER" else "line", len(uniq), n_rep, design_seed,
-                      "resample units with replacement; keep all intervals of a unit and the same observations for both models"))
+                      "resample units with replacement; keep all intervals of a unit and the same observations for both "
+                      "models; differences are model_b minus model_a"))
         rng = np.random.default_rng(design_seed)
         y = arr["y"]
-        w_int, w_hole = arr["w_int"], arr["w_hole"]
+        w_hole = arr["w_hole"]
         models = [m for m in arr["models"] if arr["data"][m]["n"] > 0]
         rows = []
         for rep in range(1, n_rep + 1):
@@ -292,43 +337,119 @@ def _bootstrap(conn, cfg, arr):
             idx = np.concatenate([idx_by_unit[uniq[k]] for k in sample])
             yb = y[idx]
             b_int, b_hole, l_int = {}, {}, {}
+            wb = w_hole[idx]
             for m in models:
                 pb = arr["data"][m]["p"][idx]
                 b_int[m] = float(np.mean((pb - yb) ** 2))
-                wb = w_hole[idx]
                 b_hole[m] = float(np.sum(wb * (pb - yb) ** 2) / np.sum(wb))
                 l_int[m] = metrics.log_loss(yb, pb, np.ones_like(pb), float(cfg["evaluation"]["epsilon"]))
             for pair in pairs:
                 a, b = pair["model_a"], pair["model_b"]
                 if a not in b_int or b not in b_int:
                     continue
-                rows.append((design_id, pair["pair_id"], rep, a, b, b_int[a] - b_int[b], b_hole[a] - b_hole[b],
-                             l_int[a] - l_int[b], int(idx.size)))
+                rows.append((design_id, pair["pair_id"], rep, a, b, b_int[b] - b_int[a], b_hole[b] - b_hole[a],
+                             l_int[b] - l_int[a], int(idx.size)))
         conn.executemany("INSERT INTO bootstrap_replicates (design_id, pair_id, replicate_index, model_a, model_b, "
                          "delta_brier_interval, delta_brier_equal_hole, delta_log_loss_interval, n_obs) "
                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
 
 
+def _update_pair_ci(conn, cfg):
+    """Attach the interval and the power label to each configured pair (interval weighting)."""
+    lo_q = (1.0 - float(cfg["evaluation"]["bootstrap"]["confidence"])) / 2.0 * 100.0
+    hi_q = 100.0 - lo_q
+    identical = _identical_keys(conn)
+    for pair in cfg["evaluation"]["pairs"]:
+        key = frozenset((pair["model_a"], pair["model_b"]))
+        if key in identical:
+            conn.execute("UPDATE paired_differences SET power_label = 'IDENTICAL', ci_low = NULL, ci_high = NULL, "
+                         "ci_low_line = NULL, ci_high_line = NULL, detectable_half_width = NULL, status = 'IDENTICAL', "
+                         "ci_design = 'not applicable: identical predictions' WHERE pair_id = ?", (pair["pair_id"],))
+            continue
+        intervals = {}
+        for design_id, prefix in (("O4-BOOT-HOLE", "ci"), ("O4-BOOT-LINE", "ci_line")):
+            rows = conn.execute("SELECT delta_brier_interval FROM bootstrap_replicates WHERE design_id = ? AND pair_id = ?",
+                                (design_id, pair["pair_id"])).fetchall()
+            if rows:
+                values = np.array([r[0] for r in rows], dtype=float)
+                intervals[design_id] = (float(np.percentile(values, lo_q)), float(np.percentile(values, hi_q)))
+        hole = intervals.get("O4-BOOT-HOLE", (None, None))
+        line = intervals.get("O4-BOOT-LINE", (None, None))
+        label, half = power_label(hole[0], hole[1], False)
+        conn.execute("UPDATE paired_differences SET ci_low = ?, ci_high = ?, ci_low_line = ?, ci_high_line = ?, "
+                     "power_label = ?, detectable_half_width = ?, ci_design = ? "
+                     "WHERE pair_id = ? AND scope = 'POOLED' AND weighting = 'INTERVAL'",
+                     (hole[0], hole[1], line[0], line[1], label, half,
+                      "HOLE_CLUSTER primary; LINE_CLUSTER sensitivity in ci_low_line/ci_high_line",
+                      pair["pair_id"]))
+        conn.execute("UPDATE paired_differences SET power_label = NULL WHERE pair_id = ? AND weighting = 'EQUAL_HOLE'",
+                     (pair["pair_id"],))
+
+
 def _audit(conn, run_id, arr, config, receipt, created):
     checks = []
+    ev = config["evaluation"]
     checks.append({"check_name": "O3_SNAPSHOT_HASH_RECORDED",
                    "status": "PASS" if receipt["o3_prediction_snapshot_sha256"] else "FAIL",
                    "detail": f"snapshot {receipt['o3_prediction_snapshot_sha256'][:16]}"})
     common = {r["observation_id"] for r in conn.execute("SELECT observation_id FROM evaluation_population "
                                                         "WHERE in_common_cohort = 1")}
-    feasible = config["evaluation"]["models"]["feasible"]
+    full = [r["model_id"] for r in conn.execute("SELECT model_id FROM prediction_coverage WHERE status = 'FULL' "
+                                                "AND model_id IN (%s)" % ",".join("?" * len(ev["models"]["feasible"])),
+                                                tuple(ev["models"]["feasible"]))]
     missing = 0
-    for m in feasible:
+    for m in full:
         ids = {r["observation_id"] for r in conn.execute("SELECT observation_id FROM prediction_snapshot WHERE model_id = ?", (m,))}
         missing += len(common - ids)
-    checks.append({"check_name": "COMMON_COHORT_IDENTICAL_ACROSS_FEASIBLE_MODELS", "status": "PASS" if missing == 0 else "FAIL",
-                   "detail": f"{len(common)} common observations; {missing} missing model IDs"})
-    m1 = conn.execute("SELECT n_predicted, n_failed FROM prediction_coverage WHERE model_id = 'M1_IK'").fetchone()
-    checks.append({"check_name": "M1_COVERAGE_REPORTED", "status": "PASS" if m1 and m1["n_predicted"] == 0 else "WARN",
-                   "detail": f"M1 predicted {m1['n_predicted'] if m1 else '?'}; failed {m1['n_failed'] if m1 else '?'}"})
-    m3 = conn.execute("SELECT fallback_identical_to FROM candidate_registry WHERE model_id = 'M3_HYBRID'").fetchone()
-    checks.append({"check_name": "M3_FALLBACK_IDENTITY_RECORDED", "status": "PASS" if m3 and m3["fallback_identical_to"] else "FAIL",
-                   "detail": f"M3 fallback identical to {m3['fallback_identical_to'] if m3 else 'not recorded'}"})
+    checks.append({"check_name": "COMMON_COHORT_IDENTICAL_ACROSS_FULL_FEASIBLE_MODELS",
+                   "status": "PASS" if missing == 0 else "FAIL",
+                   "detail": f"{len(common)} common observations; {len(full)} full-coverage feasible models; "
+                             f"{missing} missing model IDs"})
+    mismatch = []
+    for r in conn.execute("SELECT c.model_id, c.n_predicted, COUNT(p.snapshot_id) AS n_rows FROM prediction_coverage c "
+                          "LEFT JOIN prediction_snapshot p ON p.model_id = c.model_id GROUP BY c.model_id"):
+        if r["n_predicted"] != r["n_rows"]:
+            mismatch.append(r["model_id"])
+    checks.append({"check_name": "COVERAGE_MATCHES_SNAPSHOT", "status": "PASS" if not mismatch else "FAIL",
+                   "detail": "coverage rows match snapshot rows" if not mismatch else "mismatch: " + ", ".join(mismatch)})
+    # Identities recomputed from the stored probabilities on the common cohort, independently of the importer.
+    rec_bad = []
+    snap = {}
+    for r in conn.execute("SELECT p.model_id, p.observation_id, p.p_calibrated FROM prediction_snapshot p "
+                          "JOIN evaluation_population e ON e.receipt_id = p.receipt_id AND e.observation_id = p.observation_id "
+                          "WHERE e.in_common_cohort = 1"):
+        snap.setdefault(r["model_id"], {})[r["observation_id"]] = float(r["p_calibrated"])
+    order = list(ev["models"]["feasible"])
+    stored = {(r["model_a"], r["model_b"]): r for r in conn.execute("SELECT * FROM model_identities")}
+    n_pairs = 0
+    for i, a in enumerate(order):
+        for b in order[i + 1:]:
+            if a not in snap or b not in snap or set(snap[a]) != set(snap[b]):
+                continue
+            n_pairs += 1
+            diff = max(abs(snap[a][o] - snap[b][o]) for o in snap[a]) if snap[a] else None
+            ident = diff is not None and diff <= IDENTITY_TOLERANCE
+            rec = stored.get((a, b))
+            if rec is None or bool(rec["identical"]) != bool(ident):
+                rec_bad.append(f"{a}/{b}")
+    for m in order:
+        row = conn.execute("SELECT identity_status, identical_to FROM candidate_registry WHERE model_id = ?", (m,)).fetchone()
+        if row is None:
+            rec_bad.append(m)
+            continue
+        ref = None
+        for j, cand in enumerate(order):
+            if cand == m:
+                break
+            rec = stored.get((cand, m))
+            if rec is not None and rec["identical"]:
+                ref = cand
+        expected = "IDENTICAL_TO" if ref else "DISTINCT"
+        if row["identity_status"] != expected or row["identical_to"] != ref:
+            rec_bad.append(f"registry {m}")
+    checks.append({"check_name": "IDENTITY_RECORDED_MATCHES_RECOMPUTATION", "status": "PASS" if not rec_bad else "FAIL",
+                   "detail": f"{n_pairs} feasible pairs recomputed" + ("" if not rec_bad else "; differences: " +
+                                                                        ", ".join(rec_bad))})
     bad_prob = conn.execute("SELECT COUNT(*) FROM prediction_snapshot WHERE p_raw < 0 OR p_raw > 1 OR p_calibrated < 0 "
                             "OR p_calibrated > 1").fetchone()[0]
     checks.append({"check_name": "PROBABILITY_BOUNDS", "status": "PASS" if bad_prob == 0 else "FAIL",
@@ -339,24 +460,51 @@ def _audit(conn, run_id, arr, config, receipt, created):
     iid = conn.execute("SELECT COUNT(*) FROM resampling_designs WHERE method = 'HOLE_CLUSTER'").fetchone()[0]
     checks.append({"check_name": "BOOTSTRAP_USES_SPATIAL_UNITS", "status": "PASS" if iid == 1 else "FAIL",
                    "detail": "hole-cluster design present" if iid == 1 else "hole-cluster design missing"})
-    # Numerical cross-check of the pooled interval Brier for one feasible model.
-    m = "M2_RF"
-    rows = [dict(r) for r in conn.execute(
-        "SELECT e.true_label, p.selected_probability, e.weight_interval FROM prediction_snapshot p "
-        "JOIN evaluation_population e ON e.receipt_id = p.receipt_id AND e.observation_id = p.observation_id "
-        "WHERE p.model_id = ? AND e.in_common_cohort = 1", (m,))]
-    if rows:
+    # Numerical cross-check of the pooled interval Brier, one row per feasible model with predictions.
+    checked = 0
+    for m in order:
+        rows = [dict(r) for r in conn.execute(
+            "SELECT e.true_label, p.selected_probability, e.weight_interval FROM prediction_snapshot p "
+            "JOIN evaluation_population e ON e.receipt_id = p.receipt_id AND e.observation_id = p.observation_id "
+            "WHERE p.model_id = ? AND e.in_common_cohort = 1", (m,))]
+        if not rows:
+            continue
+        checked += 1
         y = np.array([r["true_label"] for r in rows], dtype=float)
         p = np.array([r["selected_probability"] for r in rows], dtype=float)
         w = np.array([r["weight_interval"] for r in rows], dtype=float)
         fast = metrics.brier(y, p, w)
         slow = metrics.independent_brier(y, p, w)
-        checks.append({"check_name": "BRIER_NUMERICAL_CROSS_CHECK", "status": "PASS" if abs(fast - slow) < 1e-12 else "FAIL",
-                       "detail": f"vector {fast:.12f}; loop {slow:.12f}"})
-    else:
-        checks.append({"check_name": "BRIER_NUMERICAL_CROSS_CHECK", "status": "FAIL", "detail": "no M2_RF rows"})
-    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
-    checks.append({"check_name": "NO_MODEL_REFIT", "status": "PASS" if not ({"training_runs", "model_artifacts"} & tables)
+        checks.append({"check_name": "BRIER_NUMERICAL_CROSS_CHECK",
+                       "status": "PASS" if abs(fast - slow) < 1e-12 else "FAIL",
+                       "detail": f"{m}: vector {fast:.12f}; loop {slow:.12f}"})
+    if checked == 0:
+        checks.append({"check_name": "BRIER_NUMERICAL_CROSS_CHECK", "status": "FAIL", "detail": "no model cross-checked"})
+    checks.append({"check_name": "BRIER_CROSS_CHECK_COVERS_FEASIBLE_MODELS",
+                   "status": "PASS" if checked == len([m for m in order if arr["data"].get(m, {}).get("n", 0) > 0])
+                   else "FAIL", "detail": f"{checked} feasible models cross-checked"})
+    # Power labels recomputed from the stored intervals.
+    label_bad = []
+    for pair in ev["pairs"]:
+        row = conn.execute("SELECT power_label, ci_low, ci_high, detectable_half_width FROM paired_differences "
+                           "WHERE pair_id = ? AND scope = 'POOLED' AND weighting = 'INTERVAL'", (pair["pair_id"],)).fetchone()
+        if row is None:
+            label_bad.append(pair["pair_id"] + " missing")
+            continue
+        key = frozenset((pair["model_a"], pair["model_b"]))
+        same = stored.get(tuple(sorted((pair["model_a"], pair["model_b"]), key=order.index)))
+        identical = same is not None and bool(same["identical"])
+        expected, half = power_label(row["ci_low"], row["ci_high"], identical)
+        ok = row["power_label"] == expected and (
+            (half is None and row["detectable_half_width"] is None) or
+            (half is not None and row["detectable_half_width"] is not None and abs(half - row["detectable_half_width"]) < 1e-12))
+        if not ok:
+            label_bad.append(pair["pair_id"])
+    checks.append({"check_name": "POWER_LABELS_MATCH_INTERVALS", "status": "PASS" if not label_bad else "FAIL",
+                   "detail": "all configured pairs labelled from their intervals" if not label_bad else
+                   "mismatch: " + ", ".join(label_bad)})
+    model_tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+    checks.append({"check_name": "NO_MODEL_REFIT", "status": "PASS" if not ({"training_runs", "model_artifacts"} & model_tables)
                    else "FAIL", "detail": "Objective 4 contains no training or model-artifact table"})
     checks.append({"check_name": "CALIBRATION_DIAGNOSTIC_ONLY", "status": "PASS",
                    "detail": "calibration intercept and slope are diagnostics; no recalibrated probability column exists"})

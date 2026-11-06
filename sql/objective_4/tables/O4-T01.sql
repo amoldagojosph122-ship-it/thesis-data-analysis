@@ -1,6 +1,7 @@
 -- O4-T01 main evaluation summary.
 -- name: evaluation_summary
 SELECT r.model_id AS model_id, r.role AS role, r.comparable AS comparable,
+       r.identity_status AS identity_status, r.identical_to AS identical_to,
        c.coverage AS coverage, c.n_predicted AS n_predicted, c.n_expected AS n_expected, c.n_failed AS n_failed,
        (SELECT value FROM pooled_metrics m WHERE m.model_id = r.model_id AND m.weighting = 'INTERVAL'
         AND m.metric_id = 'BRIER') AS brier_interval,

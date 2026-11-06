@@ -1,0 +1,23 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O4-T01. Main evaluation summary. Brier is the primary endpoint; the equal-hole weighting is a sensitivity analysis. Coverage is the share of held-out intervals with a prediction. identity\_status marks a model whose calibrated predictions equal an earlier feasible model's on every common interval (identical\_to names it); identical models are not ranked. Receipt 1.}
+\label{tab:O4-T01}
+\begin{tabular}{lllllllllllllllllllll}
+\toprule
+model\_id & role & comparable & identity\_status & identical\_to & coverage & n\_predicted & n\_expected & n\_failed & brier\_interval & brier\_equal\_hole & log\_loss\_interval & roc\_auc & pr\_auc & ece & calibration\_intercept & calibration\_slope & calibration\_status & decision\_rank & improvement\_status & selection\_basis \\
+\midrule
+M2\_HGB\_WF & M2 & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.153063 & 0.139071 & 0.461357 & 0.814162 & 0.6221 & 0.048039 & 0.121931 & 1.170599 & DEFINED & 1 & INCONCLUSIVE & POINT\_ESTIMATE\_WITH\_CAVEAT \\
+M2\_HGB & M2 & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.154827 & 0.140921 & 0.468376 & 0.811309 & 0.622919 & 0.059613 & 0.087819 & 1.079429 & DEFINED & 2 & INCONCLUSIVE & NOT\_SELECTED \\
+BASE\_LOGISTIC & BASELINE & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.15942 & 0.146138 & 0.481317 & 0.786004 & 0.627496 & 0.041851 & 0.003012 & 0.978341 & DEFINED & 3 & INCONCLUSIVE & NOT\_SELECTED \\
+M2\_RF & M2 & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.16184 & 0.146977 & 0.48174 & 0.790342 & 0.582982 & 0.047371 & -0.002164 & 0.906268 & DEFINED & 4 & NO\_IMPROVEMENT & NOT\_SELECTED \\
+BASE\_LOGISTIC\_WF & BASELINE & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.162646 & 0.148084 & 0.489432 & 0.783073 & 0.592853 & 0.026994 & 0.057442 & 1.019717 & DEFINED & 5 & INCONCLUSIVE & NOT\_SELECTED \\
+M2\_RF\_WF & M2 & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.162769 & 0.146938 & 0.481505 & 0.791049 & 0.561357 & 0.066507 & 0.064473 & 0.971668 & DEFINED & 6 & NO\_IMPROVEMENT & NOT\_SELECTED \\
+M1\_IK & M1 & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.175954 & 0.154213 & 0.516587 & 0.755858 & 0.481416 & 0.054696 & -0.085588 & 0.800734 & DEFINED & 7 & NO\_IMPROVEMENT & NOT\_SELECTED \\
+BASE\_PREVALENCE & BASELINE & 1 & DISTINCT &  & 1 & 1829 & 1829 & 0 & 0.21078 & 0.187689 & 0.615054 & 0.372593 & 0.240337 & 0.084769 & -3.899234 & -3.154363 & DEFINED & 8 & NO\_IMPROVEMENT & NOT\_SELECTED \\
+M2\_SEL & M2 & 0 & IDENTICAL\_TO & M2\_RF & 1 & 1829 & 1829 & 0 & 0.16184 & 0.146977 & 0.48174 & 0.790342 & 0.582982 & 0.047371 & -0.002164 & 0.906268 & DEFINED &  & NOT\_COMPARABLE & NOT\_RANKED \\
+M2\_WF\_SEL & M2 & 0 & IDENTICAL\_TO & M2\_RF\_WF & 1 & 1829 & 1829 & 0 & 0.162769 & 0.146938 & 0.481505 & 0.791049 & 0.561357 & 0.066507 & 0.064473 & 0.971668 & DEFINED &  & NOT\_COMPARABLE & NOT\_RANKED \\
+M3\_HYBRID & M3 & 0 & IDENTICAL\_TO & M2\_WF\_SEL & 1 & 1829 & 1829 & 0 & 0.162769 & 0.146938 & 0.481505 & 0.791049 & 0.561357 & 0.066507 & 0.064473 & 0.971668 & DEFINED &  & NOT\_COMPARABLE & NOT\_RANKED \\
+\bottomrule
+\end{tabular}
+\end{table}
