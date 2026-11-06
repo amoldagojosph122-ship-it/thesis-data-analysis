@@ -1,0 +1,147 @@
+# Objective 5 uncertainty configuration. Predeclared: committed on 2026-11-06 before any Objective 5
+# result was computed. A change of any value requires a new config_version.
+config_version: O5-CFG-2026.11.06-1
+status: PREDECLARED_ANALYSIS_STAGE
+objective: >
+  To quantify and visualize three-dimensional uncertainty in graphitic-domain occurrence and identify areas of high
+  confidence and high uncertainty.
+design_basis: >
+  Objective 2 found no identifiable lateral indicator variogram (all rock, fresh rock, and a dipping-plane structural
+  frame searched over apparent dips from -80 to +80 degrees in configuration 6), so no geostatistical
+  simulation is run: sequential indicator simulation would need a covariance the data do not support. Objective 4
+  locked one model per validation tier and found both selections INCONCLUSIVE against the next-best model. Uncertainty
+  is therefore expressed from the selected trend models: their probability, the Bernoulli entropy of that probability,
+  a hole-cluster bootstrap of the model fit, and the disagreement with the runner-up model. Every map carries the
+  validation tier that supports it.
+
+inputs:
+  label_rule_id: DESIGN_8_2_v1
+  observations: database/kambale_obj3_models.sqlite (analysis_observations, in_binary_target = 1)
+  model_config: config/objective_3/model_config.yaml   # O3-CFG-2026.11.06-2; estimators, grids, calibration, front
+  handoffs:
+    - {tier: TIER_2_INTERPOLATION, database: database/kambale_obj4_validation_tier2.sqlite}
+    - {tier: TIER_1_EXTRAPOLATION, database: database/kambale_obj4_validation.sqlite}
+  require_handoff_match:     # STOP if a locked handoff names a different model
+    TIER_2_INTERPOLATION: {selected: M2_HGB_WF, runner_up: M2_HGB}
+    TIER_1_EXTRAPOLATION: {selected: BASE_LOGISTIC_WF, runner_up: M2_RF}
+  not_used: [M1_IK, M3_HYBRID]   # neither was selected; M3 is identical to M2_WF_SEL
+
+geometry:
+  horizontal_crs: EPSG:32630
+  vertical: z_relative_m      # metres below the hole collar, straight-hole convention, PROVISIONAL_RELATIVE
+  absolute_elevation_allowed: false
+  statement: >
+    The grid's vertical axis is depth relative to the local collar surface, not elevation. Volumes are grid volumes in
+    this relative frame and are not resource volumes.
+
+grid:
+  origin_rule: collar bounding box expanded by 100 m on every side, snapped outward to the cell size
+  cell_size_m: {easting: 10.0, northing: 10.0, z: 2.0}
+  z_range_m: [-56.0, 0.0]          # covers the sampled z_relative range (-54.1 to -0.4)
+  cell_reference: cell centre
+
+support_zones:
+  # Lateral distance from the cell centre to the nearest drilled collar (all 71 holes).
+  distance: LATERAL_TO_NEAREST_COLLAR
+  zones:
+    - zone: INTERPOLATION
+      max_distance_m: 25.0
+      model_tier: TIER_2_INTERPOLATION
+      basis: tier-2 test holes were 15-17 m from the nearest training collar; 25 m is about one hole spacing
+    - zone: EXTRAPOLATION
+      max_distance_m: 560.0
+      model_tier: TIER_1_EXTRAPOLATION
+      basis: >
+        tier-1 test lines were 454-557 m from the nearest training collar. Distances between 25 and 454 m were not
+        tested directly; the tier-1 skill is taken as the conservative estimate for them.
+    - zone: NO_SUPPORT
+      max_distance_m: null
+      model_tier: null
+      basis: beyond any validated distance; no probability is reported
+  depth_support:
+    rule: >
+      A cell is DEPTH_EXTRAPOLATED when its z is below the deepest sampled z_relative among the holes within 100 m of
+      it (or of the nearest hole when none is within 100 m). Such cells keep a probability but cannot be classified as
+      confident.
+    neighbourhood_m: 100.0
+
+final_models:
+  rule: >
+    Each selected and runner-up model is refitted once on all binary intervals, with the Objective 3 configuration-2
+    estimator, hyperparameter grid, inner whole-hole cross-validation (4 folds, seed 20261105, log-loss selection) and
+    Platt calibration from inner cross-fitted predictions where Objective 3 applies it. No new hyperparameter, predictor
+    or calibration rule is introduced.
+  weathering_front_on_grid: >
+    depth_below_weathering_front_m at a cell uses the Objective 3 inverse-distance front surface (power 2, 8
+    neighbours) built from the observed fronts of all holes. For training rows the own hole is left out, as in
+    Objective 3.
+  in_sample_fit: reported as a fit diagnostic only; never as validation
+
+uncertainty_measures:
+  probability: calibrated probability of the zone's selected model
+  entropy_bits: H(p) = -p log2 p - (1 - p) log2 (1 - p)
+  hole_bootstrap:
+    n_replicates: 200
+    seed: 20261107
+    resample: holes with replacement, all intervals of a drawn hole kept
+    refit: >
+      Hyperparameters fixed at the full-data selection; the estimator, the weathering-front surface and the Platt
+      calibration are refitted in each replicate.
+    interval: 90 per cent percentile interval [p_lo, p_hi] per cell
+    storage: per-replicate cell probabilities quantised to 1/255 in memory; only per-cell summaries are written
+    min_successful_fraction: 0.95
+  model_disagreement: "|p_selected - p_runner_up| per cell, both calibrated"
+
+classification:
+  decision_threshold: 0.5        # more likely than not
+  sensitivity_threshold: TRAINING_PREVALENCE   # reported as a sensitivity table, not used in the headline classes
+  disagreement_limit: 0.20
+  classes:
+    CONFIDENT_PRESENT: p_lo >= threshold and disagreement < limit and not DEPTH_EXTRAPOLATED
+    CONFIDENT_ABSENT: p_hi < threshold and disagreement < limit and not DEPTH_EXTRAPOLATED
+    UNCERTAIN: every other cell with a probability
+    NO_SUPPORT: cells in the NO_SUPPORT zone
+  tags:
+    ABOVE_WEATHERING_FRONT: >
+      depth_below_weathering_front_m < 0. Intervals logged cw or hw carry almost no positive label (Objective 2,
+      configuration 5); CONFIDENT_ABSENT in these cells means "not logged as graphitic", not "non-graphitic".
+    EXTRAPOLATED_TIER: every class in the EXTRAPOLATION zone is reported with its tier, never merged with INTERPOLATION
+  ranking_statement: >
+    Both locked selections are INCONCLUSIVE against their runner-up; the disagreement measure is the map of where that
+    unresolved choice matters.
+
+outputs:
+  database: database/kambale_obj5_uncertainty.sqlite
+  tables:
+    - O5-T01 cell counts and relative grid volume by class, zone and 10 m depth band
+    - O5-T02 sensitivity of the class counts at the prevalence threshold
+    - O5-T03 per-zone validated skill carried from Objective 4 (Brier, AUC, interval) beside the class counts
+    - O5-T04 final-refit record (selected hyperparameters, calibration, in-sample fit)
+  figures:
+    - O5-F01 support zones in plan with collars and drill lines
+    - O5-F02 probability depth slices at z = -5, -10, -20, -30, -40 m
+    - O5-F03 bootstrap interval width depth slices (same z)
+    - O5-F04 model disagreement depth slices (same z)
+    - O5-F05 class depth slices with the weathering-front tag
+    - O5-F06 along-line sections (5 lines) of probability, interval width and class, with logged indicators overlaid
+    - O5-F07 3D view of CONFIDENT_PRESENT and UNCERTAIN cells inside the INTERPOLATION zone
+  figure_rule: every figure is drawn from registered SQL against the Objective 5 database
+
+gates:
+  STOP:
+    - handoff receipt model differs from require_handoff_match
+    - any absolute elevation used
+    - a probability outside [0, 1] or missing for a supported cell
+    - bootstrap success fraction below min_successful_fraction
+    - a weathering-front value on the grid computed from anything other than observed hole fronts
+    - a NO_SUPPORT cell carrying a probability or a confident class
+  WARN:
+    - full-data hyperparameter selection differs from the most frequent Objective 3 fold selection (reported, not changed)
+    - more than 50 per cent of INTERPOLATION cells DEPTH_EXTRAPOLATED
+
+claims_not_permitted:
+  - grade, tonnage, resource or reserve of any kind
+  - geostatistical (simulation-based) uncertainty or a variogram-based confidence
+  - a claim that one model family is better than another
+  - absence of graphite in cells above the weathering front
+  - any probability beyond 560 m from the nearest drilled collar
