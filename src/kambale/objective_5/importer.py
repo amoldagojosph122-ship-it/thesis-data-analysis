@@ -21,7 +21,8 @@ from kambale.objective_5.db import connect_o5, connect_readonly
 # gates.STOP states "tolerance 1e-4" for the down-hole parameters; the value is held here, not in the configuration.
 DOWNHOLE_TOLERANCE = 1e-4
 
-CLEARED_TABLES = ("final_refits", "bootstrap_replicates", "bootstrap_summary", "grid_cells", "grid_layers", "grid_meta",
+CLEARED_TABLES = ("sim_cell_frequency", "sim_cell_realisation", "sim_datum", "sim_downhole_variogram",
+                  "sim_realisations", "sim_scenarios", "sim_run_meta", "final_refits", "bootstrap_replicates", "bootstrap_summary", "grid_cells", "grid_layers", "grid_meta",
                   "carried_validation", "handoffs", "downhole_variogram", "hole_fronts", "collars", "observations",
                   "input_files", "source_receipts", "classification_rules", "figure_sql_registry", "figure_registry",
                   "table_sql_registry", "table_registry", "export_manifests")

@@ -1,6 +1,6 @@
 # Objective 4 blocked, skipped, warned and deferred items: TIER_1_EXTRAPOLATION
 
-Gate results are from VERIFY run 5.
+Gate results are from VERIFY run 14.
 
 ## Gates with a warning or a stop
 

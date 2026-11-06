@@ -1,13 +1,12 @@
 """Objective 4 figure renderers, one set per evaluation tier.
 
 Every figure reads only its registered SQL file in sql/objective_4/figures/ against the latest evaluation receipt.
-A figure whose required rows are missing is registered NOT_SUPPORTED with the reason. Labels, captions and footers are
+A figure whose required rows are missing is registered NOT_SUPPORTED with the reason. Labels and captions are
 built from the receipt, the tier's config and the database counts, not from fixed text.
 """
 
 from __future__ import annotations
 
-import textwrap
 from collections import OrderedDict
 from pathlib import Path
 
@@ -17,6 +16,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 from kambale.objective_4.config import (O4_CONFIG_PATH, O4_DB_PATH, O4_FIGURE_DIR, O4_SQL_DIR, PROJECT_ROOT, StopError,
@@ -93,13 +93,6 @@ def _color(model):
     return MODEL_COLORS.get(model, LIGHT)
 
 
-def _footer(fig, receipt, extra):
-    base = (f"{receipt['tier']} | O4 receipt {receipt['receipt_id']} | O3 split {receipt['o3_split_plan_id']} | "
-            f"{receipt['o1_label_rule_id']} APPROVED | geometry {receipt['geometry_status']} | EPSG:32630 datum VERIFIED | "
-            "vertical relative to collar")
-    fig.text(0.01, 0.012, textwrap.fill(f"{base} | {extra}", 175), fontsize=5.0, color=MUTED, ha="left", va="bottom")
-
-
 def _unit_phrase(receipt):
     return ("held-out drill line" if receipt["fold_unit"] == "HELD_OUT_LINE" else "interleaved hole fold")
 
@@ -157,11 +150,10 @@ def _fold_map(rows, receipt):
     ax2.set_ylim(0, top * 1.1)
     ax2.set_ylabel("Held-out intervals")
     ax2.set_title("Prediction coverage by model", loc="left", fontsize=7.5)
-    _footer(fig, receipt, "colored bars are predictions and hatched bars are explicit failures; the number above each bar "
-                          "is coverage; coverage below 0.95 is not comparable")
     return fig, _caption(receipt, f"Held-out {_unit_phrase(receipt)}s and the evaluation population. The right panel "
-                                  "shows prediction coverage per model; a missing prediction is a coverage result and is "
-                                  "never dropped silently.")
+                                  "shows prediction coverage per model: coloured bars are predictions, hatched bars are "
+                                  "explicit failures, and the number above each bar is coverage (coverage below 0.95 is "
+                                  "not comparable). A missing prediction is a coverage result and is never dropped silently.")
 
 
 def _brier(rows, receipt):
@@ -170,7 +162,7 @@ def _brier(rows, receipt):
         raise NotSupported("no pooled Brier score for a distinct feasible model")
     pooled = sorted(pooled, key=lambda r: r["brier"])
     fig, (ax, axh) = plt.subplots(1, 2, figsize=(7.8, 4.8), gridspec_kw={"width_ratios": [1.0, 1.15]})
-    fig.subplots_adjust(left=0.27, right=0.9, top=0.84, bottom=0.22, wspace=0.95)
+    fig.subplots_adjust(left=0.27, right=0.865, top=0.84, bottom=0.22, wspace=0.95)
     y = np.arange(len(pooled))
     ax.barh(y, [r["brier"] for r in pooled], height=0.62, color=[_color(r["model_id"]) for r in pooled], linewidth=0)
     for k, r in enumerate(pooled):
@@ -200,12 +192,12 @@ def _brier(rows, receipt):
     axh.set_xticks(range(len(lines)), [ln.replace("NOM_", "") for ln in lines], rotation=30, ha="right", fontsize=5.6)
     axh.set_yticks(range(len(heat_models)), [_short(m) for m in heat_models], fontsize=5.8)
     axh.set_title("Brier by drill line (prevalence pooled only)", loc="left", fontsize=7.5)
-    cax = fig.add_axes([0.93, 0.26, 0.012, 0.58])
+    cax = fig.add_axes([0.89, 0.26, 0.012, 0.58])
     fig.colorbar(im, cax=cax, label="Brier")
-    _footer(fig, receipt, _identity_note(rows))
     return fig, _caption(receipt, "Pooled and per-line Brier scores for each distinct feasible model on the identical "
-                                  "common cohort. Models identical to an earlier model are not drawn; the footer names "
-                                  "them. Lower is better; the paired intervals are in the paired-comparison figure.")
+                                  "common cohort. Models identical to an earlier model are not drawn ("
+                                  + _identity_note(rows) + "). Lower is better; the paired intervals are in the "
+                                  "paired-comparison figure.")
 
 
 def _curves(rows, receipt):
@@ -234,7 +226,7 @@ def _curves(rows, receipt):
     axr.set_xlim(0, 1)
     axr.set_ylim(0, 1)
     axr.set_title("ROC curves, pooled held-out cohort", loc="left", fontsize=7.5)
-    axr.legend(loc="lower right", fontsize=5.2)
+    axr.legend(loc="lower right", fontsize=5.2, frameon=True, facecolor="white", edgecolor="none", framealpha=0.9)
     if prev is not None:
         axp.axhline(prev, ls=":", lw=0.8, color=NEUTRAL, label=f"Positive-rate baseline {prev:.3f}")
     axp.set_xlabel("Recall")
@@ -242,12 +234,11 @@ def _curves(rows, receipt):
     axp.set_xlim(0, 1)
     axp.set_ylim(0, 1)
     axp.set_title("Precision-recall curves", loc="left", fontsize=7.5)
-    axp.legend(loc="upper right", fontsize=5.2)
-    _footer(fig, receipt, "weathering-front models are dashed; AUC and average precision are weighted; "
-                          + _identity_note(rows))
+    axp.legend(loc="upper right", fontsize=5.2, frameon=True, facecolor="white", edgecolor="none", framealpha=0.9)
     return fig, _caption(receipt, "ROC and precision-recall curves for the distinct feasible models on the pooled held-out "
-                                  "cohort. The dotted line in the PR panel is the prevalence baseline. Curves are "
-                                  "descriptive; the Brier score is the primary endpoint.")
+                                  "cohort. Weathering-front models are dashed; AUC and average precision are weighted. "
+                                  "The dotted line in the PR panel is the prevalence baseline. Curves are descriptive; "
+                                  "the Brier score is the primary endpoint. " + _identity_note(rows) + ".")
 
 
 def _reliability(rows, receipt):
@@ -281,10 +272,9 @@ def _reliability(rows, receipt):
         ax.tick_params(labelsize=5.2)
     for ax in axes[len(models):]:
         ax.axis("off")
-    _footer(fig, receipt, "Wilson 95% intervals; diagnostics are not applied to the predictions")
     return fig, _caption(receipt, "Reliability diagrams for the distinct feasible models on the pooled held-out cohort. The "
-                                  "dotted diagonal is perfect calibration. The slope and intercept are diagnostic fits and "
-                                  "are never used to recalibrate the predictions.")
+                                  "dotted diagonal is perfect calibration. Bars are Wilson 95% intervals. The slope and "
+                                  "intercept are diagnostic fits and are never used to recalibrate the predictions.")
 
 
 def _paired(rows, receipt):
@@ -327,16 +317,17 @@ def _paired(rows, receipt):
         ax2.axhline(0, lw=0.8, color=NEUTRAL)
         ax2.set_xticks(range(len(lines)), [ln.replace("NOM_", "") for ln in lines], rotation=30, ha="right", fontsize=5.6)
         ax2.set_ylabel("Delta Brier (weathering - base)", fontsize=6.5)
-        ax2.legend(loc="lower right", fontsize=5.2)
+        ax2.set_ylim(-0.0135, 0.024)
+        ax2.legend(loc="upper left", ncol=1, fontsize=5.2, handlelength=1.2)
     else:
         ax2.text(0.5, 0.5, "no line-level weathering pairs", ha="center", va="center", transform=ax2.transAxes)
     ax2.set_title("Weathering effect by drill line", loc="left", fontsize=7.2)
-    _footer(fig, receipt, "difference = Brier(b) minus Brier(a); the left panel shows the hole-cluster interval; the right "
-                          "panel is the line-level pattern of the weathering pairs (negative favours weathering)")
-    return fig, _caption(receipt, "Paired Brier differences for each configured comparison. A pair is RESOLVED when its "
-                                  "interval excludes zero, UNRESOLVED when it includes zero (the half-width is the "
-                                  "smallest difference this design could detect), and IDENTICAL when the two models are "
-                                  "the same predictions.")
+    return fig, _caption(receipt, "Paired Brier differences for each configured comparison. Difference = Brier(b) minus "
+                                  "Brier(a); the left panel shows the hole-cluster interval. The right panel is the "
+                                  "line-level pattern of the weathering pairs (negative favours weathering). A pair is "
+                                  "RESOLVED when its interval excludes zero, UNRESOLVED when it includes zero (the "
+                                  "half-width is the smallest difference this design could detect), and IDENTICAL when "
+                                  "the two models are the same predictions.")
 
 
 def _error_map(rows, receipt):
@@ -346,11 +337,11 @@ def _error_map(rows, receipt):
         raise NotSupported("no selected model or no withheld errors")
     model = sel[0]["model_id"]
     lines = sorted({e["line_code"] for e in errs})
-    fig, axes = plt.subplots(1, len(lines), figsize=(7.8, 4.2), sharey=True)
-    fig.subplots_adjust(left=0.08, right=0.9, top=0.82, bottom=0.2, wspace=0.12)
-    axes = np.atleast_1d(axes)
+    nrows, ncols = 2, 3
+    fig, axes = plt.subplots(nrows, ncols, figsize=(7.2, 5.0), sharey=True, layout="constrained")
+    axes_flat = list(axes.ravel())
     sc = None
-    for ax, line in zip(axes, lines):
+    for ax, line in zip(axes_flat, lines):
         sub = [e for e in errs if e["line_code"] == line]
         sc = ax.scatter([e["easting_m"] for e in sub], [e["z_relative_m"] for e in sub],
                         c=[e["residual"] for e in sub], cmap="RdBu_r", vmin=-1, vmax=1, s=7, linewidths=0)
@@ -359,13 +350,21 @@ def _error_map(rows, receipt):
                    edgecolors=INK, linewidths=0.35)
         ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
         ax.ticklabel_format(style="plain", useOffset=False, axis="x")
-        ax.tick_params(axis="x", labelrotation=30)
+        ax.tick_params(axis="x", labelsize=5.8, pad=2)
         ax.set_title(f"{line.replace('NOM_', '')} (n={len(sub)})", loc="left", fontsize=6.6)
-        ax.set_xlabel("Easting (m)")
-    axes[0].set_ylabel("Relative Z (m)")
-    cax = fig.add_axes([0.92, 0.2, 0.012, 0.6])
-    fig.colorbar(sc, cax=cax, label="Residual y - p")
-    _footer(fig, receipt, f"selected model {_short(model)}; black rings mark misclassified intervals")
+    for k, ax in enumerate(axes_flat):
+        if k >= len(lines):
+            ax.axis("off")
+        if k % ncols == 0:
+            ax.set_ylabel("Relative Z (m)")
+        if k // ncols == nrows - 1:
+            ax.set_xlabel("Easting (m)")
+    if len(lines) < nrows * ncols:
+        key = axes_flat[len(lines)]
+        key.legend(handles=[Line2D([0], [0], marker="o", ls="none", mfc="none", mec=INK, ms=4.5,
+                                   label="Misclassified at the frozen threshold")],
+                   loc="center", fontsize=6.2, handletextpad=0.3)
+    fig.colorbar(sc, ax=axes_flat, label="Residual y - p", shrink=0.9, aspect=30)
     return fig, _caption(receipt, f"Residuals of the selected model ({_label(model)}) on the withheld observations, by drill "
                                   "line. Blue residuals are over-predictions and red residuals under-predictions; black "
                                   "rings mark misclassified intervals at the frozen threshold.")
@@ -376,7 +375,7 @@ def _coverage(rows, receipt):
     if not cov:
         raise NotSupported("no coverage rows")
     fig, (ax, axh) = plt.subplots(1, 2, figsize=(7.8, 4.5), gridspec_kw={"width_ratios": [1.0, 1.25]})
-    fig.subplots_adjust(left=0.1, right=0.98, top=0.84, bottom=0.3, wspace=0.42)
+    fig.subplots_adjust(left=0.1, right=0.86, top=0.84, bottom=0.3, wspace=0.42)
     x = np.arange(len(cov))
     pred = np.array([r["n_predicted"] for r in cov], dtype=float)
     fail = np.array([r["n_failed"] for r in cov], dtype=float)
@@ -402,12 +401,12 @@ def _coverage(rows, receipt):
     axh.set_xticks(range(len(lines)), [ln.replace("NOM_", "") for ln in lines], rotation=30, ha="right", fontsize=5.4)
     axh.set_yticks(range(len(models)), [_short(m) for m in models], fontsize=5.4)
     axh.set_title("Coverage by model and drill line", loc="left", fontsize=7.5)
-    cax = fig.add_axes([0.93, 0.3, 0.012, 0.55])
+    cax = fig.add_axes([0.885, 0.3, 0.012, 0.55])
     fig.colorbar(im, cax=cax, label="Coverage")
-    _footer(fig, receipt, "colored bars are predictions and hatched bars are explicit failures; a missing prediction is a "
-                          "coverage result and is never dropped silently")
-    return fig, _caption(receipt, "Prediction coverage and abstention per model and drill line. Coverage below the "
-                                  "predeclared threshold makes a model not comparable; failures are retained.")
+    return fig, _caption(receipt, "Prediction coverage and abstention per model and drill line. Coloured bars are "
+                                  "predictions and hatched bars are explicit failures; a missing prediction is a coverage "
+                                  "result and is never dropped silently. Coverage below the predeclared threshold makes a "
+                                  "model not comparable; failures are retained.")
 
 
 FIGURES = OrderedDict([

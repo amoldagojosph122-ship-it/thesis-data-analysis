@@ -1,6 +1,6 @@
 # Objective 5 run report: model-based three-dimensional uncertainty (part 1)
 
-Configuration O5-CFG-2026.11.06-2 (supersedes O5-CFG-2026.11.06-1); SHA-256 of the configuration bytes 77227d3a23ceb6ba50d93994d83ca7a1a367ba36451cb28d6271409413169893. Generated 2026-11-06T11:09:37Z. Relative depth below collar throughout; absolute elevation is not used.
+Configuration O5-CFG-2026.11.06-2 (supersedes O5-CFG-2026.11.06-1); SHA-256 of the configuration bytes 77227d3a23ceb6ba50d93994d83ca7a1a367ba36451cb28d6271409413169893. Generated 2026-11-06T14:37:37Z. Relative depth below collar throughout; absolute elevation is not used.
 
 Status: parts 1 and 2 of the predeclared stage. Part 2 is a scenario analysis with an assumed lateral range (section 10).
 
@@ -8,13 +8,13 @@ Status: parts 1 and 2 of the predeclared stage. Part 2 is a scenario analysis wi
 
 | role | path | bytes | SHA-256 |
 |---|---|---|---|
-| o2_database | database/kambale_obj2_spatial.sqlite | 1200128 | a24d81798ecdda1b78edf438763101462ba39b027c516f4259994c65512d2228 |
+| o2_database | database/kambale_obj2_spatial.sqlite | 1232896 | e82be7e8802f31e0eb2f2af952f94b5e95b098ac98a5d83c8983569951087d2e |
 | o3_config | config/objective_3/model_config.yaml | 7558 | 47569e360e552b442cef675ba0f709b44d036b783b8e230be0ee1762f98744f3 |
-| o3_database | database/kambale_obj3_models.sqlite | 26488832 | 7eede9c6a4ff94b3f9ddec915ce80d8b87380796b090354cc494c5d1f55d1319 |
-| o4_tier_1_extrapolation_database | database/kambale_obj4_validation.sqlite | 22753280 | 5c518d41c92178ba0e4dd94d8dc0a2f1d02241e70216524148831b3ce5f8deed |
-| o4_tier_2_interpolation_database | database/kambale_obj4_validation_tier2.sqlite | 23814144 | 97ae266adcc4492de554106b46c24aaa30ac9430f75eb0234937c89fefcfc1b3 |
+| o3_database | database/kambale_obj3_models.sqlite | 26550272 | d02654ee1c2f0bb610450cd89c12eac9903c99dca099c40607089724860fb412 |
+| o4_tier_1_extrapolation_database | database/kambale_obj4_validation.sqlite | 22806528 | 4825a637856e898238ef3cbf1b72dc346165a3ccef77983313f02b9cd07db5de |
+| o4_tier_2_interpolation_database | database/kambale_obj4_validation_tier2.sqlite | 23867392 | f60e4fd2aee3f09ff8f154e12d3a2bb95605db546b1e174176c9e9573c62393f |
 | o5_config | config/objective_5/uncertainty_config.yaml | 14117 | 77227d3a23ceb6ba50d93994d83ca7a1a367ba36451cb28d6271409413169893 |
-| thesis_database | database/kambale_thesis.sqlite | 10289152 | 645fb5538b7685da400086fdc88caca997ce37c82cbe041848dc26cc8bb75189 |
+| thesis_database | database/kambale_thesis.sqlite | 10289152 | 096ffbb0b5f6b0e93a10d4188a79406137bba4628a39f64bb47077b132b1e0f5 |
 
 Objective 3 receipt 1: 1910 logged intervals, 1829 binary intervals (DESIGN_8_2_v1), 71 holes, prevalence 0.2870.
 
@@ -109,8 +109,8 @@ Median and 90th percentile over the supported cells of each zone.
 
 | zone | model | replicates | successful | fraction | runtime (s) | status |
 |---|---|---|---|---|---|---|
-| EXTRAPOLATION | BASE_LOGISTIC_WF | 200 | 200 | 1 | 25.43 | PASS |
-| INTERPOLATION | M2_HGB_WF | 200 | 200 | 1 | 93.08 | PASS |
+| EXTRAPOLATION | BASE_LOGISTIC_WF | 200 | 200 | 1 | 26.1 | PASS |
+| INTERPOLATION | M2_HGB_WF | 200 | 200 | 1 | 100.4 | PASS |
 
 ## 8. Gates
 
@@ -179,11 +179,11 @@ Reproduction and gates per scenario:
 
 | scenario | mean simulated frequency | mean local mean | difference | frequency status | SK fallbacks | neighbourless node visits (sum over realisations) | exact neighbour searches (sum) | downhole max abs diff (supported bins) | runtime (s) |
 |---|---|---|---|---|---|---|---|---|---|
-| SIS_AH015 | 0.2972 | 0.2999 | -0.0026 | PASS | 0 | 9931 | 0 | 0.0526 | 170 |
-| SIS_AH025 | 0.2923 | 0.2999 | -0.0076 | PASS | 0 | 1039 | 0 | 0.0333 | 214 |
-| SIS_AH050 | 0.2913 | 0.2999 | -0.0086 | PASS | 0 | 42 | 8428 | 0.0133 | 234 |
-| SIS_AH100 | 0.2936 | 0.2999 | -0.0063 | PASS | 0 | 5 | 33436 | 0.0186 | 237 |
-| SIS_AH200 | 0.2998 | 0.2999 | -0.0001 | PASS | 0 | 0 | 34903 | 0.0179 | 238 |
+| SIS_AH015 | 0.2972 | 0.2999 | -0.0026 | PASS | 0 | 9931 | 0 | 0.0526 | 184 |
+| SIS_AH025 | 0.2923 | 0.2999 | -0.0076 | PASS | 0 | 1039 | 0 | 0.0333 | 239 |
+| SIS_AH050 | 0.2913 | 0.2999 | -0.0086 | PASS | 0 | 42 | 8428 | 0.0133 | 257 |
+| SIS_AH100 | 0.2936 | 0.2999 | -0.0063 | PASS | 0 | 5 | 33436 | 0.0186 | 260 |
+| SIS_AH200 | 0.2998 | 0.2999 | -0.0001 | PASS | 0 | 0 | 34903 | 0.0179 | 262 |
 
 Spread across scenarios (the finding): the median simulated volume ranges from 8.879e+05 to 9.157e+05 m3 over the 5 feasible scenarios, against an expected volume of 9.13e+05 to 9.13e+05 m3. The median largest-component share ranges from 0.474 to 0.510 and the median component count from 34 to 73. The result is this spread, which depends on the assumed lateral range; it is not one volume.
 

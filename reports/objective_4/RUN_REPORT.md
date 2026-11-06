@@ -1,6 +1,6 @@
 # Objective 4 run report: TIER_1_EXTRAPOLATION
 
-Configuration O4-CFG-2026.11.06-2 (SHA-256 32c33d408d21), code 4.1.0, schema O4-SCHEMA-2026.11.06-1, commit 02943da. Import run 1, evaluation run 2, gate run 5. Report written 2026-11-06T04:57:55Z.
+Configuration O4-CFG-2026.11.06-2 (SHA-256 32c33d408d21), code 4.1.0, schema O4-SCHEMA-2026.11.06-1, commit dbb556a. Import run 1, evaluation run 2, gate run 14. Report written 2026-11-06T11:59:52Z.
 
 **Claim.** skill when predicting a whole undrilled line from the other four lines
 
@@ -237,7 +237,7 @@ Exit gates: G01, G02, G03, G04, G05, G06, G07, G08, G10, G11, G12, G13, G15, G16
 
 `all` runs import, evaluate, verify, figures, tables, verify, report and verify. The tier argument selects the config, database and output directories.
 
-Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-learn 1.9.1; matplotlib 3.11.1; PyYAML 6.0.3; pytest 9.1.1.
+Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-learn 1.9.0; matplotlib 3.11.1; PyYAML 6.0.3; pytest 9.1.1.
 
 ## 15. Database row counts and receipts
 
@@ -256,7 +256,7 @@ Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-le
 | figure_registry | 7 |
 | figure_sql_registry | 17 |
 | fold_metrics | 550 |
-| gate_results | 87 |
+| gate_results | 348 |
 | locked_handoff_receipts | 1 |
 | metric_curve_points | 18532 |
 | metric_definitions | 13 |
@@ -269,7 +269,7 @@ Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-le
 | schema_version | 1 |
 | source_receipts | 1 |
 | spatial_error_summaries | 546 |
-| stage_runs | 5 |
+| stage_runs | 14 |
 | table_registry | 5 |
 | table_sql_registry | 5 |
 

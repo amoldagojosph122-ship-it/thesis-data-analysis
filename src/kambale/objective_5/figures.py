@@ -122,25 +122,21 @@ def _section_extent(meta):
     return (x0, x0 + nE * meta["cell_easting_m"], -zlo, -zhi)
 
 
-def _footer(fig, receipt, extra=""):
-    base = (f"O5 receipt {receipt['receipt_id']} | O3 receipt {receipt['o3_receipt_id']} | "
-            f"{receipt['label_rule_id']} APPROVED | geometry {receipt['geometry_status']} | EPSG:32630 | "
-            f"relative depth below collar")
-    footer = FOOTER
-    if SCENARIO_STATEMENT in extra:   # simulation figures: say what they are instead of "model-based"
-        footer = footer.replace("Uncertainty is model-based (not geostatistical).",
-                                "Realisations from indicator simulation with a locally varying mean and an assumed "
-                                "lateral covariance.")
-    text = textwrap.fill(f"{base} | {footer} {extra}".strip(), 190)
-    fig.text(0.01, 0.005, text, fontsize=5.0, color=MUTED, ha="left", va="bottom")
-
-
 def _save(fig, figure_id, stem) -> Path:
     O5_FIGURE_DIR.mkdir(parents=True, exist_ok=True)
     path = O5_FIGURE_DIR / f"{figure_id}_{stem}.png"
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
     return path
+
+
+def _grid_geometry(extent, nrows, ncols, width_in, left_in, right_in, top_in, bottom_in, wgap_in, hgap_in):
+    """Figure height (inches) and panel size so equal-aspect map panels keep the map's own shape."""
+    x0, x1, y0, y1 = extent
+    pw = (width_in - left_in - right_in - wgap_in * (ncols - 1)) / ncols
+    ph = pw * (y1 - y0) / (x1 - x0)
+    height = top_in + nrows * ph + (nrows - 1) * hgap_in + bottom_in
+    return height, pw, ph
 
 
 def _receipt(conn):
@@ -176,7 +172,6 @@ def f01(conn, q, receipt, meta):
     if not rows:
         raise NotSupported("no grid cells")
     fig, ax = plt.subplots(figsize=(7.2, 5.4))
-    fig.subplots_adjust(left=0.1, right=0.97, top=0.92, bottom=0.2)
     colours = {"INTERPOLATION": BLUE, "EXTRAPOLATION": "#9ECAE1", "NO_SUPPORT": "#FFFFFF"}
     for zone in ("EXTRAPOLATION", "INTERPOLATION"):
         pts = [r for r in rows if r["zone"] == zone]
@@ -197,7 +192,14 @@ def f01(conn, q, receipt, meta):
     ax.set_ylabel("Northing (km)")
     ax.set_title("Support zones in plan, with collars and drill lines")
     ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), markerscale=3)
-    _footer(fig, receipt, "Plan view; lines join the collars of each drill line.")
+    # Size the figure to the plan's own aspect (equal-aspect map), so no empty bands above or below the map.
+    ax.autoscale_view()
+    x0, x1 = ax.get_xlim()
+    y0, y1 = ax.get_ylim()
+    plot_w = 7.2 * (0.97 - 0.1)
+    height = plot_w * (y1 - y0) / (x1 - x0) + 0.45 + 0.6
+    fig.set_size_inches(7.2, height)
+    fig.subplots_adjust(left=0.1, right=0.97, top=1 - 0.45 / height, bottom=0.6 / height)
     return _save(fig, "O5-F01", "support_zones_plan"), len(rows)
 
 
@@ -208,9 +210,13 @@ def _slice_figure(conn, q, query_name, receipt, meta, figure_id, stem, title, cm
         rows = conn.execute(q[query_name], {"iz": iz}).fetchall()
         panels.append((z, zc, rows))
     # Two rows of three: the sixth slot carries the class legend (categorical) or stays empty.
-    fig, axes = plt.subplots(2, 3, figsize=(9.6, 7.0), sharex=True, sharey=True)
-    fig.subplots_adjust(left=0.08, right=0.87, top=0.87, bottom=0.14, wspace=0.14, hspace=0.3)
     extent = _plan_extent(meta)
+    W, L, T, B, WG, HG, R = 9.6, 0.75, 0.85, 0.6, 0.22, 0.4, 1.2
+    H, pw, ph = _grid_geometry(extent, 2, 3, W, L, R, T, B, WG, HG)
+    grid_right = L + 3 * pw + 2 * WG
+    fig, axes = plt.subplots(2, 3, figsize=(W, H), sharex=True, sharey=True)
+    fig.subplots_adjust(left=L / W, right=grid_right / W, top=1 - T / H, bottom=B / H,
+                        wspace=WG / pw, hspace=HG / ph)
     flat = axes.ravel()
     last = None
     for ax, (z, zc, rows) in zip(flat, panels):
@@ -241,13 +247,15 @@ def _slice_figure(conn, q, query_name, receipt, meta, figure_id, stem, title, cm
         ax.set_ylabel("Northing (km)")
     if categorical:
         flat[5].axis("off")
-        flat[5].legend(handles=_class_handles(extra_hatch=True), loc="center", frameon=False, fontsize=6.8)
+        flat[5].legend(handles=_class_handles(extra_hatch=True), loc="center", frameon=False, fontsize=6.5)
     else:
         flat[5].axis("off")
-        cbar = fig.colorbar(last, ax=flat[:5].tolist(), fraction=0.035, pad=0.02)
+        flat[5].legend(handles=[Patch(facecolor="white", edgecolor=GREY, label="Blank cells: NO_SUPPORT (no probability)")],
+                       loc="center", frameon=False, fontsize=6.5)
+        cax = fig.add_axes([(grid_right + 0.3) / W, B / H, 0.16 / W, (2 * ph + HG) / H])
+        cbar = fig.colorbar(last, cax=cax)
         cbar.set_label(label)
-    fig.suptitle(title, y=0.975)
-    _footer(fig, receipt, "Dark grey cells: NO_SUPPORT." if categorical else "Blank cells: NO_SUPPORT (no probability).")
+    fig.suptitle(title, y=1 - 0.25 / H)
     count = sum(len(r) for _, _, r in panels)
     return _save(fig, figure_id, stem), count
 
@@ -260,8 +268,8 @@ def f06(conn, q, receipt, meta):
         raise NotSupported("no drill lines")
     nN = int(meta["n_northing"])
     extent = _section_extent(meta)
-    fig, axes = plt.subplots(len(lines), 3, figsize=(9.6, 2.25 * len(lines) + 1.0), squeeze=False)
-    fig.subplots_adjust(left=0.08, right=0.84, top=0.93, bottom=0.14, hspace=0.55, wspace=0.22)
+    fig, axes = plt.subplots(len(lines), 3, figsize=(7.2, 2.75 * len(lines) + 1.5), squeeze=False)
+    fig.subplots_adjust(left=0.12, right=0.80, top=0.9, bottom=0.1, hspace=0.45, wspace=0.28)
     total = 0
     prob_im = width_im = None
     for k, line in enumerate(lines):
@@ -292,14 +300,14 @@ def f06(conn, q, receipt, meta):
             ax_p.set_title("Probability (dots: logged labels)")
             ax_w.set_title("Bootstrap interval width")
             ax_c.set_title("Class")
-    cax_p = fig.add_axes([0.87, 0.2, 0.012, 0.66])
-    cax_w = fig.add_axes([0.93, 0.2, 0.012, 0.66])
+    cax_p = fig.add_axes([0.83, 0.12, 0.018, 0.78])
+    cax_w = fig.add_axes([0.92, 0.12, 0.018, 0.78])
     fig.colorbar(prob_im, cax=cax_p, label="p (selected)")
     fig.colorbar(width_im, cax=cax_w, label="p_hi minus p_lo")
-    fig.legend(handles=_class_handles(), loc="lower center", ncol=2, bbox_to_anchor=(0.5, 0.045), fontsize=6.5)
-    _footer(fig, receipt, "Each row is one drill line; cells are those nearest the line's mean northing. Each cell is a "
-                          "10 x 2 m rectangle.")
+    fig.legend(handles=_class_handles(), loc="lower center", ncol=2, bbox_to_anchor=(0.5, 0.02), fontsize=6.5)
     fig.suptitle("Along-line sections: probability, interval width and class", y=0.985)
+    fig.text(0.5, 0.945, "Each row is one drill line; cells are those nearest the line's mean northing; each cell is a "
+                         "10 x 2 m rectangle.", ha="center", fontsize=6.5, color=MUTED)
     return _save(fig, "O5-F06", "along_line_sections"), total
 
 
@@ -321,10 +329,11 @@ def f07(conn, q, receipt, meta):
     ax.xaxis.set_major_formatter(KM)
     ax.yaxis.set_major_formatter(KM)
     ax.invert_zaxis()
-    ax.set_title("INTERPOLATION zone: CONFIDENT_PRESENT and UNCERTAIN cells")
+    ax.set_title("INTERPOLATION zone: CONFIDENT_PRESENT and UNCERTAIN cells\n"
+                 "Only cells within 25 m of a collar; depth-extrapolated cells excluded for confident classes.",
+                 fontsize=7)
     ax.legend(loc="upper left", markerscale=4)
-    fig.subplots_adjust(left=0.02, right=0.98, top=0.92, bottom=0.08)
-    _footer(fig, receipt, "Only cells inside 25 m of a collar, not DEPTH_EXTRAPOLATED for confident classes.")
+    fig.subplots_adjust(left=0.02, right=0.98, top=0.9, bottom=0.08)
     return _save(fig, "O5-F07", "three_d_interpolation"), len(rows)
 
 
@@ -339,8 +348,8 @@ def f08(conn, q, receipt, meta):
     rows = conn.execute(q["volumes"]).fetchall()
     if not rows:
         raise NotSupported("no realisations: run the simulate stage")
-    fig, axes = plt.subplots(2, 3, figsize=(9.6, 6.6), sharex=True)   # common volume axis so scenarios compare
-    fig.subplots_adjust(left=0.08, right=0.97, top=0.87, bottom=0.14, wspace=0.3, hspace=0.45)
+    fig, axes = plt.subplots(2, 3, figsize=(7.2, 5.6), sharex=True)   # common volume axis so scenarios compare
+    fig.subplots_adjust(left=0.11, right=0.98, top=0.87, bottom=0.14, wspace=0.35, hspace=0.5)
     flat = axes.ravel()
     for ax in flat[len(scen):]:
         ax.axis("off")
@@ -359,13 +368,16 @@ def f08(conn, q, receipt, meta):
         ax.axvline(exp, color=ORANGE, lw=1.6, ls="--", label="expected sum(m) x 200")
         ax.axvline(p50, color=INK, lw=0.9, label="P50")
         ax.set_title(f"{s['scenario_id']}: a_h = {s['horizontal_range_m']:g} m")
-        ax.set_xlabel("Graphitic grid volume (10^6 m3, relative)")
+        ax.set_xlabel("Grid volume (10^6 m3, relative)")
         ax.set_ylabel("Realisations")
         ax.xaxis.set_major_locator(MaxNLocator(4))
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     handles, labels = flat[0].get_legend_handles_labels()
-    fig.legend(handles=handles, labels=labels, loc="lower center", ncol=4, bbox_to_anchor=(0.5, 0.05), fontsize=6.5)
+    if len(scen) < len(flat):   # the unused sixth slot carries the legend, not a blank axis
+        flat[len(scen)].legend(handles=handles, labels=labels, loc="center", fontsize=7, frameon=False)
+    else:
+        fig.legend(handles=handles, labels=labels, loc="lower center", ncol=4, bbox_to_anchor=(0.5, 0.05), fontsize=6.5)
     fig.suptitle("Graphitic grid volume per scenario (100 realisations each)", y=0.975)
-    _footer(fig, receipt, SCENARIO_STATEMENT)
     return _save(fig, "O5-F08", "volume_distribution_by_scenario"), len(rows)
 
 
@@ -378,10 +390,10 @@ def f09(conn, q, receipt, meta):
     comp = [[r["n_components"] for r in rows if r["scenario_id"] == s["scenario_id"]] for s in scen]
     share = [[r["largest_share"] for r in rows if r["scenario_id"] == s["scenario_id"] and r["largest_share"] is not None]
              for s in scen]
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.6, 4.6))
-    fig.subplots_adjust(left=0.08, right=0.98, top=0.84, bottom=0.27, wspace=0.28)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.2, 3.9))
+    fig.subplots_adjust(left=0.11, right=0.98, top=0.82, bottom=0.2, wspace=0.32)
     for ax, data, ttl, ylab in ((ax1, comp, "Connected components (26-neighbour)", "Components per realisation"),
-                                (ax2, share, "Share of positive volume in the largest component",
+                                (ax2, share, "Largest component, share of positive",
                                  "Largest-component share")):
         ax.boxplot(data, tick_labels=labels, whis=(10, 90), showfliers=False, patch_artist=True,
                    boxprops={"facecolor": "#D9E8F3", "edgecolor": INK, "linewidth": 0.6},
@@ -391,8 +403,7 @@ def f09(conn, q, receipt, meta):
         ax.set_xlabel("Horizontal range a_h (m), assumed")
         ax.set_ylabel(ylab)
     ax2.set_ylim(0, 1)
-    fig.suptitle("Connectivity per scenario: whiskers P10 to P90, box P25 to P75, line P50", y=0.97)
-    _footer(fig, receipt, SCENARIO_STATEMENT)
+    fig.suptitle("Connectivity per scenario: whiskers P10 to P90, box P25 to P75, line P50", y=0.97, fontsize=9)
     return _save(fig, "O5-F09", "connectivity_by_scenario"), len(rows)
 
 
@@ -410,7 +421,7 @@ def f10(conn, q, receipt, meta):
     logged = conn.execute(q["section_logged"], {"line": SECTION_LINE}).fetchall()
     extent = _section_extent(meta)
     fig, axes = plt.subplots(len(scen), 2, figsize=(7.4, 1.95 * len(scen) + 1.2), squeeze=False)
-    fig.subplots_adjust(left=0.1, right=0.9, top=0.93, bottom=0.12, hspace=0.6, wspace=0.12)
+    fig.subplots_adjust(left=0.1, right=0.9, top=0.93, bottom=0.12, hspace=0.45, wspace=0.12)
     total = 0
     freq_im = None
     for k, s in enumerate(scen):
@@ -437,14 +448,10 @@ def f10(conn, q, receipt, meta):
                            edgecolors=INK, linewidths=0.1, vmin=0, vmax=1)
         ax_r.set_ylabel(f"{s['scenario_id']}\na_h {s['horizontal_range_m']:g} m\nDepth (m)")
         if k == 0:
-            ax_r.set_title("Realisation 1 (blue: positive)")
+            ax_r.set_title("Realisation 1 (blue: positive; dots: logged)")
             ax_f.set_title("Frequency of positive outcomes (100)")
     fig.colorbar(freq_im, ax=axes[:, 1].tolist(), fraction=0.05, pad=0.04, label="frequency")
-    extra = (f"Section: line {SECTION_LINE} (cells nearest its northing; dots: logged binary labels). "
-             f"Line with the most positive intervals: {counts['line_code']} ({counts['pos']} of {counts['n']}). "
-             f"{SCENARIO_STATEMENT} Blank cells: outside the simulation domain.")
     fig.suptitle(f"Scenario realisations and frequency along {SECTION_LINE}", y=0.985)
-    _footer(fig, receipt, extra)
     return _save(fig, "O5-F10", "realisation_and_frequency_section"), total
 
 

@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Patch  # noqa: E402
+import matplotlib.ticker  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 from kambale.objective_3.config import (O3_DB_PATH, O3_FIGURE_DIR, O3_SQL_DIR, PROJECT_ROOT, StopError, sha256_bytes,
@@ -75,13 +76,6 @@ def _rel(path: Path) -> str:
     return path.relative_to(PROJECT_ROOT).as_posix()
 
 
-def _footer(fig, receipt: dict, extra: str) -> None:
-    base = (f"O3 receipt {receipt['receipt_id']} | {receipt['label_rule_id']} APPROVED | geometry "
-            f"{receipt['geometry_status']} | coordinates EPSG:32630, datum VERIFIED | vertical = metres relative to collar "
-            f"| O2 handoff {receipt['o2_handoff_status']}")
-    fig.text(0.01, 0.012, textwrap.fill(f"{base} | {extra}", 170), fontsize=5.0, color=MUTED, ha="left", va="bottom")
-
-
 def _caption(receipt: dict, body: str) -> str:
     return (f"{body} Support: 1 m logged intervals. Outer folds are leave-one-drill-line-out; every probability is "
             f"out-of-fold. Geometry {receipt['geometry_status']}: straight holes, collar elevation absent, depth relative "
@@ -123,14 +117,13 @@ def _fold_plan(rows: dict, receipt: dict):
     ax2.bar(x, pos, width=0.62, color=VERMILLION, linewidth=0, label="Positive")
     ax2.bar(x, neg, bottom=pos, width=0.62, color=BLUE, linewidth=0, label="Negative")
     for k, a in enumerate(folds):
-        ax2.text(k, a["n_test"] + 8, f"{a['n_test']}\ntrain p={a['train_positive'] / a['n_train']:.2f}", ha="center",
-                 va="bottom", fontsize=5.8, color=INK)
+        ax2.text(k, a["n_test"] + 10, f"{a['n_test']}\ntrain p=\n{a['train_positive'] / a['n_train']:.2f}", ha="center",
+                 va="bottom", fontsize=5.6, color=INK, linespacing=1.1)
     ax2.set_xticks(x, [f"F{a['fold_id']}" for a in folds], fontsize=6.5)
-    ax2.set_ylim(0, 1.28 * max(a["n_test"] for a in folds))
+    ax2.set_ylim(0, 1.42 * max(a["n_test"] for a in folds))
     ax2.set_ylabel("Held-out binary intervals")
     ax2.set_title("Class support of each held-out line", loc="left", fontsize=7.5)
     ax2.legend(loc="upper right", ncol=2, handletextpad=0.3)
-    _footer(fig, receipt, "the held-out line is never used for tuning, calibration or variogram fitting")
     return fig, _caption(receipt, "Outer split plan: each approved drill line is held out once. Left: collars by fold. "
                                   "Right: held-out class counts; the training prevalence is printed below each fold. "
                                   "Inner tuning uses whole-hole folds inside the remaining lines.")
@@ -166,46 +159,15 @@ def _feature_support(rows: dict, receipt: dict):
     axz.set_xlabel("Vertical position, metres relative to collar")
     axz.set_ylabel("Binary intervals")
     axz.set_title("Depth support by class", loc="left", fontsize=7.5)
-    axz.legend(loc="lower right")
+    axz.legend(loc="lower left")
     fig.text(0.98, 0.955, "Deployed predictors: " + ", ".join(f["name"] for f in safe), ha="right", va="bottom",
              fontsize=6.4, color=INK)
     fig.text(0.98, 0.925, f"Not predictors: {len(target)} target-derived, {len(logged)} log-only, {len(ident)} identifier "
                           "fields", ha="right", va="bottom", fontsize=6.4, color=MUTED)
-    _footer(fig, receipt, "only the three coordinates are available at every held-out interval")
     return fig, _caption(receipt, "Observation support and the deployed predictor set. Only easting, northing and "
                                   "relative-Z exist at every held-out interval. Weathering and lithology are logged only where "
                                   "a hole exists, and rock type, mineral evidence and comments define the approved label. "
                                   "Those attributes are not predictors.")
-
-
-def _m1(rows: dict, receipt: dict):
-    preds, status = rows["m1_predictions"], rows["m1_status"]
-    if not preds:
-        reasons = "; ".join(f"F{s['fold_id']}: {s['status']} ({s['reason']})" for s in status) or "no M1 training rows"
-        raise NotSupported("M1 indicator kriging produced no out-of-fold prediction: " + reasons)
-    folds = sorted({p["fold_id"] for p in preds})
-    fig, axes = plt.subplots(1, len(folds), figsize=(7.6, 3.9), sharey=True)
-    fig.subplots_adjust(left=0.08, right=0.9, top=0.84, bottom=0.2, wspace=0.12)
-    axes = np.atleast_1d(axes)
-    sc = None
-    for ax, fold in zip(axes, folds):
-        sub = [p for p in preds if p["fold_id"] == fold]
-        sc = ax.scatter([p["easting_m"] for p in sub], [p["z_relative_m"] for p in sub],
-                        c=[p["p_calibrated"] for p in sub], cmap="cividis", vmin=0.0, vmax=1.0, s=12, linewidths=0)
-        clip = [p for p in sub if p["clipped_calibrated"]]
-        if clip:
-            ax.scatter([p["easting_m"] for p in clip], [p["z_relative_m"] for p in clip], s=26, facecolors="none",
-                       edgecolors=INK, linewidths=0.5, label="Clipped to [0,1]")
-        ax.set_title(f"Fold {fold}", loc="left", fontsize=7)
-        ax.set_xlabel("Easting (m)")
-    axes[0].set_ylabel("Relative Z (m)")
-    if sc is not None:
-        cax = fig.add_axes([0.92, 0.2, 0.012, 0.64])
-        fig.colorbar(sc, cax=cax, label="P(I=1) out-of-fold")
-    _footer(fig, receipt, "simple indicator kriging; covariance chosen by inner CV in each fold; clipped values marked")
-    return fig, _caption(receipt, "M1 simple indicator kriging out-of-fold probabilities at held-out intervals. "
-                                  "The covariance is chosen by whole-hole inner cross-validation inside each outer training "
-                                  "fold; a pure-nugget choice gives the training prevalence. Clipped values are counted in O3-T03.")
 
 
 def _section_scatter(ax, sub, title, vmin=0.0, vmax=1.0):
@@ -224,6 +186,46 @@ def _section_scatter(ax, sub, title, vmin=0.0, vmax=1.0):
     return sc
 
 
+def _m1(rows: dict, receipt: dict):
+    preds, status = rows["m1_predictions"], rows["m1_status"]
+    if not preds:
+        reasons = "; ".join(f"F{s['fold_id']}: {s['status']} ({s['reason']})" for s in status) or "no M1 training rows"
+        raise NotSupported("M1 indicator kriging produced no out-of-fold prediction: " + reasons)
+    folds = sorted({p["fold_id"] for p in preds})
+    nrows, ncols = 2, 3
+    fig, axes = plt.subplots(nrows, ncols, figsize=(7.2, 4.9), sharey=True, layout="constrained")
+    axes_flat = list(axes.ravel())
+    sc = None
+    for ax, fold in zip(axes_flat, folds):
+        sub = [p for p in preds if p["fold_id"] == fold]
+        sc = ax.scatter([p["easting_m"] for p in sub], [p["z_relative_m"] for p in sub],
+                        c=[p["p_calibrated"] for p in sub], cmap="cividis", vmin=0.0, vmax=1.0, s=12, linewidths=0)
+        clip = [p for p in sub if p["clipped_calibrated"]]
+        if clip:
+            ax.scatter([p["easting_m"] for p in clip], [p["z_relative_m"] for p in clip], s=26, facecolors="none",
+                       edgecolors=INK, linewidths=0.5)
+        ax.set_title(f"Fold {fold}", loc="left", fontsize=7)
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
+        ax.ticklabel_format(style="plain", useOffset=False, axis="x")
+    for k, ax in enumerate(axes_flat):
+        if k >= len(folds):
+            ax.axis("off")
+        if k % ncols == 0:
+            ax.set_ylabel("Relative Z (m)")
+        if k // ncols == nrows - 1:
+            ax.set_xlabel("Easting (m)")
+    if len(folds) < nrows * ncols:
+        key = axes_flat[len(folds)]
+        key.legend(handles=[Line2D([0], [0], marker="o", ls="none", mfc="none", mec=INK, ms=4.5,
+                                   label="Clipped to [0,1]")], loc="center", fontsize=6.5)
+    if sc is not None:
+        fig.colorbar(sc, ax=axes_flat, label="P(I=1) out-of-fold", shrink=0.9, aspect=30)
+    return fig, _caption(receipt, "M1 simple indicator kriging out-of-fold probabilities at held-out intervals. "
+                                  "The covariance is chosen by whole-hole inner cross-validation inside each outer training "
+                                  "fold; a pure-nugget choice gives the training prevalence. Clipped values are counted in O3-T03. "
+                                  "Simple indicator kriging; covariance chosen by inner CV in each fold; clipped values marked.")
+
+
 def _m2_sections(rows: dict, receipt: dict):
     preds, fold_lines = rows["m2_predictions"], rows["fold_lines"]
     if not preds:
@@ -231,26 +233,25 @@ def _m2_sections(rows: dict, receipt: dict):
     labels = _line_labels(fold_lines)
     folds = sorted({p["fold_id"] for p in preds})
     models = [("M2_RF", "Random forest"), ("M2_HGB", "Gradient boosting")]
-    fig, axes = plt.subplots(len(folds), 2, figsize=(7.4, 2.0 * len(folds) + 1.2), sharex=False)
-    fig.subplots_adjust(left=0.09, right=0.9, top=0.96, bottom=0.12, wspace=0.16, hspace=0.55)
+    fig, axes = plt.subplots(len(folds), 2, figsize=(7.2, 1.42 * len(folds) + 0.9), sharey="row", layout="constrained")
     axes = np.atleast_2d(axes)
     sc = None
     for r, fold in enumerate(folds):
         for c, (family, name) in enumerate(models):
             sub = [p for p in preds if p["fold_id"] == fold and p["family_id"] == family]
-            sc = _section_scatter(axes[r, c], sub, f"Fold {fold} · held out {labels.get(fold, '?')} · {name}")
-            axes[r, c].xaxis.set_major_locator(MaxNLocator(nbins=4))
+            ax = axes[r, c]
+            sc = _section_scatter(ax, sub, f"Fold {fold} · held out {labels.get(fold, '?')} · {name}")
+            ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
             if c == 0:
-                axes[r, c].set_ylabel("Relative Z (m)")
+                ax.set_ylabel("Relative Z (m)")
             if r == len(folds) - 1:
-                axes[r, c].set_xlabel("Easting (m)")
+                ax.set_xlabel("Easting (m)")
     if sc is not None:
-        cax = fig.add_axes([0.92, 0.12, 0.012, 0.84])
-        fig.colorbar(sc, cax=cax, label="P(I=1) out-of-fold, calibrated")
+        fig.colorbar(sc, ax=list(axes.ravel()), label="P(I=1) out-of-fold, calibrated", shrink=0.85, aspect=40)
     selected = {s["fold_id"]: s["candidate_run_id"] for s in rows["selected_m2"]}
     note = "; ".join(f"F{f}: {selected.get(f, 'none')}" for f in folds)
-    _footer(fig, receipt, "selected M2 trend by fold: " + note +
-            "; probabilities are calibrated on inner out-of-fold predictions; no outer test label enters")
+    fig.suptitle(textwrap.fill("Selected M2 trend by fold: " + note + "; probabilities are calibrated on inner out-of-fold "
+                               "predictions; no outer test label enters", 150), x=0.01, ha="left", fontsize=6.4, color=INK)
     return fig, _caption(receipt, "M2 out-of-fold probability sections for every held-out line, random forest and gradient "
                                   "boosting. Each panel uses only the intervals of the line held out in that fold; the "
                                   "selected M2 trend is printed above the panels. No model ranking is made here.")
@@ -262,34 +263,36 @@ def _m3_sections(rows: dict, receipt: dict):
         raise NotSupported("no M3 out-of-fold predictions")
     fold = max(sorted({p["fold_id"] for p in m3}), key=lambda f: sum(1 for p in m3 if p["fold_id"] == f))
     status = next((s for s in rows["m3_status"] if s["fold_id"] == fold), None)
-    labels = {p["fold_id"]: p["line_code"].replace("NOM_", "") for p in m3}
-    fig, axes = plt.subplots(1, 3, figsize=(7.6, 3.8), sharey=True)
-    fig.subplots_adjust(left=0.09, right=0.9, top=0.82, bottom=0.2, wspace=0.12)
+    fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.4), sharey=True, layout="constrained")
+    axes_flat = list(axes.ravel())
     sc = None
     m3_label = "M3 hybrid (fallback)" if status and status["status"] == "FALLBACK" else "M3 hybrid"
     panels = [("M2_RF", "Random forest"), ("M2_HGB", "Gradient boosting"), ("M3_HYBRID", m3_label)]
-    for ax, (family, name) in zip(axes, panels):
+    for ax, (family, name) in zip(axes_flat, panels):
         if family == "M3_HYBRID":
             sub = [p for p in m3 if p["fold_id"] == fold]
         else:
             sub = [p for p in rows["m2_predictions"] if p["fold_id"] == fold and p["family_id"] == family]
         sc = _section_scatter(ax, sub, name)
-        ax.xaxis.set_major_locator(MaxNLocator(nbins=4))
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
+    axes[0, 0].set_ylabel("Relative Z (m)")
+    axes[1, 0].set_ylabel("Relative Z (m)")
+    for ax in axes[1]:
         ax.set_xlabel("Easting (m)")
-    axes[0].set_ylabel("Relative Z (m)")
-    if sc is not None:
-        cax = fig.add_axes([0.92, 0.2, 0.012, 0.6])
-        fig.colorbar(sc, cax=cax, label="P(I=1) out-of-fold")
     fb = status["status"] if status else "UNKNOWN"
-    text = (f"Fold {fold}. M3 status: {fb}. " +
+    note = (f"Fold {fold}. M3 status: {fb}. " +
             ("Residual covariance was not identified or stable, so M3 is the selected ML-only fallback; the M3 panel "
              "therefore duplicates the selected M2 trend and is not a hybrid success." if fb == "FALLBACK" else
              "A training-only residual variogram was identified and stable; the M3 panel adds the kriged residual."))
-    fig.text(0.01, 0.945, textwrap.fill(text, 150), ha="left", va="bottom", fontsize=6.2, color=INK)
-    _footer(fig, receipt, "M3 residual variogram is fitted on inner cross-fitted residuals of the training fold only")
+    key = axes_flat[3]
+    key.axis("off")
+    key.text(0.0, 1.0, textwrap.fill(note, 46), transform=key.transAxes, ha="left", va="top", fontsize=6.4, color=INK)
+    if sc is not None:
+        fig.colorbar(sc, ax=axes_flat, label="P(I=1) out-of-fold", shrink=0.85, aspect=35)
     return fig, _caption(receipt, "M3 out-of-fold probability section for the fold with the most held-out intervals, "
                                   "aligned with the two M2 candidates. The hybrid label is used only when the residual "
-                                  "variogram is supported; otherwise the panel is the explicit ML-only fallback.")
+                                  "variogram is supported; otherwise the panel is the explicit ML-only fallback. "
+                                  "The M3 residual variogram is fitted on inner cross-fitted residuals of the training fold only.")
 
 
 def _covariance_trials(rows: dict, receipt: dict):
@@ -297,9 +300,11 @@ def _covariance_trials(rows: dict, receipt: dict):
     if not trials:
         raise NotSupported("no covariance trials were stored for M1 or M3")
     fams = [("M1_IK", "M1 indicator kriging"), ("M3_HYBRID", "M3 residual kriging")]
-    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.7))
-    fig.subplots_adjust(left=0.09, right=0.98, top=0.8, bottom=0.2, wspace=0.28)
-    nugget_colors = {0.25: BLUE, 0.5: GREEN, 0.75: VERMILLION}
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 4.2))
+    fig.subplots_adjust(left=0.09, right=0.98, top=0.9, bottom=0.36, wspace=0.28)
+    cmap = plt.get_cmap("cividis")
+    # Nugget fractions use a single sequential ramp so they cannot be confused with the fold hues of the PURE_NUGGET lines.
+    nugget_colors = {0.25: cmap(0.12), 0.5: cmap(0.5), 0.75: cmap(0.88)}
     for ax, (fam, name) in zip(axes, fams):
         sub = [t for t in trials if t["family_id"] == fam]
         for t in sub:
@@ -313,15 +318,18 @@ def _covariance_trials(rows: dict, receipt: dict):
                        color=nugget_colors.get(float(cov["nugget_fraction"]), NEUTRAL),
                        edgecolors=INK if t["selected"] else "none", linewidths=0.8, zorder=3)
         ax.set_xscale("log")
+        ax.set_xticks([25, 50, 100, 200, 400])   # the predeclared range grid, so every column of points has a label
+        ax.set_xticklabels(["25", "50", "100", "200", "400"])
+        ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
         ax.set_xlabel("Practical range (m, log scale)")
         ax.set_title(name, loc="left", fontsize=7.2)
     axes[0].set_ylabel("Inner-CV mean log loss")
     handles = [Line2D([0], [0], marker="o", ls="none", color=c, label=f"nugget fraction {k:g}")
                for k, c in nugget_colors.items()]
-    handles += [Line2D([0], [0], ls="--", color=FOLD_COLORS[k], label=f"PURE_NUGGET fold {k + 1}")
+    handles += [Line2D([0], [0], ls="--", color=FOLD_COLORS[k], marker=FOLD_MARKERS[k % len(FOLD_MARKERS)],
+                       markerfacecolor=NEUTRAL, markeredgecolor="none", label=f"fold {k + 1}: marker; PURE_NUGGET line")
                 for k in range(len(FOLD_COLORS))]
-    axes[1].legend(handles=handles, loc="upper right", fontsize=5.2, ncol=2)
-    _footer(fig, receipt, "covariance grid chosen by whole-hole inner CV; outlined points are the selected covariances")
+    fig.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 0.085), fontsize=5.6, ncol=4)
     return fig, _caption(receipt, "Covariance selection for M1 and M3 by whole-hole inner cross-validation, one marker per "
                                   "grid point and outer fold. Dashed lines are the pure-nugget score of each fold; a "
                                   "pure-nugget choice means no spatial covariance was supported.")

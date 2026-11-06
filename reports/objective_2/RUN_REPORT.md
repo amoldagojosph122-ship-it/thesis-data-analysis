@@ -1,6 +1,6 @@
 # Objective 2 run report: spatial distribution, geological controls and indicator variography
 
-Configuration O2-CFG-2026.11.05-4 (SHA-256 bfc2962a9e89), code 2.1.0, schema O2-SCHEMA-2026.11.06-6, commit c13a75c. Import run 1, analysis run 2, gate run 20. Report written 2026-11-06T09:07:14Z.
+Configuration O2-CFG-2026.11.05-4 (SHA-256 bfc2962a9e89), code 2.1.0, schema O2-SCHEMA-2026.11.06-6, commit dbb556a. Import run 1, analysis run 2, gate run 24. Report written 2026-11-06T11:58:05Z.
 
 ## 1. Status
 
@@ -191,7 +191,7 @@ Claims not permitted by configuration 6 (from its claims_not_permitted list):
 
 Decision label for a PROVISIONAL result: PROVISIONAL (structural frame). It supplies a structural-frame across-strike covariance only; no along-strike range is identified.
 
-## 6. Gate results (VERIFY run 20)
+## 6. Gate results (VERIFY run 24)
 
 | gate | name | status | detail |
 |---|---|---|---|
@@ -407,7 +407,7 @@ Independent check: scikit-gstat was installed with uv into a scratch directory o
 | export_manifests | 67 |
 | figure_query_registry | 34 |
 | figure_registry | 13 |
-| gate_results | 501 |
+| gate_results | 649 |
 | geological_section_registry | 5 |
 | hole_occurrence_summaries | 71 |
 | line_occurrence_summaries | 5 |
@@ -416,7 +416,7 @@ Independent check: scikit-gstat was installed with uv into a scratch directory o
 | sensitivity_runs | 56 |
 | source_receipts | 1 |
 | spatial_support_statistics | 17 |
-| stage_runs | 20 |
+| stage_runs | 24 |
 | structural_alignment_scores | 68 |
 | structural_between_line | 20 |
 | structural_decisions | 2 |

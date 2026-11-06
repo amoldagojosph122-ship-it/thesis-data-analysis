@@ -14,6 +14,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Polygon, Rectangle  # noqa: E402
+from matplotlib.ticker import FuncFormatter, MaxNLocator  # noqa: E402
 from mpl_toolkits.mplot3d import Axes3D  # noqa: E402,F401  (registers the 3-D projection)
 from shapely import wkt as shapely_wkt  # noqa: E402
 
@@ -35,12 +36,9 @@ FOOTER_TEMPLATE = ("obj1_master {key} | DESIGN_8_2_v1 APPROVED; other label rule
 
 
 def footer(fig, key: str, extra: str = "") -> None:
-    import textwrap
-
-    text = FOOTER_TEMPLATE.format(key=key)
-    if extra:
-        text = f"{text} | {extra}"
-    fig.text(0.01, 0.005, textwrap.fill(text, 150), fontsize=5.5, color="#444444", ha="left", va="bottom")
+    """No drawn footer. Provenance (rule status, coordinate status, notes) stays in the figure registry, the export
+    manifest and the run reports; the figure itself carries only its header, panels and in-panel annotations."""
+    return None
 
 
 def header(fig, figure_id: str, title: str) -> None:
@@ -67,14 +65,16 @@ def _scale_and_north(ax, x0, y0, length_m=500):
             ha="center", va="bottom", fontsize=6)
     xr = ax.get_xlim()[1]
     yr = ax.get_ylim()[1]
-    ax.annotate("N", xy=(xr - (xr - ax.get_xlim()[0]) * 0.03, yr - (yr - ax.get_ylim()[0]) * 0.10),
-                xytext=(xr - (xr - ax.get_xlim()[0]) * 0.03, yr - (yr - ax.get_ylim()[0]) * 0.02),
-                ha="center", fontsize=8, arrowprops=dict(arrowstyle="-|>", color="black"))
+    # xy is the arrow head and xytext the tail: the head must be the upper point so the arrow points north
+    xa = xr - (xr - ax.get_xlim()[0]) * 0.03
+    ax.annotate("", xy=(xa, yr - (yr - ax.get_ylim()[0]) * 0.03), xytext=(xa, yr - (yr - ax.get_ylim()[0]) * 0.11),
+                arrowprops=dict(arrowstyle="-|>", color="black"))
+    ax.text(xa, yr - (yr - ax.get_ylim()[0]) * 0.125, "N", ha="center", va="top", fontsize=8)
 
 
 def f01(rows: dict, key: str) -> list:
     plan, regional = rows["F01_collar_plan.sql"], rows["F01_regional.sql"]
-    fig, ax = plt.subplots(figsize=(7.2, 6.4))
+    fig, ax = plt.subplots(figsize=(7.2, 5.0))
     xs = [r["easting_m"] for r in plan]
     ys = [r["northing_m"] for r in plan]
     pad = 350
@@ -85,8 +85,11 @@ def f01(rows: dict, key: str) -> list:
         pts = [r for r in plan if r["line_code"] == line]
         ax.scatter([p["easting_m"] for p in pts], [p["northing_m"] for p in pts], s=18,
                    color=LINE_COLOURS[index % 5], edgecolor="black", linewidth=0.3, zorder=3, label=f"{line} (n={len(pts)})")
-        for p in pts:
-            ax.text(p["easting_m"] + 6, p["northing_m"] + 6, p["hole_id"].split(" ")[-1], fontsize=4.2, zorder=4)
+        for k, p in enumerate(sorted(pts, key=lambda r: r["easting_m"])):
+            # vertical labels, alternately above and below the collar, so hole numbers on a dense line do not overprint
+            above = k % 2 == 0
+            ax.text(p["easting_m"], p["northing_m"] + (14 if above else -14), p["hole_id"].split(" ")[-1],
+                    fontsize=4.2, rotation=90, ha="center", va="bottom" if above else "top", zorder=4)
     ax.set_xlim(extent[0], extent[1])
     ax.set_ylim(extent[2], extent[3])
     ax.set_aspect("equal")
@@ -149,7 +152,7 @@ def f03(rows: dict, key: str) -> list:
     a.set_xlabel("Non-blank records (%); denominator = rows per sheet")
     a.set_title("A. Field completeness (raw sheets)")
     a.legend(handles=[Rectangle((0, 0), 1, 1, color=c, label=s) for s, c in sheet_colour.items()],
-             loc="lower right", frameon=False)
+             loc="upper center", bbox_to_anchor=(0.45, -0.13), ncol=3, frameon=False)
     failed = [r for r in qc if r["result"] == "FAIL" and r["n_records"]]
     failed.sort(key=lambda r: (r["severity"], -r["n_records"]))
     sev_colour = {"ERROR": OI["vermillion"], "WARNING": OI["orange"], "INFO": OI["sky"]}
@@ -159,11 +162,11 @@ def f03(rows: dict, key: str) -> list:
     b.set_yticklabels([r["check_id"] for r in failed], fontsize=5)
     b.invert_yaxis()
     b.set_xlabel("Records flagged (n_records)")
-    b.set_title("B. QA/QC checks with FAIL results")
+    b.set_title("B. QA/QC FAIL checks", loc="right")
     b.legend(handles=[Rectangle((0, 0), 1, 1, color=c, label=s) for s, c in sev_colour.items()],
-             loc="lower right", frameon=False)
+             loc="upper center", bbox_to_anchor=(0.45, -0.13), ncol=3, frameon=False)
     header(fig, "F03", "Completeness and QA/QC summary")
-    fig.subplots_adjust(top=0.92, bottom=0.14, left=0.25, right=0.98, wspace=0.75)
+    fig.subplots_adjust(top=0.92, bottom=0.2, left=0.25, right=0.97, wspace=0.75)
     footer(fig, key, "PASS checks are listed in T01 part C and reports/QAQC_REPORT.md")
     return [("F03_completeness_qc", fig)]
 
@@ -188,6 +191,9 @@ def f04(rows: dict, key: str) -> list:
     ax.set_zlabel("Relative Z (m; below collar)", labelpad=6)
     ax.view_init(elev=22, azim=-62)
     ax.tick_params(labelsize=6)
+    # plain metre labels: the default offset/exponent notation printed "1e6" on the northing axis
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:,.0f}"))
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:,.0f}"))
     handles = [Line2D([0], [0], marker="o", ls="", color=STATE_COLOUR[s], markersize=4, label=lbl)
                for s, lbl in (("POSITIVE", "Sgs, strict candidate"), ("NEGATIVE", "other valid code"),
                               ("UNRESOLVED", "unresolved code"))]
@@ -204,10 +210,10 @@ def _strip_figure(rows, key):
     for r in sorted(rows, key=lambda r: (r["line_code"], r["hole_id"])):
         holes.setdefault(r["line_code"], OrderedDict()).setdefault(r["hole_id"], []).append(r)
     n_lines = len(holes)
-    fig, axes = plt.subplots(1, n_lines, figsize=(7.6, 5.4), sharey=True,
-                             gridspec_kw={"width_ratios": [max(len(v), 1) for v in holes.values()]})
-    if n_lines == 1:
-        axes = [axes]
+    ncol = min(3, n_lines)
+    nrow = -(-n_lines // ncol)
+    fig, grid = plt.subplots(nrow, ncol, figsize=(7.4, 3.2 * nrow + 0.6), sharey=True)
+    axes = list(grid.ravel()) if hasattr(grid, "ravel") else [grid]
     max_depth = max(r["max_depth_m"] for r in rows)
     for ax, (line, group) in zip(axes, holes.items()):
         for col, (hole, items) in enumerate(group.items()):
@@ -216,20 +222,28 @@ def _strip_figure(rows, key):
                 hatch = "//" if it["rock_code_status"] != "VALID" else None
                 ax.add_patch(Rectangle((col - 0.4, it["depth_from_m"]), 0.8, it["depth_to_m"] - it["depth_from_m"],
                                        facecolor=STATE_COLOUR[state], edgecolor="none", hatch=hatch, linewidth=0))
-            ax.text(col, -max_depth * 0.02, hole.split(" ")[-1], ha="center", va="bottom", fontsize=3.8, rotation=90)
+            ax.text(col, -max_depth * 0.02, hole.split(" ")[-1], ha="center", va="bottom", fontsize=4.6, rotation=90)
         ax.set_xlim(-0.6, len(group) - 0.4)
         ax.set_title(line.replace("NOM_N", "N "), fontsize=7)
         ax.set_xticks([])
+        ax.set_xlabel("holes (columns; no interpolation)", fontsize=6)
     axes[0].set_ylim(max_depth * 1.02, -max_depth * 0.08)
-    axes[0].set_ylabel("Measured depth (m; 1-m intervals)")
+    for row in range(nrow):
+        axes[row * ncol].set_ylabel("Measured depth (m; 1-m intervals)", fontsize=7)
     handles = [Rectangle((0, 0), 1, 1, color=STATE_COLOUR[s], label=lbl)
                for s, lbl in (("POSITIVE", "Sgs (strict)"), ("NEGATIVE", "other valid code"),
-                              ("UNRESOLVED", "unresolved")) ]
+                              ("UNRESOLVED", "unresolved"))]
     handles.append(Rectangle((0, 0), 1, 1, facecolor="white", edgecolor="black", hatch="//", label="code not in legend / blank"))
-    axes[-1].legend(handles=handles, loc="lower right", frameon=False, fontsize=6)
+    if n_lines < len(axes):
+        # the spare grid cell carries the legend
+        axes[n_lines].axis("off")
+        axes[n_lines].legend(handles=handles, loc="center", frameon=False, fontsize=6)
+    else:
+        fig.legend(handles=handles, loc="upper right", frameon=False, fontsize=6)
+    for ax in axes[n_lines + 1:]:
+        ax.axis("off")
     header(fig, "F04", "B. Interval strips by approved drill line (measured depth)")
-    fig.subplots_adjust(top=0.88, bottom=0.12, left=0.08, right=0.98, wspace=0.12)
-    footer(fig, key, "columns = holes within each line; no interpolation between holes")
+    fig.subplots_adjust(top=0.90, bottom=0.08, left=0.08, right=0.98, hspace=0.55, wspace=0.12)
     return fig
 
 
@@ -316,7 +330,7 @@ def f07(rows: dict, key: str) -> list:
     ax.legend(frameon=False, fontsize=6, ncol=2)
     ax.set_xticks(bins)
     header(fig, "F07", "Graphitic (Sgs) intervals by measured depth and weathering")
-    fig.subplots_adjust(top=0.88, bottom=0.14, left=0.1, right=0.98)
+    fig.subplots_adjust(top=0.88, bottom=0.18, left=0.1, right=0.98)
     footer(fig, key, "weathering 'fr' is not used in the logging; missing weathering shown separately")
     return [("F07_depth_weathering", fig)]
 
@@ -375,8 +389,12 @@ def f09(rows: dict, key: str) -> list:
                 if pts:
                     ax.scatter([p["easting_m"] for p in pts], [p["z_relative_m"] for p in pts], s=6,
                                color=STATE_COLOUR[state], zorder=3)
+            # rotated labels, alternately at two heights, so neighbouring holes do not overprint
             top = items[0]
-            ax.text(top["easting_m"], 1.0, hole.split(" ")[-1], fontsize=4.2, ha="center", va="bottom")
+            k = len(ax.texts)
+            ax.text(top["easting_m"], 1.0 if k % 2 == 0 else 5.5, hole.split(" ")[-1], fontsize=4.2, ha="center",
+                    va="bottom", rotation=90)
+        ax.set_ylim(top=11.0)   # headroom so hole labels stay inside the panel, clear of the title
         ax.axhline(0, color="black", lw=0.5, ls=":")
         ax.set_ylabel("Relative Z (m)", fontsize=6)
         ax.set_title(f"{line.replace('NOM_N', 'N ')} (nominal Northing {nominal:.0f} m; {len(holes)} holes)", fontsize=7)
@@ -388,7 +406,7 @@ def f09(rows: dict, key: str) -> list:
                               ("UNRESOLVED", "unresolved"))]
     axes[0].legend(handles=handles, loc="lower left", frameon=False, fontsize=6, ncol=3)
     header(fig, "F09", "Relative-Z sections by approved drill line (no interpolation)")
-    fig.subplots_adjust(top=0.94, bottom=0.09, left=0.10, right=0.98, hspace=0.55)
+    fig.subplots_adjust(top=0.94, bottom=0.10, left=0.10, right=0.98, hspace=0.55)
     footer(fig, key, "collar elevation assumed common; vertical axis is depth below collar")
     return [("F09_relative_sections", fig)]
 

@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Patch, Rectangle  # noqa: E402
+from matplotlib.ticker import MaxNLocator  # noqa: E402
 
 from kambale.objective_2.config import O2_DB_PATH, O2_FIGURE_DIR, O2_SQL_DIR, PROJECT_ROOT, StopError, sha256_bytes, utc_now  # noqa: E402
 from kambale.objective_2.db import connect_o2  # noqa: E402
@@ -100,10 +101,9 @@ def _section_rows(receipt_id: int, geometry: list[dict]) -> list[dict]:
 
 
 def _footer(fig, receipt: dict, extra: str) -> None:
-    base = (f"upstream {receipt['upstream_dataset_version_key'][:12]} | receipt {receipt['receipt_id']} | "
-            f"{receipt['label_rule_id']} {receipt['label_rule_status']} | coordinates {receipt['coordinate_pair_status']} "
-            f"(UTM 30N, datum {receipt['crs_datum_status'].lower()}) | vertical = metres relative to collar (no collar RL)")
-    fig.text(0.01, 0.012, textwrap.fill(f"{base} | {extra}", 170), fontsize=5.0, color=MUTED, ha="left", va="bottom")
+    """No drawn footer. The provenance (upstream version, receipt, label rule, coordinate status) is recorded in the
+    figure registry caption and the export manifest; the drawn figure carries only its panels and in-panel notes."""
+    return None
 
 
 def _caption(receipt: dict, body: str) -> str:
@@ -120,7 +120,7 @@ def _plan(rows: dict, receipt: dict):
     if not collars:
         raise NotSupported("no collar locations in the receipt")
     fig, ax = plt.subplots(figsize=(7.0, 5.2))
-    fig.subplots_adjust(left=0.1, right=0.98, bottom=0.11, top=0.98)
+    fig.subplots_adjust(left=0.1, right=0.98, bottom=0.12, top=0.98)
     ax.scatter([c["easting_m"] for c in collars], [c["northing_m"] for c in collars], s=12, color=POINT_GREY,
                linewidths=0, zorder=3, label=f"Collar ({len(collars)} holes)")
     if positives:
@@ -573,10 +573,9 @@ def _weathering(rows: dict, receipt: dict):
         ymax = max(ymax, float(np.max(curve)))
         ax_v.plot(h, curve, ls="-" if model == "spherical" else "-.", lw=1.1, color=FRESH_COLOURS[direction],
                   label=f"Fitted {model} ({'collar' if direction.endswith('COLLAR') else 'front'})")
-    ax_v.axhline(pq, ls="--", lw=0.8, color=NEUTRAL)
+    ax_v.axhline(pq, ls="--", lw=0.8, color=NEUTRAL, label=f"p(1 - p) = {pq:.3f}")
     ax_v.set_xlim(0.0, xmax + 10.0)
-    ax_v.set_ylim(0.0, max(0.27, 1.12 * ymax))
-    ax_v.text(xmax + 8.0, pq + 0.004, f"p(1 - p) = {pq:.3f}", ha="right", va="bottom", fontsize=6.2, color=INK)
+    ax_v.set_ylim(0.0, max(0.27, 1.75 * ymax))   # headroom so the legend sits clear of the bands
     ax_v.set_xlabel("Lag centre (m), horizontal")
     ax_v.set_ylabel("Semivariance γ(h) (indicator units)")
     ax_v.set_title("Fresh-rock indicator semivariograms (95 % hole bootstrap)", loc="left", fontsize=7)
@@ -621,17 +620,20 @@ def _structural_scores(rows: dict, receipt: dict):
                         mec=colour, mew=0.9)
             null = nulls.get((sid, frame))
             if null and null["null_p95_max"] is not None:
-                ax.axhline(null["null_p95_max"], color=colour, ls=":", lw=0.8)
-                ax.text(78, null["null_p95_max"], "null 95th pct" + (" (DEM)" if frame == "DEM_ABSOLUTE" else ""),
-                        fontsize=5.4, color=colour, ha="right",
-                        va="top" if frame == "DEM_ABSOLUTE" else "bottom")   # DEM label below the line, so the two do not overlap
+                ax.axhline(null["null_p95_max"], color=colour, ls=":", lw=0.8,
+                           label=("null 95th pct (DEM)" if frame == "DEM_ABSOLUTE" else "null 95th pct (relative)"))
         ax.axvline(0.0, color=NEUTRAL_LIGHT, lw=0.7)
         ax.set_xlim(-80, 80)
         ax.set_xlabel("Apparent dip d (degrees; positive dips toward east)")
         ax.set_title(STRUCTURAL_SAMPLE_LABEL[sid], loc="left", fontsize=7)
     axes[0].set_ylabel("Alignment score A(d)")
-    handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper right", ncol=2, fontsize=6.0, bbox_to_anchor=(0.98, 0.99))
+    handles, labels = [], []
+    for ax in axes:
+        for h, lab in zip(*ax.get_legend_handles_labels()):
+            if lab not in labels:
+                handles.append(h)
+                labels.append(lab)
+    fig.legend(handles, labels, loc="upper center", ncol=3, fontsize=5.8, bbox_to_anchor=(0.5, 0.995))
     _footer(fig, receipt, "stars mark the selected dip; dotted lines: selection-null 95th percentile of the maximum over the grid")
     return fig, _caption(receipt, "Alignment score A(d) = 1 - mean semivariance at the first two supported lag bins divided by "
                                   "p(1 - p), for within-line between-hole pairs on the plane of apparent dip d (17 dips, -80 to "
@@ -645,8 +647,8 @@ def _structural_variogram(rows: dict, receipt: dict):
     if not bins:
         raise NotSupported("no supported structural bins for configuration 6")
     fits = rows["fits"]
-    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.6), sharey=True)
-    fig.subplots_adjust(left=0.1, right=0.98, top=0.8, bottom=0.2, wspace=0.12)
+    fig, axes = plt.subplots(1, 2, figsize=(7.6, 4.4), sharey=True)
+    fig.subplots_adjust(left=0.1, right=0.98, top=0.86, bottom=0.36, wspace=0.12)
     ymax = 0.25
     for ax, sid in zip(axes, ("ALL_BINARY", "FRESH")):
         sel_dip = None
@@ -677,7 +679,7 @@ def _structural_variogram(rows: dict, receipt: dict):
         ax.set_xlim(0.0, xmax)
         ax.set_xlabel("Lag centre (m), along the plane")
         ax.set_title(STRUCTURAL_SAMPLE_LABEL[sid], loc="left", fontsize=7)
-        ax.legend(loc="lower right", fontsize=5.4)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=1, fontsize=5.4)
     for ax in axes:
         ax.set_ylim(0.0, 1.1 * ymax)
     axes[0].set_ylabel("Semivariance gamma(h) (indicator units)")
@@ -704,7 +706,7 @@ def _structural_sections(rows: dict, receipt: dict):
     d = math.radians(dip)
     for k, ax in enumerate(axes.ravel()):
         if k >= len(lines):
-            ax.axis("off")
+            fig.delaxes(ax)
             continue
         line = lines[k]
         sub = [p for p in pts if p["line_code"] == line]
@@ -724,6 +726,7 @@ def _structural_sections(rows: dict, receipt: dict):
         ax.set_xlabel("UTM 30N easting (m)", fontsize=6)
         ax.set_ylabel("z relative to collar (m)", fontsize=6)
         ax.ticklabel_format(style="plain", useOffset=False, axis="x")
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=4))
         ax.tick_params(labelsize=5.5)
         if k == 0:
             ax.legend(loc="lower left", fontsize=5.4)

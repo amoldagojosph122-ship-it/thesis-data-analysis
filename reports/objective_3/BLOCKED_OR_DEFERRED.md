@@ -1,6 +1,6 @@
 # Objective 3: blocked, skipped, failed and deferred items
 
-Gate results are from VERIFY run 7. Every WARN, SKIP, STOP and model failure is listed.
+Gate results are from VERIFY run 16. Every WARN, SKIP, STOP and model failure is listed.
 
 ## Gates with a warning or a stop
 

@@ -1,6 +1,6 @@
 # Objective 3 run report: indicator geostatistics, machine learning and hybrid occurrence models
 
-Configuration O3-CFG-2026.11.06-2 (SHA-256 47569e360e55), code 3.0.0, schema O3-SCHEMA-2026.11.06-2, commit 7d83644. Import run 1, split run 2, training run 4, gate run 7. Report written 2026-11-06T04:41:05Z.
+Configuration O3-CFG-2026.11.06-2 (SHA-256 47569e360e55), code 3.0.0, schema O3-SCHEMA-2026.11.06-2, commit dbb556a. Import run 1, split run 2, training run 4, gate run 16. Report written 2026-11-06T11:59:49Z.
 
 ## 1. Status
 
@@ -250,7 +250,7 @@ Figures F01 to F05 show the primary tier O3-SPLIT-LODO-1. F06 shows the covarian
 
 `all` runs import, splits, train, verify, figures, tables, verify, report and verify. A STOP at a verify step ends the run before the next write.
 
-Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-learn 1.9.1; matplotlib 3.11.1; PyYAML 6.0.3; pytest 9.1.1.
+Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-learn 1.9.0; matplotlib 3.11.1; PyYAML 6.0.3; pytest 9.1.1.
 
 ## 13. Database row counts and receipts
 
@@ -263,7 +263,7 @@ Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-le
 | figure_registry | 6 |
 | figure_sql_registry | 17 |
 | final_refits | 1 |
-| gate_results | 84 |
+| gate_results | 336 |
 | geometry_versions | 1 |
 | hybrid_residual_variogram | 10 |
 | hyperparameter_trials | 630 |
@@ -279,7 +279,7 @@ Python 3.14.6 on Windows-11-10.0.26200-SP0; numpy 2.4.6; scipy 1.18.0; scikit-le
 | spatial_split_plans | 2 |
 | split_audit | 10 |
 | split_membership | 18290 |
-| stage_runs | 7 |
+| stage_runs | 16 |
 | table_registry | 4 |
 | table_sql_registry | 4 |
 | target_registries | 1 |
