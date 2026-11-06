@@ -1,12 +1,16 @@
-# Objective 3 modelling configuration. Predeclared before any Objective 3 prediction is computed.
+# Objective 3 modelling configuration. Predeclared before any Objective 3 prediction under this version is computed.
 # A change of any value requires a new config_version; earlier versions are kept in config/objective_3/superseded/.
-config_version: O3-CFG-2026.11.05-1
-supersedes: null
+config_version: O3-CFG-2026.11.06-2
+supersedes: O3-CFG-2026.11.05-1
 revision_reason: >
-  Initial Objective 3 configuration. It reads the approved DESIGN_8_2_v1 target and the Objective 2 continuity handoff,
-  which is NOT_IDENTIFIABLE. M1 and M3 are therefore attempted with training-only variograms in every outer fold and
-  recorded as NOT_ESTIMABLE or as an explicit ML-only fallback when support fails. No numeric result exists when this
-  file was written.
+  Configuration 1 showed that the only predictors were coordinates, that leave-one-line-out puts every test point
+  450-560 m from the nearest training collar, far beyond any range the data support, and that M1 and M3 could not be
+  tested under that split. Configuration 2 adds (a) one fold-safe geological predictor, the depth below a modelled
+  weathering front; (b) a second validation tier that holds out interleaved whole holes within each line, so that the
+  held-out holes keep training neighbours at one hole spacing (about 21 m); and (c) a kriging covariance chosen by
+  inner cross-validation from a predeclared grid, instead of being read from an unidentifiable experimental variogram.
+  The design was informed by exploratory looks at the configuration-1 data (specs/objective_3/decisions.md, O3-D14).
+  No setting was tuned on a configuration-2 result.
 
 target:
   label_rule_id: DESIGN_8_2_v1
@@ -22,29 +26,53 @@ geometry:
   absolute_elevation_allowed: false
 
 features:
-  predictors: [easting_m, northing_m, z_relative_m]
-  # The three predictors are the only attributes that exist at every prediction location and are not derived from the
-  # target. Weathering and lithology are logged only where a hole exists; rock type and mineral evidence define the label.
+  predictor_sets:
+    TREND: [easting_m, northing_m, z_relative_m]
+    TREND_WF: [easting_m, northing_m, z_relative_m, depth_below_weathering_front_m]
+  derived:
+    depth_below_weathering_front_m:
+      definition: front_z_hat(easting_m, northing_m) - z_relative_m; metres, positive below the modelled front
+      front_codes: [mw, sw]
+      front_observation: >
+        For each hole, z_relative_m at the from-depth of the shallowest interval logged mw or sw, interpolated along the
+        straight hole, located at that interval's easting and northing. All logged intervals of the hole are used.
+      surface:
+        method: INVERSE_DISTANCE
+        power: 2.0
+        n_neighbours: 8
+        coincident_distance_m: 0.001
+      training_rows: >
+        The surface for a training row uses the other outer-training holes only (its own hole is left out), so that
+        training and test rows both carry a modelled, not an observed, front.
+      test_rows: the surface from all outer-training holes; test holes never contribute
+      available_at_prediction: true   # a grid cell can receive the value from the drilled holes' fronts
   forbidden_as_predictors: [hole_id, line_code, rock_code_raw, weathering_code, rock_code_status, label_state, indicator,
                             in_binary_target, design_label, is_sgs, has_gr_mineral, comment_raw, positive_indicators,
                             negative_indicators, evidence_pattern, depth_from_m, depth_to_m, midpoint_m,
                             interval_length_m, support_length_m, upstream_interval_id, upstream_interval_key]
 
 splits:
-  primary:
-    split_plan_id: O3-SPLIT-LODO-1
-    method: LEAVE_ONE_DRILL_LINE_OUT
-    n_folds: 5
-    min_train_lines: 2
-    seed: 20261105
-  secondary:
-    split_plan_id: O3-SPLIT-HOLE-1
-    method: GROUP_K_FOLD_BY_HOLE
-    n_folds: 5
-    seed: 20261105
-    note: >
-      Whole-hole blocked folds, deterministic from the sorted hole identifier. They are registered and audited as the
-      secondary spatial plan. The primary out-of-fold predictions handed to Objective 4 come from the line-based plan.
+  tiers:
+    - tier: TIER_1_EXTRAPOLATION
+      split_plan_id: O3-SPLIT-LODO-1
+      method: LEAVE_ONE_DRILL_LINE_OUT
+      n_folds: 5
+      seed: 20261105
+      primary_plan: 1
+      claim: prediction on an undrilled line 100-400 m from the nearest drilled line
+      note: unchanged from configuration 1; the frozen plan hash must match
+    - tier: TIER_2_INTERPOLATION
+      split_plan_id: O3-SPLIT-HOLE-IL-2
+      method: INTERLEAVED_HOLES_WITHIN_LINE
+      n_folds: 5
+      seed: 20261106
+      primary_plan: 0
+      claim: prediction at an undrilled position between drilled holes of the same line
+      note: >
+        Within each line, holes are ordered by collar easting (ties by hole identifier); the k-th hole (k = 0, 1, ...)
+        is assigned to fold (k mod 5) + 1. A whole hole is the block; no further buffer is applied, because the
+        interpolation claim is defined at one hole spacing. The minimum test-to-training collar distance is audited.
+  retired: [O3-SPLIT-HOLE-1]   # configuration-1 secondary plan; not used by configuration 2
 
 inner_cv:
   method: GROUP_K_FOLD_BY_HOLE
@@ -58,8 +86,10 @@ models:
   prevalence:
     candidate_run_id: BASE_PREVALENCE
     role: BASELINE
+    predictor_set: TREND
   logistic:
     candidate_run_id: BASE_LOGISTIC
+    predictor_set: TREND
     standardise: true
     grid:
       C: [0.01, 0.1, 1.0]
@@ -67,6 +97,7 @@ models:
       max_iter: [2000]
   random_forest:
     candidate_run_id: M2_RF
+    predictor_set: TREND
     grid:
       n_estimators: [200]
       max_depth: [4, 8]
@@ -74,60 +105,63 @@ models:
       max_features: ["sqrt"]
   gradient_boosting:
     candidate_run_id: M2_HGB
+    predictor_set: TREND
     implementation: sklearn.ensemble.HistGradientBoostingClassifier
-    note: >
-      XGBoost is not installed in the verified environment. The audited gradient-boosting fallback is scikit-learn's
-      HistGradientBoostingClassifier, which is histogram-based like XGBoost and supports the same early-stopping-free
-      fixed-complexity training used here.
     grid:
       learning_rate: [0.05]
       max_iter: [150]
       max_leaf_nodes: [7, 31]
       min_samples_leaf: [20, 50]
       l2_regularization: [0.0, 1.0]
+  weathering_variants:
+    # Same estimator and grid as the parent, on predictor set TREND_WF.
+    - {candidate_run_id: BASE_LOGISTIC_WF, parent: BASE_LOGISTIC, predictor_set: TREND_WF}
+    - {candidate_run_id: M2_RF_WF, parent: M2_RF, predictor_set: TREND_WF}
+    - {candidate_run_id: M2_HGB_WF, parent: M2_HGB, predictor_set: TREND_WF}
   m2_selection: INNER_CV_LOG_LOSS
+  selected_composites:
+    # Per-fold copies of the inner-selected candidate, written as their own prediction rows so that Objective 4 can
+    # evaluate the nested chain at the selected level.
+    - {candidate_run_id: M2_SEL, choose_from: [M2_RF, M2_HGB]}
+    - {candidate_run_id: M2_WF_SEL, choose_from: [M2_RF_WF, M2_HGB_WF]}
 
-variogram:
-  family: LATERAL_BETWEEN
-  lag_width_m: 20.0
-  lag_max_m: 500.0
-  max_abs_dz_m: 3.0
-  min_pairs_per_bin: 100
-  min_independent_hole_pairs_per_bin: 10
-  min_supported_bins_for_fit: 5
-  models: [spherical, exponential]
-  weighting: CRESSIE_N_OVER_GAMMA2
-  min_structured_sill_fraction: 0.05
-  sill_factor: 1.5
-  stability: LEAVE_ONE_LINE_OUT
-  stable_if_range_ratio_between: [0.5, 2.0]
-  require_stability_for_kriging: true
-  kriging:
-    estimator: SIMPLE_KRIGING
+kriging:
+  estimator: SIMPLE_KRIGING
+  covariance_selection: INNER_CV_LOG_LOSS     # same whole-hole inner folds as the ML candidates
+  model: exponential
+  grid:
+    range_m: [25.0, 50.0, 100.0, 200.0, 400.0]
+    nugget_fraction: [0.25, 0.5, 0.75]
+  include_pure_nugget: true                   # no spatial correlation; the null covariance is always a candidate
+  tie_rule: PREFER_PURE_NUGGET_THEN_LONGER_NUGGET_THEN_SHORTER_RANGE
+  depth_band_m: 3.0                           # neighbours within 3 m of relative depth, lateral distance only
+  min_neighbours: 5
+  max_neighbours: 64
+  jitter_fraction_of_sill: 0.00000001
+  m1:
+    candidate_run_id: M1_IK
     mean: TRAINING_PREVALENCE
-    depth_band: SAME_AS_VARIOGRAM      # uses max_abs_dz_m; the lateral variogram is defined only at similar depth
-    min_neighbours: 5
-    max_neighbours: 200
-    jitter_fraction_of_sill: 0.00000001
-    clip_to_unit_interval: true
-    fallback_when_unsupported: TRAINING_MEAN
-
-hybrid:
-  trend: M2_SELECTED
-  residual_definition: INDICATOR_MINUS_INNER_CROSS_FITTED_TREND
-  residual_variogram: SAME_AS_INDICATOR_VARIOGRAM
-  minimum_residual_bins: 5
-  minimum_structured_sill_fraction: 0.05
-  fallback: ML_ONLY
-  fallback_status: FALLBACK_ML_ONLY
-  clipping: CONSTRAINT_ONLY
+    sill: TRAINING_P_ONE_MINUS_P
+    threshold: TRAINING_PREVALENCE
+    pure_nugget_meaning: M1 reduces to the training prevalence; recorded as COMPLETED with covariance PURE_NUGGET
+  m3:
+    candidate_run_id: M3_HYBRID
+    trend: M2_WF_SEL
+    residual: INDICATOR_MINUS_CALIBRATED_INNER_CROSS_FITTED_TREND
+    sill: INNER_RESIDUAL_VARIANCE
+    mean: 0.0
+    combine: CLIP_TO_UNIT_INTERVAL(trend_calibrated + kriged_residual)
+    threshold: M2_WF_SEL_THRESHOLD
+    pure_nugget_meaning: >
+      M3 equals the calibrated M2_WF_SEL probability. It is recorded as FALLBACK_ML_ONLY, and Objective 4 treats it as
+      identical to M2_WF_SEL, not as a hybrid.
 
 calibration:
   method: PLATT
   minimum_inner_samples: 30
   clip_epsilon: 0.000001
-  apply_to: [M2_RF, M2_HGB]
-  not_applied_to: [BASE_PREVALENCE, BASE_LOGISTIC, M1_IK, M3_HYBRID]
+  apply_to: [M2_RF, M2_HGB, M2_RF_WF, M2_HGB_WF]
+  not_applied_to: [BASE_PREVALENCE, BASE_LOGISTIC, BASE_LOGISTIC_WF, M1_IK, M3_HYBRID]
 
 seeds: [20261105]
 

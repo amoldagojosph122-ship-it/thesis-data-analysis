@@ -1,0 +1,74 @@
+# Objective 4 evaluation configuration. Predeclared before any metric on the frozen Objective 3 predictions is computed.
+# A change of any value requires a new config_version; earlier versions are kept in config/objective_4/superseded/.
+config_version: O4-CFG-2026.11.05-1
+supersedes: null
+revision_reason: >
+  Initial Objective 4 configuration. It evaluates the frozen out-of-fold predictions of Objective 3 read-only. No model
+  is refitted, no split is changed and no threshold is tuned here.
+
+target:
+  label_rule_id: DESIGN_8_2_v1
+  positive_label: 1
+
+evaluation:
+  models:
+    # Distinct feasible models on the common held-out cohort. M3 is identical to the selected M2_RF in every fold, so it
+    # is reported but not ranked as a separate model. M1 has no prediction in any fold, so it is reported as a coverage
+    # failure and is not comparable.
+    feasible: [BASE_PREVALENCE, BASE_LOGISTIC, M2_RF, M2_HGB]
+    reporting_only: [M1_IK, M3_HYBRID]
+  common_cohort: INTERSECTION_OF_FEASIBLE_MODELS
+  expected_observations: 1829          # checked against the Objective 3 receipt; not assumed as a source truth
+  primary_endpoint: BRIER
+  primary_weighting: INTERVAL
+  secondary_weighting: EQUAL_HOLE
+  probability_column: p_calibrated
+  epsilon: 0.000001
+  auc_min_class: 1
+  pr_auc_method: AVERAGE_PRECISION
+  calibration_bins: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+  calibration_min_bin_n: 20
+  calibration_slope_acceptable: [0.5, 2.0]
+  calibration_intercept_abs_max: 0.5
+  discrimination_margin_auc: 0.02
+  fold_consistency_min: 4            # of five held-out lines
+  coverage_threshold: 0.95
+  depth_bin_width_m: 10.0
+  bootstrap:
+    primary_design: HOLE_CLUSTER
+    sensitivity_design: LINE_CLUSTER
+    n_replicates: 2000
+    seed: 20261105
+    confidence: 0.95
+    unit_notes: >
+      The primary resampling unit is the hole (71 holes). All intervals of a sampled hole stay together, and the same
+      observations are used for both models of a pair. The line-level design is a five-line sensitivity analysis; it is
+      reported but not used for the primary interval.
+  pairs:
+    - {pair_id: PREV_vs_LOG, model_a: BASE_PREVALENCE, model_b: BASE_LOGISTIC}
+    - {pair_id: PREV_vs_RF, model_a: BASE_PREVALENCE, model_b: M2_RF}
+    - {pair_id: PREV_vs_HGB, model_a: BASE_PREVALENCE, model_b: M2_HGB}
+    - {pair_id: LOG_vs_RF, model_a: BASE_LOGISTIC, model_b: M2_RF}
+    - {pair_id: LOG_vs_HGB, model_a: BASE_LOGISTIC, model_b: M2_HGB}
+    - {pair_id: RF_vs_HGB, model_a: M2_RF, model_b: M2_HGB}
+    - {pair_id: M3_vs_M2_RF, model_a: M3_HYBRID, model_b: M2_RF}
+    - {pair_id: M3_vs_M2_HGB, model_a: M3_HYBRID, model_b: M2_HGB}
+  decision:
+    feasible_models: [BASE_PREVALENCE, BASE_LOGISTIC, M2_RF, M2_HGB]
+    select: LOWEST_POOLED_INTERVAL_BRIER
+    comparator: NEXT_LOWEST_POOLED_INTERVAL_BRIER
+    improvement_rule: >
+      SUPPORTED_IMPROVEMENT requires all of: the 95% hole-cluster bootstrap interval of (Brier_selected - Brier_comparator)
+      lies entirely below zero; the selected model has the lower Brier in at least four of the five held-out lines; the
+      calibration slope is in [0.5, 2.0] and |intercept| <= 0.5; the selected model's ROC-AUC is not worse than the
+      comparator's by more than 0.02; and coverage is at least 0.95. INCONCLUSIVE applies when the interval includes zero
+      or fold consistency is below four of five. NO_IMPROVEMENT applies when the point estimate is non-negative or the
+      interval lies entirely above zero. NOT_COMPARABLE applies to a model with coverage below 0.95, a missing metric, or
+      an explicit fallback identity (M3).
+    selection_basis_when_inconclusive: POINT_ESTIMATE_WITH_CAVEAT
+  calibration:
+    fitting: DIAGNOSTIC_ONLY
+    recalibration_on_holdout: false
+    note: >
+      The calibration intercept and slope are fitted on the pooled held-out predictions as a diagnostic of the O3
+      calibration. They are never applied to the probabilities. O3's calibration fits remain the only ones used.

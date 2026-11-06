@@ -1,0 +1,89 @@
+# Objective 2 configuration 5: weathering front as a geological control, and fresh-rock indicator variography.
+# Written on 2026-11-06, after the configuration-2, -3 and -4 results and after the exploratory looks recorded in
+# specs/objective_2/decisions.md (O2-D18), and before any configuration-5 result was computed.
+# Any change of value requires a new config_version. Configurations 2 to 4 are unchanged.
+config_version: O2-CFG-2026.11.06-5
+extends: O2-CFG-2026.11.05-4
+status: PREDECLARED_ANALYSIS_STAGE
+purpose: >
+  Characterise the weathering front as a geological control on graphitic-domain occurrence, test how far the front is
+  continuous laterally, and repeat the lateral indicator variography inside the moderately and slightly weathered rock,
+  where the logged graphitic domain occurs. The configuration-2 handoff decision is not changed by this stage.
+design_informed_by_exploratory_looks: >
+  Yes. Before this file was written, the following were looked at on the configuration-2 observation table with
+  throw-away scripts: prevalence by weathering class (0 to 1 per cent in cw and hw, 46 per cent in mw), the variance
+  share of hole, line and depth, a fresh-rock lateral variogram with no bootstrap, and a leave-one-line-out prediction
+  of the front depth. Those looks shaped the choice of analyses here. No setting below was tuned on a configuration-5
+  result.
+label_rule:
+  id: DESIGN_8_2_v1
+  status: APPROVED
+weathering_front:
+  definition: >
+    For each hole, the front is the top of the shallowest 1 m interval whose weathering code is in front_codes. Its
+    vertical position is the relative depth (z_relative_m) at that interval's from-depth, interpolated along the straight
+    hole; its location is that interval's easting and northing.
+  front_codes: [mw, sw]
+  weathered_codes: [cw, hw]
+  sample: all logged intervals of the receipt (1910), binary or not; weathering is not the target
+  reversals: report holes with a cw or hw interval below the front; the front is not redefined for them
+  continuity:
+    along_line_adjacent_difference: true      # consecutive holes by collar easting within each line
+    semivariogram:
+      variable: front_z_relative_m
+      lag_width_m: 25.0
+      lag_max_m: 500.0
+      min_hole_pairs_per_bin: 10
+    interpolation_check:
+      method: INVERSE_DISTANCE
+      power: 2.0
+      n_neighbours: 8
+      schemes: [LEAVE_ONE_HOLE_OUT, LEAVE_ONE_LINE_OUT]
+      reference: TRAINING_MEAN               # the fold's own training-hole mean front
+      skill_rule: >
+        INTERPOLABLE for a scheme when the inverse-distance RMSE is at most 0.8 times the training-mean RMSE;
+        NOT_INTERPOLABLE otherwise. Reported for each scheme separately.
+fresh_rock_variography:
+  sample: DESIGN_8_2_v1 binary intervals whose weathering code is in front_codes
+  experiments:
+    - direction_id: LATERAL_FRESH_COLLAR
+      vertical_pairing: z_relative_m           # pairs at similar depth below collar, as in configuration 2
+    - direction_id: LATERAL_FRESH_FRONT
+      vertical_pairing: depth_below_observed_front_m   # pairs at similar depth below the hole's own observed front
+  lag_width_m: 20.0
+  lag_max_m: 500.0
+  max_abs_dz_m: 3.0
+  min_pairs_per_bin: 100
+  min_independent_hole_pairs_per_bin: 10
+  min_supported_bins_for_fit: 5
+  within_hole_pairs: EXCLUDED
+  pair_weighting: EQUAL_PAIR
+  hole_bootstrap:
+    n_replicates: 500
+    seed: 20261106
+    confidence: 0.95
+    method: >
+      Holes are resampled with replacement. Each between-hole pair is weighted by the product of the two holes'
+      resampling multiplicities; pairs between copies of the same hole are never formed. The band is the percentile
+      interval of the bin semivariance.
+model_fitting:
+  models: [spherical, exponential]
+  weighting: CRESSIE_N_OVER_GAMMA2
+  nugget_bounds: [0.0, p_one_minus_p]
+  structured_sill_bounds: [0.0, 1.5_p_one_minus_p]
+  range_bounds_m: [first_supported_lag_centre, lag_max_m]
+  min_structured_sill_fraction: 0.05
+  identifiability: [range_at_smallest_lag, range_at_upper_bound, sill_at_upper_bound, structure_below_minimum]
+  stability_check: LEAVE_ONE_LINE_OUT
+  stable_if_range_ratio_between: [0.5, 2.0]
+  fit_failure_status: NOT_IDENTIFIABLE
+observability:
+  statement: >
+    Intervals logged cw or hw carry almost no positive DESIGN label. This stage reports that as an observability limit
+    of logging in strongly weathered material. It does not relabel any interval and does not claim that weathered rock
+    is non-graphitic. The label rule stays DESIGN_8_2_v1 as approved.
+decision_rule: >
+  Fresh-rock lateral decision per experiment: PROVISIONAL (fresh rock) requires a FITTED model that passes the
+  identifiability rules and is STABLE under leave-one-line-out on all five lines; otherwise NOT_IDENTIFIABLE (fresh
+  rock). This stage writes no handoff row. Objective 3 configuration 2 does not take variogram parameters from
+  Objective 2; it selects its covariance by inner cross-validation inside each training fold.
