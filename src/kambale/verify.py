@@ -80,6 +80,28 @@ def run_verification(db_path: Path, with_pytest: bool = True) -> dict:
         z_bad = conn.execute("SELECT COUNT(*) FROM interval_coordinates WHERE z_absolute_m IS NOT NULL").fetchone()[0]
         _record(conn, run, dv, "SQL_INTEGRITY", "z_absolute_m non-null rows", 0, z_bad, "PASS" if z_bad == 0 else "FAIL")
         failures += 0 if z_bad == 0 else 1
+        lith_intervals = conn.execute("SELECT COUNT(*) FROM v_intervals").fetchone()[0]
+        lith_rows = conn.execute("SELECT COUNT(*) FROM v_lithology_refinement").fetchone()[0]
+        lith_ok = lith_rows == lith_intervals
+        _record(conn, run, dv, "SQL_INTEGRITY", "one lithology refinement row per active interval", lith_intervals, lith_rows,
+                "PASS" if lith_ok else "FAIL")
+        failures += 0 if lith_ok else 1
+        dem_holes = conn.execute("SELECT COUNT(*) FROM holes WHERE dataset_version_id = "
+                                 "(SELECT dataset_version_id FROM v_active_version) AND dem_elevation_m IS NOT NULL"
+                                 ).fetchone()[0]
+        dem_ok = dem_holes == counts["Holes"]
+        _record(conn, run, dv, "SQL_INTEGRITY", "collars with a provisional DEM elevation", counts["Holes"], dem_holes,
+                "PASS" if dem_ok else "FAIL")
+        failures += 0 if dem_ok else 1
+        active_geometry = ("geometry_build_id IN (SELECT geometry_build_id FROM geometry_builds "
+                           "WHERE dataset_version_id = (SELECT dataset_version_id FROM v_active_version))")
+        geometry_rows = conn.execute(f"SELECT COUNT(*) FROM interval_coordinates WHERE {active_geometry}").fetchone()[0]
+        z_dem_rows = conn.execute(f"SELECT COUNT(*) FROM interval_coordinates WHERE {active_geometry} "
+                                  "AND z_dem_absolute_m IS NOT NULL").fetchone()[0]
+        z_dem_ok = z_dem_rows == geometry_rows
+        _record(conn, run, dv, "SQL_INTEGRITY", "interval rows with a provisional DEM elevation", geometry_rows,
+                z_dem_rows, "PASS" if z_dem_ok else "FAIL")
+        failures += 0 if z_dem_ok else 1
         conn.execute("COMMIT")
     except Exception:
         if conn.in_transaction:

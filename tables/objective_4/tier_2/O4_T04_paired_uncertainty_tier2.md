@@ -1,0 +1,25 @@
+# O4-T04. Paired difference uncertainty and weighting sensitivity
+
+Sign convention: difference = Brier(model_b) minus Brier(model_a); negative means model_b has the lower Brier. power_label: RESOLVED when the 95% hole-cluster interval excludes zero; UNRESOLVED when it includes zero, with detectable_half_width the smallest difference this design could have detected; IDENTICAL when the two models are the same predictions (no interval). The line-level interval is a sensitivity analysis.
+Source: sql/objective_4/tables/O4-T04.sql, receipt 1, 18 rows.
+
+| pair_id | model_a | model_b | weighting | delta_brier_b_minus_a | delta_log_loss_b_minus_a | ci_low_hole | ci_high_hole | ci_low_line | ci_high_line | power_label | detectable_half_width | folds_b_better | n | status | reason |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| HGB_vs_HGBWF | M2_HGB | M2_HGB_WF | EQUAL_HOLE | -0.00185 | -0.007109 |  |  |  |  |  |  | 2 | 1829 | DEFINED | both models defined on this subset |
+| HGB_vs_HGBWF | M2_HGB | M2_HGB_WF | INTERVAL | -0.001764 | -0.007019 | -0.006949 | 0.002869 | -0.006275 | 0.001851 | UNRESOLVED | 0.004909 | 2 | 1829 | DEFINED | both models defined on this subset |
+| LOG_vs_LOGWF | BASE_LOGISTIC | BASE_LOGISTIC_WF | EQUAL_HOLE | 0.001946 | 0.004856 |  |  |  |  |  |  | 2 | 1829 | DEFINED | both models defined on this subset |
+| LOG_vs_LOGWF | BASE_LOGISTIC | BASE_LOGISTIC_WF | INTERVAL | 0.003226 | 0.008114 | -0.000197 | 0.006651 | -0.000512 | 0.008523 | UNRESOLVED | 0.003424 | 2 | 1829 | DEFINED | both models defined on this subset |
+| LOG_vs_RF | BASE_LOGISTIC | M2_RF | EQUAL_HOLE | 0.000839 | -0.004901 |  |  |  |  |  |  | 2 | 1829 | DEFINED | both models defined on this subset |
+| LOG_vs_RF | BASE_LOGISTIC | M2_RF | INTERVAL | 0.00242 | 0.000423 | -0.012221 | 0.017109 | -0.009684 | 0.021596 | UNRESOLVED | 0.014665 | 2 | 1829 | DEFINED | both models defined on this subset |
+| M2SEL_vs_M2WFSEL | M2_SEL | M2_WF_SEL | EQUAL_HOLE | -0.000039 | -0.002024 |  |  |  |  |  |  | 2 | 1829 | DEFINED | both models defined on this subset |
+| M2SEL_vs_M2WFSEL | M2_SEL | M2_WF_SEL | INTERVAL | 0.000929 | -0.000236 | -0.003167 | 0.004985 | -0.001103 | 0.00383 | UNRESOLVED | 0.004076 | 1 | 1829 | DEFINED | both models defined on this subset |
+| M2WFSEL_vs_M3 | M2_WF_SEL | M3_HYBRID | EQUAL_HOLE | 0 | 0 |  |  |  |  |  |  | 0 | 1829 | IDENTICAL | identical predictions on every common observation; no interval |
+| M2WFSEL_vs_M3 | M2_WF_SEL | M3_HYBRID | INTERVAL | 0 | 0 |  |  |  |  | IDENTICAL |  | 0 | 1829 | IDENTICAL | identical predictions on every common observation; no interval |
+| PREV_vs_M1 | BASE_PREVALENCE | M1_IK | EQUAL_HOLE | -0.033475 | -0.101479 |  |  |  |  |  |  | 5 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_M1 | BASE_PREVALENCE | M1_IK | INTERVAL | -0.034825 | -0.098467 | -0.054539 | -0.015626 | -0.058075 | 0.001114 | RESOLVED |  | 5 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_M2SEL | BASE_PREVALENCE | M2_SEL | EQUAL_HOLE | -0.040712 | -0.121545 |  |  |  |  |  |  | 5 | 1829 | DEFINED | both models defined on this subset |
+| PREV_vs_M2SEL | BASE_PREVALENCE | M2_SEL | INTERVAL | -0.048939 | -0.133313 | -0.074345 | -0.025907 | -0.082708 | -0.016041 | RESOLVED |  | 5 | 1829 | DEFINED | both models defined on this subset |
+| RF_vs_HGB | M2_RF | M2_HGB | EQUAL_HOLE | -0.006056 | -0.009663 |  |  |  |  |  |  | 5 | 1829 | DEFINED | both models defined on this subset |
+| RF_vs_HGB | M2_RF | M2_HGB | INTERVAL | -0.007013 | -0.013365 | -0.014635 | 0.000435 | -0.012588 | -0.00157 | UNRESOLVED | 0.007535 | 5 | 1829 | DEFINED | both models defined on this subset |
+| RF_vs_RFWF | M2_RF | M2_RF_WF | EQUAL_HOLE | -0.000039 | -0.002024 |  |  |  |  |  |  | 2 | 1829 | DEFINED | both models defined on this subset |
+| RF_vs_RFWF | M2_RF | M2_RF_WF | INTERVAL | 0.000929 | -0.000236 | -0.003167 | 0.004985 | -0.001103 | 0.00383 | UNRESOLVED | 0.004076 | 1 | 1829 | DEFINED | both models defined on this subset |

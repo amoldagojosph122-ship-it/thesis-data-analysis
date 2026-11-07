@@ -1,0 +1,1111 @@
+{
+  "config_version": "SENS-FRONT-CFG-2026.11.07-1",
+  "config_sha256": "64dee4867803a5b370a41ceacc1e025c1f59fa5a619b3d2a12d01fd2a421f3af",
+  "o3_db_sha256": "d02654ee1c2f0bb610450cd89c12eac9903c99dca099c40607089724860fb412",
+  "o3_config_version": "O3-CFG-2026.11.06-2",
+  "code_commit": "b8ede28",
+  "run_utc": "2026-11-07T11:15:24Z",
+  "duration_seconds": 815.4,
+  "quick": false,
+  "bootstrap_replicates": 2000,
+  "bootstrap_seed": 20261107,
+  "acceptance_max_abs_diff": {
+    "O3-SPLIT-LODO-1": {
+      "BASE_LOGISTIC_WF": 0.0,
+      "M2_RF_WF": 0.0,
+      "M2_HGB_WF": 0.0
+    },
+    "O3-SPLIT-HOLE-IL-2": {
+      "BASE_LOGISTIC_WF": 0.0,
+      "M2_RF_WF": 0.0,
+      "M2_HGB_WF": 0.0
+    }
+  },
+  "acceptance_tolerance": 1e-09,
+  "front_skill": [
+    {
+      "variant": "IDW_P2_K8",
+      "scheme": "LEAVE_ONE_HOLE_OUT",
+      "rmse_variant_m": 4.849457438738099,
+      "rmse_mean_m": 4.493088536642181,
+      "skill_ratio": 1.0793149075941075
+    },
+    {
+      "variant": "IDW_P2_K8",
+      "scheme": "LEAVE_ONE_LINE_OUT",
+      "rmse_variant_m": 5.563690650843705,
+      "rmse_mean_m": 4.734418302230074,
+      "skill_ratio": 1.175158233953053
+    },
+    {
+      "variant": "IDW_P1_K8",
+      "scheme": "LEAVE_ONE_HOLE_OUT",
+      "rmse_variant_m": 4.5335667957467995,
+      "rmse_mean_m": 4.493088536642181,
+      "skill_ratio": 1.009009005447925
+    },
+    {
+      "variant": "IDW_P1_K8",
+      "scheme": "LEAVE_ONE_LINE_OUT",
+      "rmse_variant_m": 5.550363164424591,
+      "rmse_mean_m": 4.734418302230074,
+      "skill_ratio": 1.1723432130638265
+    },
+    {
+      "variant": "IDW_P3_K8",
+      "scheme": "LEAVE_ONE_HOLE_OUT",
+      "rmse_variant_m": 5.068534982347822,
+      "rmse_mean_m": 4.493088536642181,
+      "skill_ratio": 1.1280736938550715
+    },
+    {
+      "variant": "IDW_P3_K8",
+      "scheme": "LEAVE_ONE_LINE_OUT",
+      "rmse_variant_m": 5.580212223461775,
+      "rmse_mean_m": 4.734418302230074,
+      "skill_ratio": 1.178647907142743
+    },
+    {
+      "variant": "IDW_P2_K4",
+      "scheme": "LEAVE_ONE_HOLE_OUT",
+      "rmse_variant_m": 4.9188058903652685,
+      "rmse_mean_m": 4.493088536642181,
+      "skill_ratio": 1.094749380131565
+    },
+    {
+      "variant": "IDW_P2_K4",
+      "scheme": "LEAVE_ONE_LINE_OUT",
+      "rmse_variant_m": 5.689146878084071,
+      "rmse_mean_m": 4.734418302230074,
+      "skill_ratio": 1.2016569966798851
+    },
+    {
+      "variant": "IDW_P2_K16",
+      "scheme": "LEAVE_ONE_HOLE_OUT",
+      "rmse_variant_m": 4.832848217154196,
+      "rmse_mean_m": 4.493088536642181,
+      "skill_ratio": 1.075618291903486
+    },
+    {
+      "variant": "IDW_P2_K16",
+      "scheme": "LEAVE_ONE_LINE_OUT",
+      "rmse_variant_m": 5.41050371387681,
+      "rmse_mean_m": 4.734418302230074,
+      "skill_ratio": 1.1428022131733222
+    },
+    {
+      "variant": "NEAREST_HOLE",
+      "scheme": "LEAVE_ONE_HOLE_OUT",
+      "rmse_variant_m": 5.79399723444832,
+      "rmse_mean_m": 4.493088536642181,
+      "skill_ratio": 1.2895355137556108
+    },
+    {
+      "variant": "NEAREST_HOLE",
+      "scheme": "LEAVE_ONE_LINE_OUT",
+      "rmse_variant_m": 7.64300005153694,
+      "rmse_mean_m": 4.734418302230074,
+      "skill_ratio": 1.6143482818019743
+    },
+    {
+      "variant": "TRAINING_MEAN",
+      "scheme": "LEAVE_ONE_HOLE_OUT",
+      "rmse_variant_m": 4.493088536642181,
+      "rmse_mean_m": 4.493088536642181,
+      "skill_ratio": 1.0
+    },
+    {
+      "variant": "TRAINING_MEAN",
+      "scheme": "LEAVE_ONE_LINE_OUT",
+      "rmse_variant_m": 4.734418302230074,
+      "rmse_mean_m": 4.734418302230074,
+      "skill_ratio": 1.0
+    }
+  ],
+  "brier": [
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K8",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.1650700112749227
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K8",
+      "model": "M2_RF_WF",
+      "brier": 0.16771724649242367
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K8",
+      "model": "M2_HGB_WF",
+      "brier": 0.16571585897244617
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P1_K8",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.1650672184017779
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P1_K8",
+      "model": "M2_RF_WF",
+      "brier": 0.1696433901970777
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P1_K8",
+      "model": "M2_HGB_WF",
+      "brier": 0.16852788731251017
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P3_K8",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16507300226196875
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P3_K8",
+      "model": "M2_RF_WF",
+      "brier": 0.16825634970737968
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P3_K8",
+      "model": "M2_HGB_WF",
+      "brier": 0.1645661303757921
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K4",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16520287521824872
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K4",
+      "model": "M2_RF_WF",
+      "brier": 0.16777008205829855
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K4",
+      "model": "M2_HGB_WF",
+      "brier": 0.16465670427445614
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K16",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.1651980101751295
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K16",
+      "model": "M2_RF_WF",
+      "brier": 0.16723738156463594
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K16",
+      "model": "M2_HGB_WF",
+      "brier": 0.1656442690949115
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "NEAREST_HOLE",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16607678246935997
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "NEAREST_HOLE",
+      "model": "M2_RF_WF",
+      "brier": 0.16684021429945992
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "NEAREST_HOLE",
+      "model": "M2_HGB_WF",
+      "brier": 0.16733390405425608
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "TRAINING_MEAN",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16570141565057203
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "TRAINING_MEAN",
+      "model": "M2_RF_WF",
+      "brier": 0.17269835443237458
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "TRAINING_MEAN",
+      "model": "M2_HGB_WF",
+      "brier": 0.17345181057761958
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "not applicable",
+      "model": "BASE_PREVALENCE",
+      "brier": 0.22112501590944908
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "not applicable",
+      "model": "BASE_LOGISTIC",
+      "brier": 0.16581696630300466
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "not applicable",
+      "model": "M2_RF",
+      "brier": 0.16551478960205407
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "not applicable",
+      "model": "M2_HGB",
+      "brier": 0.1714797092496809
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "prediction_setting": "Prediction to a new drill line",
+      "variant": "not applicable",
+      "model": "M1_IK",
+      "brier": 0.21937671607529682
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K8",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16264586762137595
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K8",
+      "model": "M2_RF_WF",
+      "brier": 0.16276936983830032
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K8",
+      "model": "M2_HGB_WF",
+      "brier": 0.1530626054438199
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P1_K8",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16031916530591553
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P1_K8",
+      "model": "M2_RF_WF",
+      "brier": 0.16352255669552906
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P1_K8",
+      "model": "M2_HGB_WF",
+      "brier": 0.15540082486392937
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P3_K8",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16266020132295106
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P3_K8",
+      "model": "M2_RF_WF",
+      "brier": 0.16357208406636484
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P3_K8",
+      "model": "M2_HGB_WF",
+      "brier": 0.15414452664723458
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K4",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16246584233796155
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K4",
+      "model": "M2_RF_WF",
+      "brier": 0.16177300186717392
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K4",
+      "model": "M2_HGB_WF",
+      "brier": 0.15671065071640106
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K16",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.1625960188190495
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K16",
+      "model": "M2_RF_WF",
+      "brier": 0.1625592203601198
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K16",
+      "model": "M2_HGB_WF",
+      "brier": 0.15232724936956238
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "NEAREST_HOLE",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.16320875273933105
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "NEAREST_HOLE",
+      "model": "M2_RF_WF",
+      "brier": 0.16371491327893417
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "NEAREST_HOLE",
+      "model": "M2_HGB_WF",
+      "brier": 0.15620856945597136
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "TRAINING_MEAN",
+      "model": "BASE_LOGISTIC_WF",
+      "brier": 0.1594063412826406
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "TRAINING_MEAN",
+      "model": "M2_RF_WF",
+      "brier": 0.1616611177469146
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "TRAINING_MEAN",
+      "model": "M2_HGB_WF",
+      "brier": 0.1574257994772792
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "not applicable",
+      "model": "BASE_PREVALENCE",
+      "brier": 0.21077956512095625
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "not applicable",
+      "model": "BASE_LOGISTIC",
+      "brier": 0.15942030856430225
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "not applicable",
+      "model": "M2_RF",
+      "brier": 0.1618403860783607
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "not applicable",
+      "model": "M2_HGB",
+      "brier": 0.15482693906461859
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "prediction_setting": "Prediction between holes on the same line",
+      "variant": "not applicable",
+      "model": "M1_IK",
+      "brier": 0.1759543002245831
+    }
+  ],
+  "paired_vs_baseline": [
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P1_K8",
+      "brier_variant": 0.1650672184017779,
+      "brier_baseline": 0.1650700112749227,
+      "diff": -2.792873144807917e-06,
+      "ci_low": -0.00039606391243034145,
+      "ci_high": 0.0003907360983470045,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P1_K8",
+      "brier_variant": 0.1696433901970777,
+      "brier_baseline": 0.16771724649242367,
+      "diff": 0.0019261437046540208,
+      "ci_low": 0.0006209590322082826,
+      "ci_high": 0.003236893866529098,
+      "status": "RESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P1_K8",
+      "brier_variant": 0.16852788731251017,
+      "brier_baseline": 0.16571585897244617,
+      "diff": 0.002812028340063999,
+      "ci_low": 0.0009469397577584645,
+      "ci_high": 0.004730273649159755,
+      "status": "RESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P3_K8",
+      "brier_variant": 0.16507300226196875,
+      "brier_baseline": 0.1650700112749227,
+      "diff": 2.9909870460365084e-06,
+      "ci_low": -0.0001660956435530325,
+      "ci_high": 0.00017948178477072895,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P3_K8",
+      "brier_variant": 0.16825634970737968,
+      "brier_baseline": 0.16771724649242367,
+      "diff": 0.0005391032149560104,
+      "ci_low": -0.00042524529341442436,
+      "ci_high": 0.001541387830874527,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P3_K8",
+      "brier_variant": 0.1645661303757921,
+      "brier_baseline": 0.16571585897244617,
+      "diff": -0.001149728596654076,
+      "ci_low": -0.004628661024874601,
+      "ci_high": 0.0020523284089269235,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P2_K4",
+      "brier_variant": 0.16520287521824872,
+      "brier_baseline": 0.1650700112749227,
+      "diff": 0.00013286394332601148,
+      "ci_low": -0.0009064799459367062,
+      "ci_high": 0.001165914890179944,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P2_K4",
+      "brier_variant": 0.16777008205829855,
+      "brier_baseline": 0.16771724649242367,
+      "diff": 5.283556587487581e-05,
+      "ci_low": -0.0014355242050681435,
+      "ci_high": 0.001638938181770692,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P2_K4",
+      "brier_variant": 0.16465670427445614,
+      "brier_baseline": 0.16571585897244617,
+      "diff": -0.0010591546979900335,
+      "ci_low": -0.0028158244191547337,
+      "ci_high": 0.0006863714841531066,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P2_K16",
+      "brier_variant": 0.1651980101751295,
+      "brier_baseline": 0.1650700112749227,
+      "diff": 0.00012799890020678828,
+      "ci_low": -0.0004511792434229213,
+      "ci_high": 0.0006990670539180433,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P2_K16",
+      "brier_variant": 0.16723738156463594,
+      "brier_baseline": 0.16771724649242367,
+      "diff": -0.00047986492778773204,
+      "ci_low": -0.001738567823218679,
+      "ci_high": 0.0008271894733615458,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P2_K16",
+      "brier_variant": 0.1656442690949115,
+      "brier_baseline": 0.16571585897244617,
+      "diff": -7.158987753466683e-05,
+      "ci_low": -0.0022169592976955723,
+      "ci_high": 0.0019641732060712,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "NEAREST_HOLE",
+      "brier_variant": 0.16607678246935997,
+      "brier_baseline": 0.1650700112749227,
+      "diff": 0.0010067711944372615,
+      "ci_low": -0.0014654342149414965,
+      "ci_high": 0.0037324903315113303,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_RF_WF",
+      "variant": "NEAREST_HOLE",
+      "brier_variant": 0.16684021429945992,
+      "brier_baseline": 0.16771724649242367,
+      "diff": -0.0008770321929637559,
+      "ci_low": -0.0040913013141426905,
+      "ci_high": 0.0021230498586664124,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_HGB_WF",
+      "variant": "NEAREST_HOLE",
+      "brier_variant": 0.16733390405425608,
+      "brier_baseline": 0.16571585897244617,
+      "diff": 0.0016180450818099046,
+      "ci_low": -0.0025664251131366196,
+      "ci_high": 0.006144390480910105,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "TRAINING_MEAN",
+      "brier_variant": 0.16570141565057203,
+      "brier_baseline": 0.1650700112749227,
+      "diff": 0.0006314043756493193,
+      "ci_low": -0.0013253994363905965,
+      "ci_high": 0.0026574912880644465,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_RF_WF",
+      "variant": "TRAINING_MEAN",
+      "brier_variant": 0.17269835443237458,
+      "brier_baseline": 0.16771724649242367,
+      "diff": 0.004981107939950907,
+      "ci_low": 0.0009365652991044569,
+      "ci_high": 0.008910069977115043,
+      "status": "RESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "candidate": "M2_HGB_WF",
+      "variant": "TRAINING_MEAN",
+      "brier_variant": 0.17345181057761958,
+      "brier_baseline": 0.16571585897244617,
+      "diff": 0.007735951605173402,
+      "ci_low": 0.0038792247109253677,
+      "ci_high": 0.01166417011901392,
+      "status": "RESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P1_K8",
+      "brier_variant": 0.16031916530591553,
+      "brier_baseline": 0.16264586762137595,
+      "diff": -0.0023267023154604216,
+      "ci_low": -0.005198980114061614,
+      "ci_high": 0.00020558773318748484,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P1_K8",
+      "brier_variant": 0.16352255669552906,
+      "brier_baseline": 0.16276936983830032,
+      "diff": 0.0007531868572287492,
+      "ci_low": -0.0013495501993848469,
+      "ci_high": 0.0029769179327782586,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P1_K8",
+      "brier_variant": 0.15540082486392937,
+      "brier_baseline": 0.1530626054438199,
+      "diff": 0.0023382194201094775,
+      "ci_low": -0.004077571723058361,
+      "ci_high": 0.010992634259484182,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P3_K8",
+      "brier_variant": 0.16266020132295106,
+      "brier_baseline": 0.16264586762137595,
+      "diff": 1.4333701575108826e-05,
+      "ci_low": -0.0005492741914378497,
+      "ci_high": 0.0006073547747516626,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P3_K8",
+      "brier_variant": 0.16357208406636484,
+      "brier_baseline": 0.16276936983830032,
+      "diff": 0.0008027142280645216,
+      "ci_low": -0.0026100181021772653,
+      "ci_high": 0.004136548840387088,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P3_K8",
+      "brier_variant": 0.15414452664723458,
+      "brier_baseline": 0.1530626054438199,
+      "diff": 0.0010819212034146874,
+      "ci_low": -0.0012626546739255497,
+      "ci_high": 0.0034697179218732173,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P2_K4",
+      "brier_variant": 0.16246584233796155,
+      "brier_baseline": 0.16264586762137595,
+      "diff": -0.00018002528341440338,
+      "ci_low": -0.0004958568248626443,
+      "ci_high": 7.732673699203214e-05,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P2_K4",
+      "brier_variant": 0.16177300186717392,
+      "brier_baseline": 0.16276936983830032,
+      "diff": -0.0009963679711263995,
+      "ci_low": -0.001896255651351677,
+      "ci_high": -0.0002026615049853314,
+      "status": "RESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P2_K4",
+      "brier_variant": 0.15671065071640106,
+      "brier_baseline": 0.1530626054438199,
+      "diff": 0.0036480452725811685,
+      "ci_low": -0.0022124106201645176,
+      "ci_high": 0.012088834634347142,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "IDW_P2_K16",
+      "brier_variant": 0.1625960188190495,
+      "brier_baseline": 0.16264586762137595,
+      "diff": -4.9848802326446506e-05,
+      "ci_low": -0.00011914032840840898,
+      "ci_high": 1.320084992400681e-05,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_RF_WF",
+      "variant": "IDW_P2_K16",
+      "brier_variant": 0.1625592203601198,
+      "brier_baseline": 0.16276936983830032,
+      "diff": -0.00021014947818051577,
+      "ci_low": -0.000672608130925735,
+      "ci_high": 0.0002716580362416339,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_HGB_WF",
+      "variant": "IDW_P2_K16",
+      "brier_variant": 0.15232724936956238,
+      "brier_baseline": 0.1530626054438199,
+      "diff": -0.0007353560742575094,
+      "ci_low": -0.002392364408976443,
+      "ci_high": 0.0007470875069618385,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "NEAREST_HOLE",
+      "brier_variant": 0.16320875273933105,
+      "brier_baseline": 0.16264586762137595,
+      "diff": 0.0005628851179551031,
+      "ci_low": -0.0009647339834446793,
+      "ci_high": 0.0021084912688460965,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_RF_WF",
+      "variant": "NEAREST_HOLE",
+      "brier_variant": 0.16371491327893417,
+      "brier_baseline": 0.16276936983830032,
+      "diff": 0.0009455434406338559,
+      "ci_low": -0.0024955304117167463,
+      "ci_high": 0.004065721751253035,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_HGB_WF",
+      "variant": "NEAREST_HOLE",
+      "brier_variant": 0.15620856945597136,
+      "brier_baseline": 0.1530626054438199,
+      "diff": 0.0031459640121514754,
+      "ci_low": -0.0005972823455651354,
+      "ci_high": 0.0071913058373481945,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "BASE_LOGISTIC_WF",
+      "variant": "TRAINING_MEAN",
+      "brier_variant": 0.1594063412826406,
+      "brier_baseline": 0.16264586762137595,
+      "diff": -0.003239526338735338,
+      "ci_low": -0.006553244231799712,
+      "ci_high": -0.00037633803252426436,
+      "status": "RESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_RF_WF",
+      "variant": "TRAINING_MEAN",
+      "brier_variant": 0.1616611177469146,
+      "brier_baseline": 0.16276936983830032,
+      "diff": -0.0011082520913857086,
+      "ci_low": -0.00491409476954888,
+      "ci_high": 0.002505089398595489,
+      "status": "UNRESOLVED"
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "candidate": "M2_HGB_WF",
+      "variant": "TRAINING_MEAN",
+      "brier_variant": 0.1574257994772792,
+      "brier_baseline": 0.1530626054438199,
+      "diff": 0.0043631940334593056,
+      "ci_low": 5.852443901097402e-05,
+      "ci_high": 0.008777932603704562,
+      "status": "RESOLVED"
+    }
+  ],
+  "selection": [
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K8",
+      "lowest_brier_model": "BASE_LOGISTIC_WF",
+      "lowest_brier": 0.1650700112749227,
+      "o4_selected": "BASE_LOGISTIC_WF",
+      "same_as_o4": true,
+      "wf_beats_parent_logistic": true,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "variant": "IDW_P1_K8",
+      "lowest_brier_model": "BASE_LOGISTIC_WF",
+      "lowest_brier": 0.1650672184017779,
+      "o4_selected": "BASE_LOGISTIC_WF",
+      "same_as_o4": true,
+      "wf_beats_parent_logistic": true,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "variant": "IDW_P3_K8",
+      "lowest_brier_model": "M2_HGB_WF",
+      "lowest_brier": 0.1645661303757921,
+      "o4_selected": "BASE_LOGISTIC_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": true,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K4",
+      "lowest_brier_model": "M2_HGB_WF",
+      "lowest_brier": 0.16465670427445614,
+      "o4_selected": "BASE_LOGISTIC_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": true,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "variant": "IDW_P2_K16",
+      "lowest_brier_model": "BASE_LOGISTIC_WF",
+      "lowest_brier": 0.1651980101751295,
+      "o4_selected": "BASE_LOGISTIC_WF",
+      "same_as_o4": true,
+      "wf_beats_parent_logistic": true,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "variant": "NEAREST_HOLE",
+      "lowest_brier_model": "M2_RF",
+      "lowest_brier": 0.16551478960205407,
+      "o4_selected": "BASE_LOGISTIC_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": false,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "variant": "TRAINING_MEAN",
+      "lowest_brier_model": "M2_RF",
+      "lowest_brier": 0.16551478960205407,
+      "o4_selected": "BASE_LOGISTIC_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": true,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": false
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K8",
+      "lowest_brier_model": "M2_HGB_WF",
+      "lowest_brier": 0.1530626054438199,
+      "o4_selected": "M2_HGB_WF",
+      "same_as_o4": true,
+      "wf_beats_parent_logistic": false,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "variant": "IDW_P1_K8",
+      "lowest_brier_model": "M2_HGB",
+      "lowest_brier": 0.15482693906461859,
+      "o4_selected": "M2_HGB_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": false,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": false
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "variant": "IDW_P3_K8",
+      "lowest_brier_model": "M2_HGB_WF",
+      "lowest_brier": 0.15414452664723458,
+      "o4_selected": "M2_HGB_WF",
+      "same_as_o4": true,
+      "wf_beats_parent_logistic": false,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K4",
+      "lowest_brier_model": "M2_HGB",
+      "lowest_brier": 0.15482693906461859,
+      "o4_selected": "M2_HGB_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": false,
+      "wf_beats_parent_rf": true,
+      "wf_beats_parent_hgb": false
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "variant": "IDW_P2_K16",
+      "lowest_brier_model": "M2_HGB_WF",
+      "lowest_brier": 0.15232724936956238,
+      "o4_selected": "M2_HGB_WF",
+      "same_as_o4": true,
+      "wf_beats_parent_logistic": false,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": true
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "variant": "NEAREST_HOLE",
+      "lowest_brier_model": "M2_HGB",
+      "lowest_brier": 0.15482693906461859,
+      "o4_selected": "M2_HGB_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": false,
+      "wf_beats_parent_rf": false,
+      "wf_beats_parent_hgb": false
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "variant": "TRAINING_MEAN",
+      "lowest_brier_model": "M2_HGB",
+      "lowest_brier": 0.15482693906461859,
+      "o4_selected": "M2_HGB_WF",
+      "same_as_o4": false,
+      "wf_beats_parent_logistic": true,
+      "wf_beats_parent_rf": true,
+      "wf_beats_parent_hgb": false
+    }
+  ],
+  "conclusions": [
+    {
+      "plan": "O3-SPLIT-LODO-1",
+      "setting": "Prediction to a new drill line",
+      "conclusion": "PERFORMANCE_SENSITIVE",
+      "n_resolved": 4,
+      "n_selection_changes": 4
+    },
+    {
+      "plan": "O3-SPLIT-HOLE-IL-2",
+      "setting": "Prediction between holes on the same line",
+      "conclusion": "PERFORMANCE_SENSITIVE",
+      "n_resolved": 3,
+      "n_selection_changes": 4
+    }
+  ]
+}

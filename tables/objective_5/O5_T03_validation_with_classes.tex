@@ -1,0 +1,14 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O5-T03. Validated skill carried from Objective 4 beside the class counts. Pooled interval-weighted Brier and ROC-AUC are Objective 4 values, carried without recomputation. The interval is the Objective 4 hole-cluster interval of the Brier difference (selected minus runner-up). Receipt 1.}
+\label{tab:O5T03}
+\begin{tabular}{llllllllllllllll}
+\toprule
+validation\_tier & zone & selected\_model & selected\_pooled\_brier & selected\_pooled\_roc\_auc & runner\_up\_model & runner\_up\_pooled\_brier & runner\_up\_pooled\_roc\_auc & delta\_brier\_selected\_minus\_runner\_up & delta\_ci\_low & delta\_ci\_high & improvement\_status & confident\_present\_cells & confident\_absent\_cells & uncertain\_cells & cells \\
+\midrule
+TIER\_2\_INTERPOLATION & INTERPOLATION & M2\_HGB\_WF & 0.153063 & 0.814162 & M2\_HGB & 0.154827 & 0.811309 & -0.001764 & -0.006949 & 0.002869 & INCONCLUSIVE & 972 & 8977 & 18051 & 28000 \\
+TIER\_1\_EXTRAPOLATION & EXTRAPOLATION & BASE\_LOGISTIC\_WF & 0.16507 & 0.748707 & M2\_RF & 0.165515 & 0.781648 & -0.000445 & -0.013957 & 0.013737 & INCONCLUSIVE & 28868 & 221295 & 579029 & 829192 \\
+\bottomrule
+\end{tabular}
+\end{table}

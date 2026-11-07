@@ -1,0 +1,35 @@
+# O2-T07. Structural-frame fit at the selected dip and between-line report
+
+Fits use the configuration-5 rules at the selected dip. A range is STABLE only when every leave-one-line-out refit is FITTED with a range ratio between 0.5 and 2.0. The between-line report is REPORT_ONLY and carries no fit.
+Source: sql/objective_2/tables/O2-T07.sql, receipt 1, 28 rows.
+
+| row_type | sample_id | frame_id | dip_deg | item | status | nugget | structured_sill | range_m | n_supported_bins | n_pairs | n_independent_hole_pairs | gamma | stability | range_ratio_min | range_ratio_max | detail |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| FIT | ALL_BINARY | DEM_ABSOLUTE | 0 | exponential | NOT_IDENTIFIABLE |  |  |  | 24 |  |  |  | NOT_ASSESSED |  |  | range at the smallest supported lag: no spatial dependence beyond the nugget; structured sill below 5% of p(1-p): no structure beyond the nugget |
+| FIT | ALL_BINARY | DEM_ABSOLUTE | 0 | spherical | NOT_IDENTIFIABLE |  |  |  | 24 |  |  |  | NOT_ASSESSED |  |  | structured sill below 5% of p(1-p): no structure beyond the nugget |
+| FIT | ALL_BINARY | RELATIVE | 0 | exponential | NOT_IDENTIFIABLE |  |  |  | 24 |  |  |  | NOT_ASSESSED |  |  | range at the smallest supported lag: no spatial dependence beyond the nugget; structured sill below 5% of p(1-p): no structure beyond the nugget |
+| FIT | ALL_BINARY | RELATIVE | 0 | spherical | NOT_IDENTIFIABLE |  |  |  | 24 |  |  |  | NOT_ASSESSED |  |  | structured sill below 5% of p(1-p): no structure beyond the nugget |
+| FIT | FRESH | DEM_ABSOLUTE | 20 | exponential | NOT_IDENTIFIABLE |  |  |  | 2 |  |  |  | NOT_ASSESSED |  |  | 2 supported bins; 5 required |
+| FIT | FRESH | DEM_ABSOLUTE | 20 | spherical | NOT_IDENTIFIABLE |  |  |  | 2 |  |  |  | NOT_ASSESSED |  |  | 2 supported bins; 5 required |
+| FIT | FRESH | RELATIVE | 20 | exponential | NOT_IDENTIFIABLE |  |  |  | 2 |  |  |  | NOT_ASSESSED |  |  | 2 supported bins; 5 required |
+| FIT | FRESH | RELATIVE | 20 | spherical | NOT_IDENTIFIABLE |  |  |  | 2 |  |  |  | NOT_ASSESSED |  |  | 2 supported bins; 5 required |
+| BETWEEN_LINE | ALL_BINARY | DEM_ABSOLUTE | 0 | northing lag 150 to 250 m | SUPPORTED |  |  |  |  | 6092 | 39 | 0.2196 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | DEM_ABSOLUTE | 0 | northing lag 250 to 350 m | SUPPORTED |  |  |  |  | 2702 | 32 | 0.3403 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | DEM_ABSOLUTE | 0 | northing lag 350 to 450 m | SUPPORTED |  |  |  |  | 34917 | 469 | 0.2723 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | DEM_ABSOLUTE | 0 | northing lag 450 to 600 m | SUPPORTED |  |  |  |  | 79338 | 657 | 0.1814 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | DEM_ABSOLUTE | 0 | northing lag 50 to 150 m | SUPPORTED |  |  |  |  | 22486 | 308 | 0.2004 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | RELATIVE | 0 | northing lag 150 to 250 m | SUPPORTED |  |  |  |  | 6666 | 39 | 0.1856 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | RELATIVE | 0 | northing lag 250 to 350 m | SUPPORTED |  |  |  |  | 3707 | 32 | 0.1876 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | RELATIVE | 0 | northing lag 350 to 450 m | SUPPORTED |  |  |  |  | 72723 | 526 | 0.1705 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | RELATIVE | 0 | northing lag 450 to 600 m | SUPPORTED |  |  |  |  | 89649 | 657 | 0.1502 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | ALL_BINARY | RELATIVE | 0 | northing lag 50 to 150 m | SUPPORTED |  |  |  |  | 43897 | 315 | 0.1865 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | DEM_ABSOLUTE | 20 | northing lag 150 to 250 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | DEM_ABSOLUTE | 20 | northing lag 250 to 350 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | DEM_ABSOLUTE | 20 | northing lag 350 to 450 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | DEM_ABSOLUTE | 20 | northing lag 450 to 600 m | SUPPORTED |  |  |  |  | 2085 | 40 | 0.2026 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | DEM_ABSOLUTE | 20 | northing lag 50 to 150 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | RELATIVE | 20 | northing lag 150 to 250 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | RELATIVE | 20 | northing lag 250 to 350 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | RELATIVE | 20 | northing lag 350 to 450 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | RELATIVE | 20 | northing lag 450 to 600 m | SUPPORTED |  |  |  |  | 1692 | 42 | 0.2441 | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |
+| BETWEEN_LINE | FRESH | RELATIVE | 20 | northing lag 50 to 150 m | NOT_SUPPORTED |  |  |  |  | 0 | 0 |  | REPORT_ONLY |  |  | no fit; report only; pairs between holes on different lines with \|ds\| at most 3 m |

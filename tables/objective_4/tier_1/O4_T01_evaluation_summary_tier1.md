@@ -1,0 +1,18 @@
+# O4-T01. Main evaluation summary
+
+Brier is the primary endpoint; the equal-hole weighting is a sensitivity analysis. Coverage is the share of held-out intervals with a prediction. identity_status marks a model whose calibrated predictions equal an earlier feasible model's on every common interval (identical_to names it); identical models are not ranked.
+Source: sql/objective_4/tables/O4-T01.sql, receipt 1, 11 rows.
+
+| model_id | role | comparable | identity_status | identical_to | coverage | n_predicted | n_expected | n_failed | brier_interval | brier_equal_hole | log_loss_interval | roc_auc | pr_auc | ece | calibration_intercept | calibration_slope | calibration_status | decision_rank | improvement_status | selection_basis |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| BASE_LOGISTIC_WF | BASELINE | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.16507 | 0.151516 | 0.508542 | 0.748707 | 0.619849 | 0.056222 | 0.052777 | 0.878032 | DEFINED | 1 | INCONCLUSIVE | POINT_ESTIMATE_WITH_CAVEAT |
+| M2_RF | M2 | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.165515 | 0.15099 | 0.501592 | 0.781648 | 0.573873 | 0.060151 | 0.263171 | 1.36926 | DEFINED | 2 | INCONCLUSIVE | NOT_SELECTED |
+| M2_HGB_WF | M2 | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.165716 | 0.150661 | 0.50987 | 0.763479 | 0.59865 | 0.049827 | 0.225777 | 1.060419 | DEFINED | 3 | INCONCLUSIVE | NOT_SELECTED |
+| BASE_LOGISTIC | BASELINE | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.165817 | 0.151508 | 0.507433 | 0.756211 | 0.615319 | 0.059558 | 0.060156 | 0.887238 | DEFINED | 4 | INCONCLUSIVE | NOT_SELECTED |
+| M2_RF_WF | M2 | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.167717 | 0.153565 | 0.519777 | 0.770604 | 0.590135 | 0.053712 | -0.009391 | 0.993907 | DEFINED | 5 | INCONCLUSIVE | NOT_SELECTED |
+| M2_HGB | M2 | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.17148 | 0.156431 | 0.52518 | 0.751269 | 0.576846 | 0.050829 | 0.222731 | 1.076797 | DEFINED | 6 | INCONCLUSIVE | NOT_SELECTED |
+| M1_IK | M1 | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.219377 | 0.197503 | 0.636257 | 0.333287 | 0.210583 | 0.127701 | -4.268909 | -3.47174 | DEFINED | 7 | NO_IMPROVEMENT | NOT_SELECTED |
+| BASE_PREVALENCE | BASELINE | 1 | DISTINCT |  | 1 | 1829 | 1829 | 0 | 0.221125 | 0.199565 | 0.64036 | 0.287837 | 0.224825 | 0.164886 | -4.320374 | -3.566699 | DEFINED | 8 | NO_IMPROVEMENT | NOT_SELECTED |
+| M2_SEL | M2 | 0 | IDENTICAL_TO | M2_RF | 1 | 1829 | 1829 | 0 | 0.165515 | 0.15099 | 0.501592 | 0.781648 | 0.573873 | 0.060151 | 0.263171 | 1.36926 | DEFINED |  | NOT_COMPARABLE | NOT_RANKED |
+| M2_WF_SEL | M2 | 0 | IDENTICAL_TO | M2_RF_WF | 1 | 1829 | 1829 | 0 | 0.167717 | 0.153565 | 0.519777 | 0.770604 | 0.590135 | 0.053712 | -0.009391 | 0.993907 | DEFINED |  | NOT_COMPARABLE | NOT_RANKED |
+| M3_HYBRID | M3 | 0 | IDENTICAL_TO | M2_WF_SEL | 1 | 1829 | 1829 | 0 | 0.167717 | 0.153565 | 0.519777 | 0.770604 | 0.590135 | 0.053712 | -0.009391 | 0.993907 | DEFINED |  | NOT_COMPARABLE | NOT_RANKED |

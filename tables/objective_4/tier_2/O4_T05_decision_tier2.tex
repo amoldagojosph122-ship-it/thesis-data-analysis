@@ -1,0 +1,23 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O4-T05. Final model-selection decision and handoff. The decision policy was predeclared. Rank 1 is the selected model and rank 2 the comparator; identical models are NOT\_COMPARABLE with their identity. For the selected model delta\_brier is selected minus comparator; for other rows it is the model minus the selected model. INCONCLUSIVE means the point estimate selected the model but the uncertainty or fold consistency does not support a credible improvement. Receipt 1.}
+\label{tab:O4-T05}
+\begin{tabular}{llllllllllllllp{0.3\linewidth}l}
+\toprule
+rank & model\_id & role & identity\_status & identical\_to & improvement\_status & selection\_basis & delta\_brier & ci\_low & ci\_high & fold\_consistency & calibration\_status & discrimination\_status & coverage & reason & handoff\_receipt\_sha256 \\
+\midrule
+1 & M2\_HGB\_WF & SELECTED & DISTINCT &  & INCONCLUSIVE & POINT\_ESTIMATE\_WITH\_CAVEAT & -0.001764 & -0.006949 & 0.002869 & 2 & ACCEPTABLE & NOT\_WORSE & 1 & lowest pooled interval Brier among distinct full-coverage models; against comparator M2\_HGB: delta Brier (selected minus comparator) -0.001764, 95\% hole-cluster interval [-0.006949, 0.002869], selected better in 2 of 5 folds; calibration ACCEPTABLE; discrimination NOT\_WORSE; interval includes zero; selected better in 2 of 5 folds (minimum 4) & 9aa361f17f1a9b24ac0ff7f3af957a1dba4ea550d1b1c7fc0607fd1adcfd9c7f \\
+2 & M2\_HGB & COMPARATOR & DISTINCT &  & INCONCLUSIVE & NOT\_SELECTED & 0.001764 & -0.002869 & 0.006949 &  & ACCEPTABLE & NOT\_WORSE & 1 & vs selected M2\_HGB\_WF: delta Brier (model minus selected) 0.001764, 95\% hole-cluster interval [-0.002869, 0.006949]; unresolved: the interval includes zero &  \\
+3 & BASE\_LOGISTIC & REJECTED & DISTINCT &  & INCONCLUSIVE & NOT\_SELECTED & 0.006358 & -0.009576 & 0.021205 &  & ACCEPTABLE & WORSE & 1 & vs selected M2\_HGB\_WF: delta Brier (model minus selected) 0.006358, 95\% hole-cluster interval [-0.009576, 0.021205]; unresolved: the interval includes zero &  \\
+4 & M2\_RF & REJECTED & DISTINCT &  & NO\_IMPROVEMENT & NOT\_SELECTED & 0.008778 & 0.000319 & 0.018555 &  & ACCEPTABLE & WORSE & 1 & vs selected M2\_HGB\_WF: delta Brier (model minus selected) 0.008778, 95\% hole-cluster interval [0.000319, 0.018555]; resolved: the selected model has the lower Brier (interval above zero) &  \\
+5 & BASE\_LOGISTIC\_WF & REJECTED & DISTINCT &  & INCONCLUSIVE & NOT\_SELECTED & 0.009583 & -0.00515 & 0.02377 &  & ACCEPTABLE & WORSE & 1 & vs selected M2\_HGB\_WF: delta Brier (model minus selected) 0.009583, 95\% hole-cluster interval [-0.005150, 0.023770]; unresolved: the interval includes zero &  \\
+6 & M2\_RF\_WF & REJECTED & DISTINCT &  & NO\_IMPROVEMENT & NOT\_SELECTED & 0.009707 & 0.001205 & 0.01915 &  & ACCEPTABLE & WORSE & 1 & vs selected M2\_HGB\_WF: delta Brier (model minus selected) 0.009707, 95\% hole-cluster interval [0.001205, 0.019150]; resolved: the selected model has the lower Brier (interval above zero) &  \\
+7 & M1\_IK & REJECTED & DISTINCT &  & NO\_IMPROVEMENT & NOT\_SELECTED & 0.022892 & 0.006284 & 0.042134 &  & ACCEPTABLE & WORSE & 1 & vs selected M2\_HGB\_WF: delta Brier (model minus selected) 0.022892, 95\% hole-cluster interval [0.006284, 0.042134]; resolved: the selected model has the lower Brier (interval above zero) &  \\
+8 & BASE\_PREVALENCE & REJECTED & DISTINCT &  & NO\_IMPROVEMENT & NOT\_SELECTED & 0.057717 & 0.033779 & 0.084769 &  & NOT\_ACCEPTABLE & WORSE & 1 & vs selected M2\_HGB\_WF: delta Brier (model minus selected) 0.057717, 95\% hole-cluster interval [0.033779, 0.084769]; resolved: the selected model has the lower Brier (interval above zero) &  \\
+ & M2\_SEL & NOT\_COMPARABLE & IDENTICAL\_TO & M2\_RF & NOT\_COMPARABLE & NOT\_RANKED &  &  &  &  & ACCEPTABLE & IDENTICAL\_TO\_M2\_RF & 1 & identical to M2\_RF on every common observation; reported, not ranked &  \\
+ & M2\_WF\_SEL & NOT\_COMPARABLE & IDENTICAL\_TO & M2\_RF\_WF & NOT\_COMPARABLE & NOT\_RANKED &  &  &  &  & ACCEPTABLE & IDENTICAL\_TO\_M2\_RF\_WF & 1 & identical to M2\_RF\_WF on every common observation; reported, not ranked &  \\
+ & M3\_HYBRID & NOT\_COMPARABLE & IDENTICAL\_TO & M2\_WF\_SEL & NOT\_COMPARABLE & NOT\_RANKED &  &  &  &  & ACCEPTABLE & IDENTICAL\_TO\_M2\_WF\_SEL & 1 & identical to M2\_WF\_SEL on every common observation; reported, not ranked &  \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,231 @@
+# Objective 5 uncertainty configuration. Predeclared: committed on 2026-11-06 before any Objective 5 result was computed.
+# A change of any value requires a new config_version; earlier versions are kept in config/objective_5/superseded/.
+config_version: O5-CFG-2026.11.06-2
+supersedes: O5-CFG-2026.11.06-1
+supersedes_sha256: 69a3cb61bab4aa6c112dc26c54b135dc32e5451f671e37d69df9425bbea859b9
+status: PREDECLARED_ANALYSIS_STAGE
+revision_reason: >
+  Configuration 1 gave per-cell (marginal) uncertainty only. It could not express uncertainty that involves many cells
+  jointly (graphitic volume, connectivity), which needs spatially correlated realisations. Configuration 2 keeps every
+  configuration-1 setting and adds a labelled scenario sequential indicator simulation (SIS) with a locally varying
+  mean from the validated tier-2 model. No configuration-1 result was computed; nothing was tuned on a result.
+objective: >
+  To quantify and visualize three-dimensional uncertainty in graphitic-domain occurrence and identify areas of high
+  confidence and high uncertainty.
+design_basis: >
+  Objective 2 found no identifiable lateral indicator variogram (all rock, fresh rock, and a dipping-plane structural
+  frame searched over apparent dips from -80 to +80 degrees in configuration 6), so no geostatistical simulation can be
+  driven by a data-identified lateral covariance. Objective 4 locked one model per validation tier and found both
+  selections INCONCLUSIVE against the next-best model. The headline uncertainty is therefore model-based: the selected
+  trend models' probability, the Bernoulli entropy of that probability, a hole-cluster bootstrap of the model fit, and
+  the disagreement with the runner-up model. Every map carries the validation tier that supports it. Joint (multi-cell)
+  uncertainty is added as a scenario analysis whose lateral range is assumed, never estimated.
+
+inputs:
+  label_rule_id: DESIGN_8_2_v1
+  observations: database/kambale_obj3_models.sqlite (analysis_observations, in_binary_target = 1)
+  model_config: config/objective_3/model_config.yaml   # O3-CFG-2026.11.06-2; estimators, grids, calibration, front
+  downhole_variogram:
+    database: database/kambale_obj2_spatial.sqlite
+    experiment: DOWNHOLE_WITHIN, config O2-CFG-2026.11.05-4
+    model_rule: the FITTED model with the smaller objective_value (exponential, fit 16, at the time of writing)
+    expected_values: {model: exponential, nugget: 0.012760, structured_sill: 0.213132, practical_range_m: 23.5297}
+    range_convention: practical range a, gamma = c0 + c1 (1 - exp(-3 h / a)) (objective_2/fitting.py)
+    lag_direction: along the hole, plunge 60 degrees toward azimuth 090
+  handoffs:
+    - {tier: TIER_2_INTERPOLATION, database: database/kambale_obj4_validation_tier2.sqlite}
+    - {tier: TIER_1_EXTRAPOLATION, database: database/kambale_obj4_validation.sqlite}
+  require_handoff_match:     # STOP if a locked handoff names a different model
+    TIER_2_INTERPOLATION: {selected: M2_HGB_WF, runner_up: M2_HGB}
+    TIER_1_EXTRAPOLATION: {selected: BASE_LOGISTIC_WF, runner_up: M2_RF}
+  not_used: [M1_IK, M3_HYBRID]   # neither was selected; M3 is identical to M2_WF_SEL
+
+geometry:
+  horizontal_crs: EPSG:32630
+  vertical: z_relative_m      # metres below the hole collar, straight-hole convention, PROVISIONAL_RELATIVE
+  absolute_elevation_allowed: false
+  statement: >
+    The grid's vertical axis is depth relative to the local collar surface, not elevation. Volumes are grid volumes in
+    this relative frame and are not resource volumes.
+
+grid:
+  origin_rule: collar bounding box expanded by 100 m on every side, snapped outward to the cell size
+  cell_size_m: {easting: 10.0, northing: 10.0, z: 2.0}
+  z_range_m: [-56.0, 0.0]          # covers the sampled z_relative range (-54.1 to -0.4)
+  cell_reference: cell centre
+  cell_volume_m3: 200.0
+
+support_zones:
+  # Lateral distance from the cell centre to the nearest drilled collar (all 71 holes).
+  distance: LATERAL_TO_NEAREST_COLLAR
+  zones:
+    - zone: INTERPOLATION
+      max_distance_m: 25.0
+      model_tier: TIER_2_INTERPOLATION
+      basis: tier-2 test holes were 15-17 m from the nearest training collar; 25 m is about one hole spacing
+    - zone: EXTRAPOLATION
+      max_distance_m: 560.0
+      model_tier: TIER_1_EXTRAPOLATION
+      basis: >
+        tier-1 test lines were 454-557 m from the nearest training collar. Distances between 25 and 454 m were not
+        tested directly; the tier-1 skill is taken as the conservative estimate for them.
+    - zone: NO_SUPPORT
+      max_distance_m: null
+      model_tier: null
+      basis: beyond any validated distance; no probability is reported
+  depth_support:
+    rule: >
+      A cell is DEPTH_EXTRAPOLATED when its z is below the deepest sampled z_relative among the holes within 100 m of
+      it (or of the nearest hole when none is within 100 m). Such cells keep a probability but cannot be classified as
+      confident.
+    neighbourhood_m: 100.0
+
+final_models:
+  rule: >
+    Each selected and runner-up model is refitted once on all binary intervals, with the Objective 3 configuration-2
+    estimator, hyperparameter grid, inner whole-hole cross-validation (4 folds, seed 20261105, log-loss selection) and
+    Platt calibration from inner cross-fitted predictions where Objective 3 applies it. No new hyperparameter, predictor
+    or calibration rule is introduced.
+  weathering_front_on_grid: >
+    depth_below_weathering_front_m at a cell uses the Objective 3 inverse-distance front surface (power 2, 8
+    neighbours) built from the observed fronts of all holes. For training rows the own hole is left out, as in
+    Objective 3.
+  in_sample_fit: reported as a fit diagnostic only; never as validation
+
+uncertainty_measures:
+  probability: calibrated probability of the zone's selected model
+  entropy_bits: "H(p) = -p log2 p - (1 - p) log2 (1 - p)"
+  hole_bootstrap:
+    n_replicates: 200
+    seed: 20261107
+    resample: holes with replacement, all intervals of a drawn hole kept
+    refit: >
+      Hyperparameters fixed at the full-data selection; the estimator, the weathering-front surface and the Platt
+      calibration are refitted in each replicate.
+    interval: 90 per cent percentile interval [p_lo, p_hi] per cell
+    storage: per-replicate cell probabilities quantised to 1/255 in memory; only per-cell summaries are written
+    min_successful_fraction: 0.95
+  model_disagreement: "|p_selected - p_runner_up| per cell, both calibrated"
+
+classification:
+  decision_threshold: 0.5        # more likely than not
+  sensitivity_threshold: TRAINING_PREVALENCE   # reported as a sensitivity table, not used in the headline classes
+  disagreement_limit: 0.20
+  classes:
+    CONFIDENT_PRESENT: p_lo >= threshold and disagreement < limit and not DEPTH_EXTRAPOLATED
+    CONFIDENT_ABSENT: p_hi < threshold and disagreement < limit and not DEPTH_EXTRAPOLATED
+    UNCERTAIN: every other cell with a probability
+    NO_SUPPORT: cells in the NO_SUPPORT zone
+  tags:
+    ABOVE_WEATHERING_FRONT: >
+      depth_below_weathering_front_m < 0. Intervals logged cw or hw carry almost no positive label (Objective 2,
+      configuration 5); CONFIDENT_ABSENT in these cells means "not logged as graphitic", not "non-graphitic".
+    EXTRAPOLATED_TIER: every class in the EXTRAPOLATION zone is reported with its tier, never merged with INTERPOLATION
+  ranking_statement: >
+    Both locked selections are INCONCLUSIVE against their runner-up; the disagreement measure is the map of where that
+    unresolved choice matters.
+
+scenario_simulation:
+  role: >
+    SCENARIO ANALYSIS. It does not change the headline classes. Its lateral range is assumed; results are reported per
+    scenario and never pooled into one answer.
+  method: SEQUENTIAL_INDICATOR_SIMULATION_WITH_LOCALLY_VARYING_MEAN
+  domain: INTERPOLATION zone cells that are not DEPTH_EXTRAPOLATED
+  local_mean: calibrated M2_HGB_WF probability from the full-data final refit, at each simulation node and datum
+  conditioning_data: >
+    All DESIGN_8_2_v1 binary intervals at their own midpoint coordinates (easting_m, northing_m, z_relative_m); they
+    are not snapped to nodes. The local mean at a datum is the final-refit probability at that datum.
+  residual_covariance: >
+    C(u, v) = sqrt(m(u)(1 - m(u)) m(v)(1 - m(v))) rho(h_aniso(u, v)), where rho is the correlogram of the down-hole
+    model in anisotropy-scaled distance h (h = 1 at the practical range): rho(h) = (c1 / (c0 + c1)) exp(-3 h) for
+    h > 0 and rho(0) = 1.
+  anisotropy:
+    type: GEOMETRIC, horizontally isotropic
+    horizontal_range_m: SCENARIO
+    vertical_range_rule: >
+      The vertical practical range a_v is set so that the range along the hole direction (plunge 60 degrees) equals
+      the fitted down-hole practical range a_d: 1 / a_v^2 = (1 / a_d^2 - cos^2(60) / a_h^2) / sin^2(60). A scenario
+      with a_h <= a_d cos(60) is INFEASIBLE and is recorded as such, not run.
+    scaled_distance: "h = sqrt((dx^2 + dy^2) / a_h^2 + dz^2 / a_v^2)"
+  scenarios:
+    - {scenario_id: SIS_AH015, horizontal_range_m: 15.0}
+    - {scenario_id: SIS_AH025, horizontal_range_m: 25.0}
+    - {scenario_id: SIS_AH050, horizontal_range_m: 50.0}
+    - {scenario_id: SIS_AH100, horizontal_range_m: 100.0}
+    - {scenario_id: SIS_AH200, horizontal_range_m: 200.0}
+  scenario_basis: >
+    15 m is just above the shortest feasible range and below one hole spacing (lateral correlation effectively absent
+    between holes); 25 m is about one hole spacing; 50 to 200 m bracket the stratabound continuity described by Sunkari
+    et al. (2026, Minerals 16:1060) without any of them being estimated. Objective 3's inner cross-validation
+    covariance for M1 (75 per cent nugget, mostly 400 m) is a different, pure-indicator model and is not a scenario.
+  kriging:
+    type: SIMPLE_KRIGING_OF_RESIDUALS
+    max_conditioning_data: 24
+    max_previously_simulated: 12
+    search_radius: anisotropy-scaled distance 1.0 (the practical range in every direction)
+    no_neighbours_rule: the node takes its local mean as the probability
+    ccdf: p* = clip(m(u) + sum lambda_i (i_i - m_i), 0, 1); draw i(u) = 1 if U < p*
+    jitter_fraction: 0.00000001
+  path: random, a new permutation per realisation
+  n_realisations: 100
+  seed: 20261109
+  outputs_per_scenario:
+    volume: >
+      graphitic grid volume (simulated positive cells x 200 m3) per realisation, with P10, P50 and P90, against the
+      expected volume sum(m) x 200 m3 over the same cells
+    connectivity: >
+      per realisation, 26-neighbour connected components of positive cells: number of components, share of positive
+      volume in the largest component; P10, P50, P90 across realisations
+    frequency_map: per-cell share of realisations that are positive (stored per cell)
+    reproduction: >
+      mean simulated frequency over the domain against the mean local mean; the down-hole experimental indicator
+      variogram of five realisations against the data variogram (reported)
+  claims: >
+    Volumes are relative grid volumes of the logged DESIGN_8_2_v1 domain inside the INTERPOLATION zone. They are not
+    resources, carry no grade, and depend on the assumed lateral range; the spread across scenarios is the result.
+
+outputs:
+  database: database/kambale_obj5_uncertainty.sqlite
+  tables:
+    - O5-T01 cell counts and relative grid volume by class, zone and 10 m depth band
+    - O5-T02 sensitivity of the class counts at the prevalence threshold
+    - O5-T03 per-zone validated skill carried from Objective 4 (Brier, AUC, interval) beside the class counts
+    - O5-T04 final-refit record (selected hyperparameters, calibration, in-sample fit)
+    - O5-T05 scenario simulation summary (a_h, a_v, feasibility, volume P10/P50/P90, expected volume, connectivity)
+    - O5-T06 scenario reproduction checks
+  figures:
+    - O5-F01 support zones in plan with collars and drill lines
+    - O5-F02 probability depth slices at z = -5, -10, -20, -30, -40 m
+    - O5-F03 bootstrap interval width depth slices (same z)
+    - O5-F04 model disagreement depth slices (same z)
+    - O5-F05 class depth slices with the weathering-front tag
+    - O5-F06 along-line sections (5 lines) of probability, interval width and class, with logged indicators overlaid
+    - O5-F07 3D view of CONFIDENT_PRESENT and UNCERTAIN cells inside the INTERPOLATION zone
+    - O5-F08 graphitic volume distribution per scenario, with the expected volume marked
+    - O5-F09 connectivity (largest-component share and component count) per scenario
+    - O5-F10 one realisation and the frequency map per scenario on one drill-line section
+  figure_rule: every figure is drawn from registered SQL against the Objective 5 database
+
+gates:
+  STOP:
+    - handoff receipt model differs from require_handoff_match
+    - down-hole variogram model or parameters differ from inputs.downhole_variogram.expected_values (tolerance 1e-4)
+    - any absolute elevation used
+    - a probability outside [0, 1] or missing for a supported cell
+    - bootstrap success fraction below min_successful_fraction
+    - a weathering-front value on the grid computed from anything other than observed hole fronts
+    - a NO_SUPPORT cell carrying a probability or a confident class
+    - scenario set, realisation count, neighbour limits or seed differing from this file
+    - a simulation node outside the simulation domain
+  WARN:
+    - full-data hyperparameter selection differs from the most frequent Objective 3 fold selection (reported, not changed)
+    - more than 50 per cent of INTERPOLATION cells DEPTH_EXTRAPOLATED
+    - a scenario's mean simulated frequency differs from the mean local mean by more than 0.05
+
+claims_not_permitted:
+  - grade, tonnage, resource or reserve of any kind
+  - a geostatistical uncertainty with an estimated lateral covariance; scenario results rest on an assumed lateral range
+  - a single best-estimate graphitic volume pooled across scenarios
+  - a claim that one model family is better than another
+  - absence of graphite in cells above the weathering front
+  - any probability beyond 560 m from the nearest drilled collar

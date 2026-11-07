@@ -1,0 +1,78 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O4-T03. Confusion matrices and threshold provenance. The pooled matrix sums the fold-specific confusion counts; the threshold is therefore NULL and the source records that the fold-specific thresholds were summed. Receipt 1.}
+\label{tab:O4-T03}
+\begin{tabular}{llllllllllllllllp{0.3\linewidth}}
+\toprule
+model\_id & scope & fold\_id & threshold & threshold\_source & tp & fp & tn & fn & precision & recall & specificity & balanced\_accuracy & f1 & mcc & status & reason \\
+\midrule
+BASE\_LOGISTIC & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 367 & 402 & 902 & 158 & 0.477243 & 0.699048 & 0.691718 & 0.695383 & 0.567233 & 0.358112 & DEFINED & all rates defined \\
+BASE\_LOGISTIC & FOLD & 1 & 0.35 & O3\_TRAINING\_ONLY\_THRESHOLD & 48 & 72 & 228 & 35 & 0.4 & 0.578313 & 0.76 & 0.669157 & 0.472906 & 0.300504 & DEFINED & all rates defined \\
+BASE\_LOGISTIC & FOLD & 2 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 177 & 104 & 152 & 22 & 0.629893 & 0.889447 & 0.59375 & 0.741599 & 0.7375 & 0.493223 & DEFINED & all rates defined \\
+BASE\_LOGISTIC & FOLD & 3 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 62 & 72 & 192 & 57 & 0.462687 & 0.521008 & 0.727273 & 0.624141 & 0.490119 & 0.240917 & DEFINED & all rates defined \\
+BASE\_LOGISTIC & FOLD & 4 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 46 & 95 & 154 & 8 & 0.326241 & 0.851852 & 0.618474 & 0.735163 & 0.471795 & 0.360851 & DEFINED & all rates defined \\
+BASE\_LOGISTIC & FOLD & 5 & 0.35 & O3\_TRAINING\_ONLY\_THRESHOLD & 34 & 59 & 176 & 36 & 0.365591 & 0.485714 & 0.748936 & 0.617325 & 0.417178 & 0.214336 & DEFINED & all rates defined \\
+BASE\_LOGISTIC\_WF & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 370 & 436 & 868 & 155 & 0.459057 & 0.704762 & 0.665644 & 0.685203 & 0.555973 & 0.337514 & DEFINED & all rates defined \\
+BASE\_LOGISTIC\_WF & FOLD & 1 & 0.35 & O3\_TRAINING\_ONLY\_THRESHOLD & 46 & 69 & 231 & 37 & 0.4 & 0.554217 & 0.77 & 0.662108 & 0.464646 & 0.29142 & DEFINED & all rates defined \\
+BASE\_LOGISTIC\_WF & FOLD & 2 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 180 & 108 & 148 & 19 & 0.625 & 0.904523 & 0.578125 & 0.741324 & 0.73922 & 0.496732 & DEFINED & all rates defined \\
+BASE\_LOGISTIC\_WF & FOLD & 3 & 0.35 & O3\_TRAINING\_ONLY\_THRESHOLD & 50 & 59 & 205 & 69 & 0.458716 & 0.420168 & 0.776515 & 0.598342 & 0.438596 & 0.201722 & DEFINED & all rates defined \\
+BASE\_LOGISTIC\_WF & FOLD & 4 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 47 & 93 & 156 & 7 & 0.335714 & 0.87037 & 0.626506 & 0.748438 & 0.484536 & 0.381406 & DEFINED & all rates defined \\
+BASE\_LOGISTIC\_WF & FOLD & 5 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 47 & 107 & 128 & 23 & 0.305195 & 0.671429 & 0.544681 & 0.608055 & 0.419643 & 0.181764 & DEFINED & all rates defined \\
+BASE\_PREVALENCE & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 0 & 0 & 1304 & 525 &  & 0 & 1 & 0.5 &  &  & UNDEFINED & undefined rates: precision, f1, mcc \\
+BASE\_PREVALENCE & FOLD & 1 & 0.5 & O3\_TRAINING\_ONLY\_THRESHOLD & 0 & 0 & 300 & 83 &  & 0 & 1 & 0.5 &  &  & UNDEFINED & undefined rates: precision, f1, mcc \\
+BASE\_PREVALENCE & FOLD & 2 & 0.5 & O3\_TRAINING\_ONLY\_THRESHOLD & 0 & 0 & 256 & 199 &  & 0 & 1 & 0.5 &  &  & UNDEFINED & undefined rates: precision, f1, mcc \\
+BASE\_PREVALENCE & FOLD & 3 & 0.5 & O3\_TRAINING\_ONLY\_THRESHOLD & 0 & 0 & 264 & 119 &  & 0 & 1 & 0.5 &  &  & UNDEFINED & undefined rates: precision, f1, mcc \\
+BASE\_PREVALENCE & FOLD & 4 & 0.5 & O3\_TRAINING\_ONLY\_THRESHOLD & 0 & 0 & 249 & 54 &  & 0 & 1 & 0.5 &  &  & UNDEFINED & undefined rates: precision, f1, mcc \\
+BASE\_PREVALENCE & FOLD & 5 & 0.5 & O3\_TRAINING\_ONLY\_THRESHOLD & 0 & 0 & 235 & 70 &  & 0 & 1 & 0.5 &  &  & UNDEFINED & undefined rates: precision, f1, mcc \\
+M1\_IK & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 397 & 419 & 885 & 128 & 0.48652 & 0.75619 & 0.678681 & 0.717436 & 0.592095 & 0.395758 & DEFINED & all rates defined \\
+M1\_IK & FOLD & 1 & 0.305671 & O3\_TRAINING\_ONLY\_THRESHOLD & 67 & 111 & 189 & 16 & 0.376404 & 0.807229 & 0.63 & 0.718614 & 0.51341 & 0.361178 & DEFINED & all rates defined \\
+M1\_IK & FOLD & 2 & 0.237263 & O3\_TRAINING\_ONLY\_THRESHOLD & 163 & 79 & 177 & 36 & 0.673554 & 0.819095 & 0.691406 & 0.755251 & 0.739229 & 0.507512 & DEFINED & all rates defined \\
+M1\_IK & FOLD & 3 & 0.280775 & O3\_TRAINING\_ONLY\_THRESHOLD & 75 & 73 & 191 & 44 & 0.506757 & 0.630252 & 0.723485 & 0.676868 & 0.561798 & 0.336195 & DEFINED & all rates defined \\
+M1\_IK & FOLD & 4 & 0.30865 & O3\_TRAINING\_ONLY\_THRESHOLD & 42 & 77 & 172 & 12 & 0.352941 & 0.777778 & 0.690763 & 0.73427 & 0.485549 & 0.367165 & DEFINED & all rates defined \\
+M1\_IK & FOLD & 5 & 0.298556 & O3\_TRAINING\_ONLY\_THRESHOLD & 50 & 79 & 156 & 20 & 0.387597 & 0.714286 & 0.66383 & 0.689058 & 0.502513 & 0.321852 & DEFINED & all rates defined \\
+M2\_HGB & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 430 & 567 & 737 & 95 & 0.431294 & 0.819048 & 0.565184 & 0.692116 & 0.565046 & 0.349062 & DEFINED & all rates defined \\
+M2\_HGB & FOLD & 1 & 0.1 & O3\_TRAINING\_ONLY\_THRESHOLD & 82 & 196 & 104 & 1 & 0.294964 & 0.987952 & 0.346667 & 0.667309 & 0.454294 & 0.309053 & DEFINED & all rates defined \\
+M2\_HGB & FOLD & 2 & 0.35 & O3\_TRAINING\_ONLY\_THRESHOLD & 147 & 45 & 211 & 52 & 0.765625 & 0.738693 & 0.824219 & 0.781456 & 0.751918 & 0.565404 & DEFINED & all rates defined \\
+M2\_HGB & FOLD & 3 & 0.15 & O3\_TRAINING\_ONLY\_THRESHOLD & 110 & 130 & 134 & 9 & 0.458333 & 0.92437 & 0.507576 & 0.715973 & 0.612813 & 0.413267 & DEFINED & all rates defined \\
+M2\_HGB & FOLD & 4 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 30 & 76 & 173 & 24 & 0.283019 & 0.555556 & 0.694779 & 0.625167 & 0.375 & 0.200878 & DEFINED & all rates defined \\
+M2\_HGB & FOLD & 5 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 61 & 120 & 115 & 9 & 0.337017 & 0.871429 & 0.489362 & 0.680395 & 0.486056 & 0.308878 & DEFINED & all rates defined \\
+M2\_HGB\_WF & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 413 & 564 & 740 & 112 & 0.422723 & 0.786667 & 0.567485 & 0.677076 & 0.549933 & 0.321174 & DEFINED & all rates defined \\
+M2\_HGB\_WF & FOLD & 1 & 0.1 & O3\_TRAINING\_ONLY\_THRESHOLD & 83 & 211 & 89 & 0 & 0.282313 & 1 & 0.296667 & 0.648333 & 0.440318 & 0.289401 & DEFINED & all rates defined \\
+M2\_HGB\_WF & FOLD & 2 & 0.4 & O3\_TRAINING\_ONLY\_THRESHOLD & 111 & 27 & 229 & 88 & 0.804348 & 0.557789 & 0.894531 & 0.72616 & 0.658754 & 0.488116 & DEFINED & all rates defined \\
+M2\_HGB\_WF & FOLD & 3 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 109 & 101 & 163 & 10 & 0.519048 & 0.915966 & 0.617424 & 0.766695 & 0.662614 & 0.496007 & DEFINED & all rates defined \\
+M2\_HGB\_WF & FOLD & 4 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 46 & 86 & 163 & 8 & 0.348485 & 0.851852 & 0.654618 & 0.753235 & 0.494624 & 0.3909 & DEFINED & all rates defined \\
+M2\_HGB\_WF & FOLD & 5 & 0.15 & O3\_TRAINING\_ONLY\_THRESHOLD & 64 & 139 & 96 & 6 & 0.315271 & 0.914286 & 0.408511 & 0.661398 & 0.468864 & 0.287716 & DEFINED & all rates defined \\
+M2\_RF & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 414 & 453 & 851 & 111 & 0.477509 & 0.788571 & 0.652607 & 0.720589 & 0.594828 & 0.399702 & DEFINED & all rates defined \\
+M2\_RF & FOLD & 1 & 0.25 & O3\_TRAINING\_ONLY\_THRESHOLD & 74 & 149 & 151 & 9 & 0.331839 & 0.891566 & 0.503333 & 0.69745 & 0.48366 & 0.329894 & DEFINED & all rates defined \\
+M2\_RF & FOLD & 2 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 176 & 63 & 193 & 23 & 0.736402 & 0.884422 & 0.753906 & 0.819164 & 0.803653 & 0.63411 & DEFINED & all rates defined \\
+M2\_RF & FOLD & 3 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 74 & 56 & 208 & 45 & 0.569231 & 0.621849 & 0.787879 & 0.704864 & 0.594378 & 0.400441 & DEFINED & all rates defined \\
+M2\_RF & FOLD & 4 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 36 & 80 & 169 & 18 & 0.310345 & 0.666667 & 0.678715 & 0.672691 & 0.423529 & 0.271923 & DEFINED & all rates defined \\
+M2\_RF & FOLD & 5 & 0.25 & O3\_TRAINING\_ONLY\_THRESHOLD & 54 & 105 & 130 & 16 & 0.339623 & 0.771429 & 0.553191 & 0.66231 & 0.471616 & 0.273265 & DEFINED & all rates defined \\
+M2\_RF\_WF & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 475 & 523 & 781 & 50 & 0.475952 & 0.904762 & 0.598926 & 0.751844 & 0.623769 & 0.45763 & DEFINED & all rates defined \\
+M2\_RF\_WF & FOLD & 1 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 74 & 144 & 156 & 9 & 0.33945 & 0.891566 & 0.52 & 0.705783 & 0.491694 & 0.342428 & DEFINED & all rates defined \\
+M2\_RF\_WF & FOLD & 2 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 192 & 84 & 172 & 7 & 0.695652 & 0.964824 & 0.671875 & 0.81835 & 0.808421 & 0.646546 & DEFINED & all rates defined \\
+M2\_RF\_WF & FOLD & 3 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 103 & 93 & 171 & 16 & 0.52551 & 0.865546 & 0.647727 & 0.756637 & 0.653968 & 0.475199 & DEFINED & all rates defined \\
+M2\_RF\_WF & FOLD & 4 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 47 & 92 & 157 & 7 & 0.338129 & 0.87037 & 0.630522 & 0.750446 & 0.487047 & 0.384691 & DEFINED & all rates defined \\
+M2\_RF\_WF & FOLD & 5 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 59 & 110 & 125 & 11 & 0.349112 & 0.842857 & 0.531915 & 0.687386 & 0.493724 & 0.317057 & DEFINED & all rates defined \\
+M2\_SEL & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 414 & 453 & 851 & 111 & 0.477509 & 0.788571 & 0.652607 & 0.720589 & 0.594828 & 0.399702 & DEFINED & all rates defined \\
+M2\_SEL & FOLD & 1 & 0.25 & O3\_TRAINING\_ONLY\_THRESHOLD & 74 & 149 & 151 & 9 & 0.331839 & 0.891566 & 0.503333 & 0.69745 & 0.48366 & 0.329894 & DEFINED & all rates defined \\
+M2\_SEL & FOLD & 2 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 176 & 63 & 193 & 23 & 0.736402 & 0.884422 & 0.753906 & 0.819164 & 0.803653 & 0.63411 & DEFINED & all rates defined \\
+M2\_SEL & FOLD & 3 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 74 & 56 & 208 & 45 & 0.569231 & 0.621849 & 0.787879 & 0.704864 & 0.594378 & 0.400441 & DEFINED & all rates defined \\
+M2\_SEL & FOLD & 4 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 36 & 80 & 169 & 18 & 0.310345 & 0.666667 & 0.678715 & 0.672691 & 0.423529 & 0.271923 & DEFINED & all rates defined \\
+M2\_SEL & FOLD & 5 & 0.25 & O3\_TRAINING\_ONLY\_THRESHOLD & 54 & 105 & 130 & 16 & 0.339623 & 0.771429 & 0.553191 & 0.66231 & 0.471616 & 0.273265 & DEFINED & all rates defined \\
+M2\_WF\_SEL & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 475 & 523 & 781 & 50 & 0.475952 & 0.904762 & 0.598926 & 0.751844 & 0.623769 & 0.45763 & DEFINED & all rates defined \\
+M2\_WF\_SEL & FOLD & 1 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 74 & 144 & 156 & 9 & 0.33945 & 0.891566 & 0.52 & 0.705783 & 0.491694 & 0.342428 & DEFINED & all rates defined \\
+M2\_WF\_SEL & FOLD & 2 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 192 & 84 & 172 & 7 & 0.695652 & 0.964824 & 0.671875 & 0.81835 & 0.808421 & 0.646546 & DEFINED & all rates defined \\
+M2\_WF\_SEL & FOLD & 3 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 103 & 93 & 171 & 16 & 0.52551 & 0.865546 & 0.647727 & 0.756637 & 0.653968 & 0.475199 & DEFINED & all rates defined \\
+M2\_WF\_SEL & FOLD & 4 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 47 & 92 & 157 & 7 & 0.338129 & 0.87037 & 0.630522 & 0.750446 & 0.487047 & 0.384691 & DEFINED & all rates defined \\
+M2\_WF\_SEL & FOLD & 5 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 59 & 110 & 125 & 11 & 0.349112 & 0.842857 & 0.531915 & 0.687386 & 0.493724 & 0.317057 & DEFINED & all rates defined \\
+M3\_HYBRID & POOLED & 0 &  & O3\_FOLD\_SPECIFIC\_THRESHOLDS\_SUMMED & 475 & 523 & 781 & 50 & 0.475952 & 0.904762 & 0.598926 & 0.751844 & 0.623769 & 0.45763 & DEFINED & all rates defined \\
+M3\_HYBRID & FOLD & 1 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 74 & 144 & 156 & 9 & 0.33945 & 0.891566 & 0.52 & 0.705783 & 0.491694 & 0.342428 & DEFINED & all rates defined \\
+M3\_HYBRID & FOLD & 2 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 192 & 84 & 172 & 7 & 0.695652 & 0.964824 & 0.671875 & 0.81835 & 0.808421 & 0.646546 & DEFINED & all rates defined \\
+M3\_HYBRID & FOLD & 3 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 103 & 93 & 171 & 16 & 0.52551 & 0.865546 & 0.647727 & 0.756637 & 0.653968 & 0.475199 & DEFINED & all rates defined \\
+M3\_HYBRID & FOLD & 4 & 0.3 & O3\_TRAINING\_ONLY\_THRESHOLD & 47 & 92 & 157 & 7 & 0.338129 & 0.87037 & 0.630522 & 0.750446 & 0.487047 & 0.384691 & DEFINED & all rates defined \\
+M3\_HYBRID & FOLD & 5 & 0.2 & O3\_TRAINING\_ONLY\_THRESHOLD & 59 & 110 & 125 & 11 & 0.349112 & 0.842857 & 0.531915 & 0.687386 & 0.493724 & 0.317057 & DEFINED & all rates defined \\
+\bottomrule
+\end{tabular}
+\end{table}

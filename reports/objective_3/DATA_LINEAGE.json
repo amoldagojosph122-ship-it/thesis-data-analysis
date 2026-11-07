@@ -1,0 +1,1047 @@
+{
+  "code_commit": "dbb556a",
+  "code_version": "3.0.0",
+  "config_sha256": "47569e360e552b442cef675ba0f709b44d036b783b8e230be0ee1762f98744f3",
+  "config_version": "O3-CFG-2026.11.06-2",
+  "created_utc": "2026-11-06T11:59:49Z",
+  "figures": [
+    {
+      "figure_id": "O3-F01",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Outer-fold spatial map and class support"
+    },
+    {
+      "figure_id": "O3-F02",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Predictor availability and observation support"
+    },
+    {
+      "figure_id": "O3-F03",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "M1 indicator-kriging out-of-fold probabilities"
+    },
+    {
+      "figure_id": "O3-F04",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "M2 out-of-fold probability sections"
+    },
+    {
+      "figure_id": "O3-F05",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "M3 hybrid or fallback probability section"
+    },
+    {
+      "figure_id": "O3-F06",
+      "reason": "rendered from the registered queries",
+      "status": "GENERATED",
+      "title": "Inner-CV covariance selection for M1 and M3"
+    }
+  ],
+  "geometry_version": {
+    "created_utc": "2026-11-06T04:36:37Z",
+    "crs_key": "EPSG:32630",
+    "datum_status": "VERIFIED",
+    "geometry_build_id": 10,
+    "geometry_status": "PROVISIONAL_RELATIVE",
+    "geometry_version_id": "GEOM-10-1",
+    "receipt_id": 1,
+    "vertical_basis": "RELATIVE_TO_COLLAR",
+    "z_absolute_used": 0
+  },
+  "label_version": {
+    "ambiguous_n": 81,
+    "binary_n": 1829,
+    "definition_sha256": "d7a8043ed70dcc76e34a084c6b723dd428c98162ae451c53428d2f64e1a4d628",
+    "excluded_states_json": "[\"AMBIGUOUS\", \"UNRESOLVED\"]",
+    "frozen_utc": "2026-11-06T04:36:37Z",
+    "label_version_id": "LABEL-DESIGN_8_2_v1-1",
+    "negative_n": 1304,
+    "negative_state": "NEGATIVE",
+    "positive_n": 525,
+    "positive_state": "POSITIVE",
+    "receipt_id": 1,
+    "rule_id": "DESIGN_8_2_v1",
+    "rule_status": "APPROVED",
+    "unresolved_n": 0
+  },
+  "model_artifacts": {
+    "bytes": 108128,
+    "count": 90
+  },
+  "objective": 3,
+  "output_hashes": [
+    {
+      "bytes": 89802,
+      "path": "figures/objective_3/O3_F01_outer_folds.svg",
+      "sha256": "1581cfa46b2c7c15d6f420cd27b96c1e088a26e5a9ac09dcc0c8635773cacb54"
+    },
+    {
+      "bytes": 21036,
+      "path": "figures/objective_3/O3_F01_outer_folds.pdf",
+      "sha256": "bdcc93ce8773a8174fd515fd3d1826f28c2ce8d57a4ba6a918bc7101f9b72e5a"
+    },
+    {
+      "bytes": 141306,
+      "path": "figures/objective_3/O3_F01_outer_folds.png",
+      "sha256": "0302726c9c25702e68a4361e1710ab51cb9b5f529f81629df3dc009bc18dae99"
+    },
+    {
+      "bytes": 285420,
+      "path": "figures/objective_3/O3_F02_predictor_support.svg",
+      "sha256": "d4afe468bc6c77821253cb5a89d9b4d4e80350df03ecf4b5b00fa40d3cc93f91"
+    },
+    {
+      "bytes": 25073,
+      "path": "figures/objective_3/O3_F02_predictor_support.pdf",
+      "sha256": "f8b3f57cb4ff7a7540908f780af81c715ff0a34973b715a9abfffcbc1d72392d"
+    },
+    {
+      "bytes": 138786,
+      "path": "figures/objective_3/O3_F02_predictor_support.png",
+      "sha256": "ba364d88c99a12b71093c503a4c5fc675fa824f74f3b756933f82f771cce9274"
+    },
+    {
+      "bytes": 326275,
+      "path": "figures/objective_3/O3_F03_m1_probabilities.svg",
+      "sha256": "a5dd431b03bba3759a232e4eab0ec289da94dca22550cab6d73cde6f54c748b3"
+    },
+    {
+      "bytes": 26254,
+      "path": "figures/objective_3/O3_F03_m1_probabilities.pdf",
+      "sha256": "81ebb71ff724a806544ebe1ef614413790fff71d5bfe7a03653c3ca5e5b1371b"
+    },
+    {
+      "bytes": 298620,
+      "path": "figures/objective_3/O3_F03_m1_probabilities.png",
+      "sha256": "22c5b8e29cf6917f4223f813adc6060f0fcf961fddf3fc2afaf27cff1bf33805"
+    },
+    {
+      "bytes": 664697,
+      "path": "figures/objective_3/O3_F04_m2_sections.svg",
+      "sha256": "d8bfb4ef0d591d47abf3d336eddc3706b8ffff6f970de3734c217cf8a021d12e"
+    },
+    {
+      "bytes": 48234,
+      "path": "figures/objective_3/O3_F04_m2_sections.pdf",
+      "sha256": "3b31fcda4c914ed87642d4d64c4bf67aea7519b4f747066081e6786af7483174"
+    },
+    {
+      "bytes": 653220,
+      "path": "figures/objective_3/O3_F04_m2_sections.png",
+      "sha256": "3bde9db1c7a5455214fcce3617ea204de0f8f4613db4bca1145796881e5344bb"
+    },
+    {
+      "bytes": 302092,
+      "path": "figures/objective_3/O3_F05_m3_sections.svg",
+      "sha256": "796dc88f08222d7b09abcb8a99e79771cf1fc0e91e7454c455c7af533eec503d"
+    },
+    {
+      "bytes": 33389,
+      "path": "figures/objective_3/O3_F05_m3_sections.pdf",
+      "sha256": "9ab7bc162da4099eb9ec9e42846629ae75299a8c44499e418a297415314416bb"
+    },
+    {
+      "bytes": 507719,
+      "path": "figures/objective_3/O3_F05_m3_sections.png",
+      "sha256": "2dbe72d06406c19ffd4daca7b22a3596585ba7db66f1e8f85c13cf0de723902b"
+    },
+    {
+      "bytes": 113113,
+      "path": "figures/objective_3/O3_F06_covariance_selection.svg",
+      "sha256": "39398274d344fb453003ecf59359d0be9dd00f85b362b503f6e9735d2a824c1f"
+    },
+    {
+      "bytes": 25727,
+      "path": "figures/objective_3/O3_F06_covariance_selection.pdf",
+      "sha256": "5569c42dbd8781d22acef0b35f443cac8a42505c2862346f771bd47f76032375"
+    },
+    {
+      "bytes": 129658,
+      "path": "figures/objective_3/O3_F06_covariance_selection.png",
+      "sha256": "84f485b0f92c1f702c3afd681d9090a9c1f3aa48281637ce1f357c14a4208367"
+    },
+    {
+      "bytes": 8979,
+      "path": "tables/objective_3/O3_T01_model_support.csv",
+      "sha256": "bcc9b9c6a4d1132f16212b1eb4f2ec30f5057f4d98bd7046934a712f6f00e3b0"
+    },
+    {
+      "bytes": 10450,
+      "path": "tables/objective_3/O3_T01_model_support.md",
+      "sha256": "90bce5e371dc6fa1b267e4b84a267c0684c46d5d8cb43d6f7b68a678287d2b86"
+    },
+    {
+      "bytes": 10729,
+      "path": "tables/objective_3/O3_T01_model_support.tex",
+      "sha256": "6c36e1b501143272eccccca49a48cd75684f2c15bf05597143bb5ec1605a41ea"
+    },
+    {
+      "bytes": 42928,
+      "path": "tables/objective_3/O3_T02_fit_diagnostics.csv",
+      "sha256": "fde1b9e9eac902227f652864cf02152f549048be01f95628021577379ca38d04"
+    },
+    {
+      "bytes": 48168,
+      "path": "tables/objective_3/O3_T02_fit_diagnostics.md",
+      "sha256": "ce07f628dee41dd4d0aef019d0f34382c4bb1a9c407efbf924d12a975c1a8c9b"
+    },
+    {
+      "bytes": 49867,
+      "path": "tables/objective_3/O3_T02_fit_diagnostics.tex",
+      "sha256": "7fbd814ad1b08854ca0fb904060a1087ff0182e0cc012f659da7e0d173cd08f5"
+    },
+    {
+      "bytes": 57319,
+      "path": "tables/objective_3/O3_T03_completeness_leakage.csv",
+      "sha256": "5d91439a1a683cd22ce1b6c0682449f8c0189db852dc07d4b2103876e23bdc6e"
+    },
+    {
+      "bytes": 69834,
+      "path": "tables/objective_3/O3_T03_completeness_leakage.md",
+      "sha256": "34f1af58830c5b7e5923f646b65b8b6a73cb46736f3489cb85a014b166d8a501"
+    },
+    {
+      "bytes": 70839,
+      "path": "tables/objective_3/O3_T03_completeness_leakage.tex",
+      "sha256": "6daf401ad11be5c6b3f86c3bf59bdb1707885c280f84f5e0dd6c07889a52e949"
+    },
+    {
+      "bytes": 11796,
+      "path": "tables/objective_3/O3_T04_artifact_registry.csv",
+      "sha256": "d484d00802cc49213f95d1e176472823bf4603ed684b208f8d4d29a1238b6344"
+    },
+    {
+      "bytes": 13341,
+      "path": "tables/objective_3/O3_T04_artifact_registry.md",
+      "sha256": "e5722b6c40b33cb471bc16113ee17831a492307aab134dc0717316a38c09a469"
+    },
+    {
+      "bytes": 13785,
+      "path": "tables/objective_3/O3_T04_artifact_registry.tex",
+      "sha256": "094498f079f45d31ed40ef07b34863a1bded24d466bfd9b0fea610ab1c23293f"
+    },
+    {
+      "bytes": 1010,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "ab7c618da9c9b5ecebc5981a34f9051ec2842e0c69c3a49b177dfe4579e405b5"
+    },
+    {
+      "bytes": 1089,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "a221887c5755ceec810f69c73a62d0db4473a8ea21b2cc7f924e2bb66173a84a"
+    },
+    {
+      "bytes": 1153,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "d782eaf308454f2d933d3a13fadb50221e6de649f57736a42ad2b7d62e9b2e93"
+    },
+    {
+      "bytes": 1195,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "40f76ef01e391cf407a959b0b3f55e5fd9b764dec97ec5d87f64f933809d0f31"
+    },
+    {
+      "bytes": 1100,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "f845a7f50d8fbc707f980cb963dc95d63c192aede6720930251e8a210e7a6ea1"
+    },
+    {
+      "bytes": 1163,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "441f080d49d35b4deea71c79eb4dfecd09f2ad9d978d9462d5fc5a15e72ac905"
+    },
+    {
+      "bytes": 1205,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "3102176fa2fc44a64e4a41ba7327c887640339ece092e47a6c56776ab38fc62d"
+    },
+    {
+      "bytes": 2057,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "634e53a10096b2652e18256e244ec0a431b1ea9f1422c7bf2abfd6c5479d8621"
+    },
+    {
+      "bytes": 829,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-LODO-1_fold1.json",
+      "sha256": "30244ec93ce8c7cfe0fea1dbd45fdfced664dd6e0bf16d6908cc94561cf44736"
+    },
+    {
+      "bytes": 1010,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "13876ef89ebe7d06df48ba6d2924824b1f142ee321133748f68b563849401093"
+    },
+    {
+      "bytes": 1092,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "b69103e2b1f6858b66f4ea72fff3f4518bc2d8b25e9768cfeb7b3f658b1dff15"
+    },
+    {
+      "bytes": 1152,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "14588542308af3065e088ba34b84329bf55da1dc3821c6a21fe02a8d44955629"
+    },
+    {
+      "bytes": 1194,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "f2f4fafcd49ce8dfcd9fd9717c317290175e7998201cfbc9b542aecfe19f5f9a"
+    },
+    {
+      "bytes": 1101,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "e4686e703c379b119ea5eda31279e2d7db1480afebd0b24ab0ce83f8990dafc7"
+    },
+    {
+      "bytes": 1165,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "b073c22b337c8e2b62ebcc069f9d0e7abc095c5a94e6abe4957fdf17d224ba96"
+    },
+    {
+      "bytes": 1204,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "38b9c4841707ac03ccd045d327429ea5c2e992889a309e8f04a7644ec9a808f2"
+    },
+    {
+      "bytes": 2030,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "e64b4bfd78d39b1c7c9b6e560188e6ee923d3541744eabdf0aa7068ac6aeef09"
+    },
+    {
+      "bytes": 829,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-LODO-1_fold2.json",
+      "sha256": "b359f45d13cadd60456c424ac45c31901a65a2eb0b50cd098fc985557e171889"
+    },
+    {
+      "bytes": 1010,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "6c8684eb9735d1aacf68508cdea6a657dc7412ce8f094820a109236cf6087f18"
+    },
+    {
+      "bytes": 1090,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "3fc3860419af37a388b4bebfef3c34d38f4dd92ea9277827d0c7e5b126f3075c"
+    },
+    {
+      "bytes": 1155,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "e46fa58ce66761512f010fdb28349b2c651cb126df9659215b31251d249808c7"
+    },
+    {
+      "bytes": 1194,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "e16df8dee313496858cfdfdd98f5b8a176fa60eda4ebc6629bef2c892c9f8f10"
+    },
+    {
+      "bytes": 1099,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "af7ee22a03fdd006295bfb4793ea25d7f80869637ab890c3f62a019fa709256d"
+    },
+    {
+      "bytes": 1164,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "23b12d3bf04fd2f8cf7b298505335d25f9f2eae88dde99df2839f41305233f6b"
+    },
+    {
+      "bytes": 1203,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "e57b74742a765963ea7a664ef9cfcaf298c2f2ef8fec7b6f8d42082771bef6bc"
+    },
+    {
+      "bytes": 2058,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "9913c2b1d179a40da6db5df6f5541e0a50282cff8b438af00a01683499986205"
+    },
+    {
+      "bytes": 828,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-LODO-1_fold3.json",
+      "sha256": "e7195a85f9e7861fe72cc1675520d179d66d5bc9d685e61743e5c33c78d20ef2"
+    },
+    {
+      "bytes": 1011,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "40ca37098d36467ab75f14d9363d02a72e545721b1d04f00a2f59b9c79112b5c"
+    },
+    {
+      "bytes": 1090,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "d1789857ced04425d60a4fbef685693d2360c4f67be7bc8e5203a18c163a42e9"
+    },
+    {
+      "bytes": 1153,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "d586b701ca7ad9097b5b9c5c3b65835aefea774fe77ca9df043e675cdae54b81"
+    },
+    {
+      "bytes": 1193,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "44441748a92a70e09fc0436d121b02d2dba3a835e0669c7ff993b60b772a8556"
+    },
+    {
+      "bytes": 1099,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "be60c5d403185392f99c88e523235c250b37ac5e45226289b0eb33eaa3d14625"
+    },
+    {
+      "bytes": 1163,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "844cd6682fec9906550e5eef43f37fdb698bf02f3f25bb38331fc19b7293eb03"
+    },
+    {
+      "bytes": 1204,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "30077eb349ace40cf74cd7d396e927cca96aee3930b514d40b2dbbd19b2b3231"
+    },
+    {
+      "bytes": 2058,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "697f4f21a12ec1df445cc99f9d468cc0bd6f26a5fecd0793014d643bdc476650"
+    },
+    {
+      "bytes": 829,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-LODO-1_fold4.json",
+      "sha256": "6ad031d8e5c67619115b248c480bf0298d29d52ca2fa8918d9bd6d5a8a227119"
+    },
+    {
+      "bytes": 1010,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "f385efb6e39a7586d3ff4c40a87b9cc6265731ddb3f556e78ec0314334d4c627"
+    },
+    {
+      "bytes": 1089,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "71ce160c9a61bcd19b45d8cbd9a8acc9191be1b00cdcb41612a7c77375c25704"
+    },
+    {
+      "bytes": 1157,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "d048c1237be07a6c186d172cc90734d3276748a2f2d30c5673ad1950c67f421e"
+    },
+    {
+      "bytes": 1196,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "9b53149bc49dbfab5295986f3bda6387c09d8fda531a4debf04abd2d0c3d7f00"
+    },
+    {
+      "bytes": 1100,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "5b4fa1ec941403f7cdbd6b0cc393b65443c07d8072343912409ddd7493396a06"
+    },
+    {
+      "bytes": 1165,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "40144841e55b32cab6ab19f324d7e48350a99621e43e5d5ebec7f4538967198c"
+    },
+    {
+      "bytes": 1204,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "db5816c33040c038312b790c91f2d09867df5173ea98f63e7c77773cf1454c6f"
+    },
+    {
+      "bytes": 2058,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "8b51c949002465670e4e4d662a373b42fe3abe623747640b7a1f571633256a31"
+    },
+    {
+      "bytes": 828,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-LODO-1_fold5.json",
+      "sha256": "a102a027942531ed67f0caf54f68b57c3be01d2cbe2398c83da79300e9844476"
+    },
+    {
+      "bytes": 1014,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "ca97af9c13203012a52cdb3ae635b4b9d46e3d5490a00dc073e6612c1bf1ff89"
+    },
+    {
+      "bytes": 1095,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "dffe51444f307d24216a63d267a9317a8a26a4899c92d4e90935004728a65fa8"
+    },
+    {
+      "bytes": 1157,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "a3dd07dc070e815ce92ea16d970ca44935d3d3dc15c10efb3f941a1a080f1c88"
+    },
+    {
+      "bytes": 1197,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "130ac232a2d92c87638bab458cdc4274e5e7f9c8e1dd98a0bb461c82664cfdc9"
+    },
+    {
+      "bytes": 1103,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "54656f23f8255741803d3228cd0f6c90c312e00e68925ced9df728b1af03f147"
+    },
+    {
+      "bytes": 1166,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "689c77d1f1b334e34547cbacdae1997bf6ba22b0b44b862be27d74e334366f81"
+    },
+    {
+      "bytes": 1205,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "b4fb1704c8661e05480b2e6996165f0744b86b31df810767db97bddf472b16b6"
+    },
+    {
+      "bytes": 2060,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "93b37998248961608f5b6d38e4377565b38cd68177f78c36939ded359653039c"
+    },
+    {
+      "bytes": 832,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-HOLE-IL-2_fold1.json",
+      "sha256": "e0035358cb5aa712ac3f27e6636c7f0db35a1970db63ffeade8ab4855ef5473e"
+    },
+    {
+      "bytes": 1012,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "a084ec810b1cba247d408d2360c6ce7d6c80d4952b002948a1299d2960874e6b"
+    },
+    {
+      "bytes": 1091,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "75365a134d336e56931fdd1e66a5930aaad7980482638f7e2a4b402910dd7898"
+    },
+    {
+      "bytes": 1157,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "f57ddba09ee84ea47b32c285ce938d6d8ef6dd107008ef4e88d5c257950b5a92"
+    },
+    {
+      "bytes": 1197,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "fdca846d59043dbaea82b18dfe707e2922f3438a7ba2af248d0fa81834f0a47a"
+    },
+    {
+      "bytes": 1104,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "22e275564b88d055127faaf919f9a9dbe5015fbbb6ddf90a4796ec8bb0fefdff"
+    },
+    {
+      "bytes": 1166,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "dc78114dbcc10ec86053266340b2497cc2d7f59a5595883daa0ac5d8a7300b1e"
+    },
+    {
+      "bytes": 1204,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "695fc9199224da43c65bab4c41b89c582c67bbb139a9c48e57242dffed440bda"
+    },
+    {
+      "bytes": 2061,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "5c5fbd2dc795bbcff21efce58584e17809acdd11cca86bdcfd94f18bbc32707c"
+    },
+    {
+      "bytes": 832,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-HOLE-IL-2_fold2.json",
+      "sha256": "2cca1633f2f8b629f85b3b80b2bef6afcd0e0af51b157a43e7c1498324ac2b80"
+    },
+    {
+      "bytes": 1013,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "10e86739ca16f11a5d2bdd618fc6f4f1a18393034a78fd4dd89e19986aeb97f9"
+    },
+    {
+      "bytes": 1093,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "c2c69e0a9db1a6d8077cb92c208eb0ecff17c6ddce0f247d4466a5bb4bc50737"
+    },
+    {
+      "bytes": 1158,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "f4d7fd7fabb8913c3f4e88cf6114cab267344294fd7ed28731ed9d9e6613f4cf"
+    },
+    {
+      "bytes": 1197,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "81a6011335f3b0ae62c0969437ecdcc32ceb182ad3a9e86e2ecd10ec2493a2d4"
+    },
+    {
+      "bytes": 1103,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "90f102ec100d0437936f26baddb733b7b57d704c3744ffbf655e1f10b55d8951"
+    },
+    {
+      "bytes": 1167,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "ed43f2120113427e5b3ec8564eef1f9d0089c56f4e4fdf5d435ba262cb500e8d"
+    },
+    {
+      "bytes": 1208,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "bdd52bb3665348a88f41ee1773c261f529d30f6c6148cd16281195d3c2d6e746"
+    },
+    {
+      "bytes": 2061,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "9580ef474c8c7034733d3e34ec30822c7c2bd324d3a5602a05ecc99316faa438"
+    },
+    {
+      "bytes": 832,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-HOLE-IL-2_fold3.json",
+      "sha256": "0aade197f3669c53366ac479fafebc33ecdf20378a014b7dc1b5c229e4b2b2ce"
+    },
+    {
+      "bytes": 1013,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "ced65183165af2a4d7299331c36d3ff814bfd36d5d93c17802dbc63c225b0a3a"
+    },
+    {
+      "bytes": 1094,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "f980fead17b22aa52d22b5991df1f565435dd32173ca7262b852474c6e7ea26c"
+    },
+    {
+      "bytes": 1158,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "e7cfa693a5cef4c4cfe3a9042c73dd9e8736be261a0c22e766342480cb49fe76"
+    },
+    {
+      "bytes": 1197,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "9ee383ef5af1aaeb17419ae30dfe9c42b3262f51becbe3c1e691be26f255e52e"
+    },
+    {
+      "bytes": 1102,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "5cd86e088328360591688cb285ae12aceb474c97b229b9f674b9f8164b9dc50d"
+    },
+    {
+      "bytes": 1167,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "51287cb0b09953d1c3a5e0ec046c389518362a5a26086fd74e219e4c9bbe9392"
+    },
+    {
+      "bytes": 1207,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "c4bf0ac755db590ccd8249fa3060f454d9a4185e329563cb6bee41311563fec7"
+    },
+    {
+      "bytes": 2060,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "72569122a510ab6f4c9c93acd2b958890575776800ce41bf1e6a52e1af3804f8"
+    },
+    {
+      "bytes": 832,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-HOLE-IL-2_fold4.json",
+      "sha256": "0cf7b6708c824ade539b628e90b085f5686a52077a9ae2dcdf37d16d9b7f6588"
+    },
+    {
+      "bytes": 1013,
+      "path": "reports/objective_3/artifacts/BASE_PREVALENCE_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "be0b731f6ccaa4b7fe246a73035a0390779deb326650037173bc24e66cc10f6d"
+    },
+    {
+      "bytes": 1095,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "5228816be6683222e36b1a3e19d189074b9665e7db8ce3df3ab3f27401ecf514"
+    },
+    {
+      "bytes": 1154,
+      "path": "reports/objective_3/artifacts/M2_RF_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "2e13a0dd960a9df73e3c40d1311bf7de8fb71b659bfc5312deac60f8e6930f88"
+    },
+    {
+      "bytes": 1200,
+      "path": "reports/objective_3/artifacts/M2_HGB_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "5c4f15a76a87c8459c1db451745f756ae6a6b2d8ea61457e8590110d38940fd3"
+    },
+    {
+      "bytes": 1101,
+      "path": "reports/objective_3/artifacts/BASE_LOGISTIC_WF_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "4709b43fba668bbcae53d466dfd76894e3ccd5b8f5791b66aed93db30cd2a718"
+    },
+    {
+      "bytes": 1164,
+      "path": "reports/objective_3/artifacts/M2_RF_WF_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "cd99301b93d863c3ce37f83027deba344e68a34b5e4906b90efec24fcf2c9348"
+    },
+    {
+      "bytes": 1209,
+      "path": "reports/objective_3/artifacts/M2_HGB_WF_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "16c42f022a39553de91fdb83bc7fc175553a0570971fefe9c52a44190ef95230"
+    },
+    {
+      "bytes": 2059,
+      "path": "reports/objective_3/artifacts/M1_IK_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "d38a808308b9d963e43faa32627bce04b483402b752b132fb0dbd005f474b2f7"
+    },
+    {
+      "bytes": 832,
+      "path": "reports/objective_3/artifacts/M3_HYBRID_O3-SPLIT-HOLE-IL-2_fold5.json",
+      "sha256": "cbdeffcf60ff52537ebc76a422f7e5fb2434bdee4d358099ce69c096dadf8e97"
+    }
+  ],
+  "runs": {
+    "import": 1,
+    "splits": 2,
+    "train": 4,
+    "verify": 16
+  },
+  "schema_version": "O3-SCHEMA-2026.11.06-2",
+  "split_plans": [
+    {
+      "frozen_utc": "2026-11-06T04:36:37Z",
+      "method": "LEAVE_ONE_DRILL_LINE_OUT",
+      "n_folds": 5,
+      "notes": "unchanged from configuration 1; the frozen plan hash must match",
+      "plan_sha256": "e1193a349fcd34264519672cb3de9854b19e984a21b21d784b011220e9888c1f",
+      "primary_plan": 1,
+      "receipt_id": 1,
+      "seed": 20261105,
+      "split_plan_id": "O3-SPLIT-LODO-1"
+    },
+    {
+      "frozen_utc": "2026-11-06T04:36:37Z",
+      "method": "INTERLEAVED_HOLES_WITHIN_LINE",
+      "n_folds": 5,
+      "notes": "Within each line, holes are ordered by collar easting (ties by hole identifier); the k-th hole (k = 0, 1, ...) is assigned to fold (k mod 5) + 1. A whole hole is the block; no further buffer is applied, because the interpolation claim is defined at one hole spacing. The minimum test-to-training collar distance is audited.\n",
+      "plan_sha256": "df0364073d40ae93e40195e1429d6a1ab23d32ebdeac7dfcf85e7a68f17577c1",
+      "primary_plan": 0,
+      "receipt_id": 1,
+      "seed": 20261106,
+      "split_plan_id": "O3-SPLIT-HOLE-IL-2"
+    }
+  ],
+  "tables": [
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 61,
+      "status": "GENERATED",
+      "table_id": "O3-T01",
+      "title": "Model definitions, predictors, target version and sample support"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 200,
+      "status": "GENERATED",
+      "table_id": "O3-T02",
+      "title": "Split-plan, fold and family hyperparameters, covariance selection and calibration diagnostics"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 432,
+      "status": "GENERATED",
+      "table_id": "O3-T03",
+      "title": "Out-of-fold completeness and leakage audit, both split plans"
+    },
+    {
+      "reason": "rendered from the registered query",
+      "row_count": 46,
+      "status": "GENERATED",
+      "table_id": "O3-T04",
+      "title": "Model artifact and reproducibility registry"
+    }
+  ],
+  "target": {
+    "ambiguous_n": 81,
+    "binary_n": 1829,
+    "created_utc": "2026-11-06T04:36:37Z",
+    "excluded_states_json": "[\"AMBIGUOUS\", \"UNRESOLVED\"]",
+    "label_rule_id": "DESIGN_8_2_v1",
+    "label_rule_status": "APPROVED",
+    "negative_n": 1304,
+    "negative_state": "NEGATIVE",
+    "positive_n": 525,
+    "positive_state": "POSITIVE",
+    "receipt_id": 1,
+    "target_id": "TARGET-DESIGN_8_2_v1-1",
+    "unresolved_n": 0
+  },
+  "tiers": [
+    {
+      "m1": [
+        {
+          "fold_id": 1,
+          "inner": 0.5070721817349293,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 2,
+          "inner": 0.49615785575176463,
+          "label": "exponential range 100 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 3,
+          "inner": 0.5835155214644157,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 4,
+          "inner": 0.4481169269782272,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 5,
+          "inner": 0.5763881364942807,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        }
+      ],
+      "m3": [
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 1,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 2,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 3,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 4,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 5,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        }
+      ],
+      "m3_fallback_folds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "method": "LEAVE_ONE_DRILL_LINE_OUT",
+      "n_folds": 5,
+      "plan_sha256": "e1193a349fcd34264519672cb3de9854b19e984a21b21d784b011220e9888c1f",
+      "primary": true,
+      "pure_m1_folds": [],
+      "selected": [
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.45776140321383557,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.4491005869606612,
+          "fold_id": 1
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.463978393375751,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.46330878438798206,
+          "fold_id": 2
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.48269285251343125,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.4966381040509853,
+          "fold_id": 3
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.41798528431959026,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.4334549847167626,
+          "fold_id": 4
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.5387553239670455,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.5308897430024306,
+          "fold_id": 5
+        }
+      ],
+      "split_plan_id": "O3-SPLIT-LODO-1"
+    },
+    {
+      "m1": [
+        {
+          "fold_id": 1,
+          "inner": 0.5623593272981495,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 2,
+          "inner": 0.5046536441181897,
+          "label": "exponential range 200 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 3,
+          "inner": 0.5043269528004953,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 4,
+          "inner": 0.5305176694886649,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        },
+        {
+          "fold_id": 5,
+          "inner": 0.5245027865657493,
+          "label": "exponential range 400 m, nugget fraction 0.75",
+          "pure": false,
+          "status": "COMPLETED",
+          "trials": 16
+        }
+      ],
+      "m3": [
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 1,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 2,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 3,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 4,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        },
+        {
+          "fallback": "FALLBACK_ML_ONLY",
+          "fold_id": 5,
+          "label": "PURE_NUGGET",
+          "status": "FALLBACK",
+          "trend": "M2_RF_WF",
+          "trials": 16
+        }
+      ],
+      "m3_fallback_folds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "method": "INTERLEAVED_HOLES_WITHIN_LINE",
+      "n_folds": 5,
+      "plan_sha256": "df0364073d40ae93e40195e1429d6a1ab23d32ebdeac7dfcf85e7a68f17577c1",
+      "primary": false,
+      "pure_m1_folds": [],
+      "selected": [
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.4867996545961919,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.4821752163181893,
+          "fold_id": 1
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.4419696613690054,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.45954886118046784,
+          "fold_id": 2
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.45719034314828305,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.46266169391834283,
+          "fold_id": 3
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.47590476553712246,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.4749557583173265,
+          "fold_id": 4
+        },
+        {
+          "M2_SEL": "M2_RF (COMPLETED)",
+          "M2_SEL_score": 0.4602660997760884,
+          "M2_WF_SEL": "M2_RF_WF (COMPLETED)",
+          "M2_WF_SEL_score": 0.4619141921815042,
+          "fold_id": 5
+        }
+      ],
+      "split_plan_id": "O3-SPLIT-HOLE-IL-2"
+    }
+  ],
+  "upstream": {
+    "objective_1": {
+      "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",
+      "dataset_version_id": 10,
+      "dataset_version_key": "55dead7da64cac14b0d79569e460739f8b9a217b17425a3e3ff2610649940248",
+      "path": "C:/Users/ThinkPad P1 G4/Documents/Joseph_Thesis/database/kambale_thesis.sqlite",
+      "row_count": 1910
+    },
+    "objective_2": {
+      "candidate_family": "NONE",
+      "content_sha256": "abf6f758faf75c82a250931ab034b145574a10f98362424e93dd6cc6483dea22",
+      "handoff_id": 1,
+      "handoff_status": "NOT_IDENTIFIABLE",
+      "path": "C:/Users/ThinkPad P1 G4/Documents/Joseph_Thesis/database/kambale_obj2_spatial.sqlite",
+      "receipt_id": 1
+    }
+  },
+  "working_tree_committed": false
+}

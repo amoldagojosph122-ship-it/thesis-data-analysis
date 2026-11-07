@@ -29,7 +29,7 @@ class RuleDef:
     rule_id: str
     rule_version: str
     family: str
-    logic: str                # STRICT_CODE or MIN_POSITIVE
+    logic: str                # STRICT_CODE, MIN_POSITIVE or DESIGN_8_2
     min_positive: int | None
     description: str
     definition_sha256: str
@@ -136,8 +136,28 @@ def evidence(interval: dict, status: str) -> dict:
     }
 
 
+def design_8_2(ev: dict) -> tuple[int | None, str]:
+    """Target B as set out in ThesisDesign section 8.2 (the reconciled target of the review form).
+
+    Graphitic: Sgs with at least one further indicator and no conflicting description.
+    Non-graphitic: a valid non-Sgs code, no graphite indicator and a comment.
+    Ambiguous: one indicator only, or the code and the other evidence disagree.
+    Unresolved: a non-Sgs interval with a blank comment (missing or unsupported codes are handled by rule_label).
+
+    A blank graphite field means "not logged", so it is not counted as evidence against graphite.
+    """
+    if not ev["is_sgs"] and not ev["comment_present"]:
+        return None, "UNRESOLVED"
+    if ev["positive_indicators"] == 0:
+        return 0, "NEGATIVE"
+    conflict = (not ev["is_sgs"]) or (ev["comment_present"] == 1 and ev["comment_graphitic"] == 0)
+    if conflict or ev["positive_indicators"] == 1:
+        return None, "AMBIGUOUS"
+    return 1, "POSITIVE"
+
+
 def rule_label(rule: RuleDef, ev: dict) -> tuple[int | None, str]:
-    """Apply one candidate rule. Returns (label, state) with state POSITIVE, NEGATIVE or UNRESOLVED."""
+    """Apply one candidate rule. Returns (label, state): POSITIVE, NEGATIVE, UNRESOLVED or AMBIGUOUS."""
     if ev["rock_code_status"] != "VALID":
         return None, "UNRESOLVED"
     if rule.logic == "STRICT_CODE":
@@ -150,4 +170,6 @@ def rule_label(rule: RuleDef, ev: dict) -> tuple[int | None, str]:
         if positives == 0 and ev["comment_present"]:
             return 0, "NEGATIVE"
         return None, "UNRESOLVED"
+    if rule.logic == "DESIGN_8_2":
+        return design_8_2(ev)
     raise ValueError(f"unknown rule logic {rule.logic!r} for {rule.rule_id}")

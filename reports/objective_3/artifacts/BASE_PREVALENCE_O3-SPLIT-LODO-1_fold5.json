@@ -1,0 +1,38 @@
+{
+  "calibration": {
+    "intercept": null,
+    "method": "NONE",
+    "reason": "calibration is not configured for this family",
+    "slope": null,
+    "status": "SKIPPED"
+  },
+  "candidate_run_id": "BASE_PREVALENCE",
+  "family_id": "BASE_PREVALENCE",
+  "feature_names": [
+    "easting_m",
+    "northing_m",
+    "z_relative_m"
+  ],
+  "fold_id": 5,
+  "hyperparameters": {},
+  "inner_cv_score": 0.6534103106913363,
+  "inner_cv_score_sd": 0.03569614439895297,
+  "model_class": "TrainingPrevalence",
+  "predictor_set": "TREND",
+  "seed": 20261105,
+  "selection_metric": "LOG_LOSS",
+  "software": {
+    "numpy": "2.4.6",
+    "python": "3.14.6",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.0"
+  },
+  "split_plan_id": "O3-SPLIT-LODO-1",
+  "threshold": {
+    "source": "INNER_CV_MAX_YOUDEN_J_TIE_CLOSEST_TO_HALF",
+    "threshold": 0.5,
+    "youden_j": 0.0
+  },
+  "training_id_digest": "5ddf20a85f35d0f29ca3ca9f49d5e671ff692012d6bef856cfd3e479653481f3",
+  "training_n": 1442
+}

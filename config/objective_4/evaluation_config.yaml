@@ -1,0 +1,93 @@
+# Objective 4 evaluation configuration, TIER_1_EXTRAPOLATION. Predeclared before any metric on the configuration-2 Objective 3
+# predictions is computed. A change of any value requires a new config_version; earlier versions are in superseded/.
+config_version: O4-CFG-2026.11.06-3
+supersedes: O4-CFG-2026.11.06-2
+tier: TIER_1_EXTRAPOLATION
+revision_reason: >
+  Version 3 changes only the output folder to tier_1 so both tiers are stored symmetrically; no analysis value, split, model or threshold changes. Objective 3 configuration 2 adds a weathering-front predictor, a kriging covariance chosen by inner cross-validation,
+  per-fold selected composites, and a second validation tier. Objective 4 evaluates each tier separately, because
+  extrapolation to an unseen line and interpolation between drilled holes are different claims and one pooled score
+  would mix them. No model is refitted, no split is changed and no threshold is tuned here.
+claim: skill when predicting a whole undrilled line from the other four lines
+
+paths:
+  o3_split_plan_id: O3-SPLIT-LODO-1
+  database: database/kambale_obj4_validation.sqlite
+  output_subdir: tier_1      # tier_1 writes to figures/, tables/ and reports/objective_4 under tier_1/
+
+target:
+  label_rule_id: DESIGN_8_2_v1
+  positive_label: 1
+
+evaluation:
+  models:
+    feasible: [BASE_PREVALENCE, BASE_LOGISTIC, BASE_LOGISTIC_WF, M2_RF, M2_HGB, M2_RF_WF, M2_HGB_WF, M2_SEL, M2_WF_SEL,
+               M1_IK, M3_HYBRID]
+    reporting_only: []
+    identity_rule: >
+      A model whose calibrated probabilities equal another model's on every common observation (tolerance 1e-12) is
+      reported as IDENTICAL_TO that model and is not ranked separately. This covers M1 under a pure-nugget covariance
+      (identical to BASE_PREVALENCE) and M3 under the ML-only fallback (identical to M2_WF_SEL).
+  common_cohort: INTERSECTION_OF_FEASIBLE_MODELS_WITH_FULL_COVERAGE
+  expected_observations: 1829
+  primary_endpoint: BRIER
+  primary_weighting: INTERVAL
+  secondary_weighting: EQUAL_HOLE
+  probability_column: p_calibrated
+  epsilon: 0.000001
+  auc_min_class: 1
+  pr_auc_method: AVERAGE_PRECISION
+  calibration_bins: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+  calibration_min_bin_n: 20
+  calibration_slope_acceptable: [0.5, 2.0]
+  calibration_intercept_abs_max: 0.5
+  discrimination_margin_auc: 0.02
+  fold_consistency_min: 4            # of five held-out lines
+  coverage_threshold: 0.95
+  depth_bin_width_m: 10.0
+  bootstrap:
+    primary_design: HOLE_CLUSTER
+    sensitivity_design: LINE_CLUSTER
+    n_replicates: 2000
+    seed: 20261105
+    confidence: 0.95
+    unit_notes: >
+      The primary resampling unit is the hole (71 holes). All intervals of a sampled hole stay together, and the same
+      observations are used for both models of a pair. The line-level design is a five-line sensitivity analysis; it is
+      reported but not used for the primary interval.
+  fold_unit: HELD_OUT_LINE
+  pairs:
+    # Nested chain at the selected level: trend, plus weathering, plus kriging.
+    - {pair_id: PREV_vs_M2SEL, model_a: BASE_PREVALENCE, model_b: M2_SEL, question: does the coordinate trend beat the mean}
+    - {pair_id: M2SEL_vs_M2WFSEL, model_a: M2_SEL, model_b: M2_WF_SEL, question: does the weathering front add skill}
+    - {pair_id: M2WFSEL_vs_M3, model_a: M2_WF_SEL, model_b: M3_HYBRID, question: does residual kriging add skill}
+    - {pair_id: PREV_vs_M1, model_a: BASE_PREVALENCE, model_b: M1_IK, question: does indicator kriging beat the mean}
+    # Weathering effect inside each family.
+    - {pair_id: LOG_vs_LOGWF, model_a: BASE_LOGISTIC, model_b: BASE_LOGISTIC_WF, question: weathering effect, logistic}
+    - {pair_id: RF_vs_RFWF, model_a: M2_RF, model_b: M2_RF_WF, question: weathering effect, random forest}
+    - {pair_id: HGB_vs_HGBWF, model_a: M2_HGB, model_b: M2_HGB_WF, question: weathering effect, gradient boosting}
+    # Family comparisons carried over from configuration 1.
+    - {pair_id: LOG_vs_RF, model_a: BASE_LOGISTIC, model_b: M2_RF, question: random forest against logistic}
+    - {pair_id: RF_vs_HGB, model_a: M2_RF, model_b: M2_HGB, question: random forest against gradient boosting}
+  power_statement: >
+    Each pair is reported with its hole-cluster bootstrap 95 per cent interval of the Brier difference (b minus a).
+    RESOLVED: the interval excludes zero. UNRESOLVED: it includes zero; the half-width of the interval is then reported
+    as the smallest difference this design could have detected, and no ranking is claimed for that pair.
+  decision:
+    select: LOWEST_POOLED_INTERVAL_BRIER_AMONG_DISTINCT_FULL_COVERAGE_MODELS
+    comparator: NEXT_LOWEST_POOLED_INTERVAL_BRIER
+    improvement_rule: >
+      SUPPORTED_IMPROVEMENT requires all of: the 95% hole-cluster bootstrap interval of (Brier_selected - Brier_comparator)
+      lies entirely below zero; the selected model has the lower Brier in at least four of the five folds; the
+      calibration slope is in [0.5, 2.0] and |intercept| <= 0.5; the selected model's ROC-AUC is not worse than the
+      comparator's by more than 0.02; and coverage is at least 0.95. INCONCLUSIVE applies when the interval includes zero
+      or fold consistency is below four of five. NO_IMPROVEMENT applies when the point estimate is non-negative or the
+      interval lies entirely above zero. NOT_COMPARABLE applies to a model with coverage below 0.95, a missing metric, or
+      an identity with another model.
+    selection_basis_when_inconclusive: POINT_ESTIMATE_WITH_CAVEAT
+  calibration:
+    fitting: DIAGNOSTIC_ONLY
+    recalibration_on_holdout: false
+    note: >
+      The calibration intercept and slope are fitted on the pooled held-out predictions as a diagnostic of the O3
+      calibration. They are never applied to the probabilities. O3's calibration fits remain the only ones used.

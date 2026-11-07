@@ -116,4 +116,6 @@ def test_evidence_distribution_reconciles_with_workbook_recount():
     for i in data.intervals:
         ev = evidence(i, rock_status(i["rock_code_raw"], legend))
         counts[ev["positive_indicators"]] += 1
-    assert counts == {3: 476, 2: 87, 1: 43, 0: 1304}
+    # Six comments (decision D15): rows 251-253 add a third positive indicator, and rows 505-507 add none.
+    # Rock codes from the original log (decision D19): the blank code on row 177 is Sgs with a graphitic comment.
+    assert counts == {3: 480, 2: 83, 1: 43, 0: 1304}

@@ -1,0 +1,53 @@
+plan,prediction_setting,variant,model,brier
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K8,BASE_LOGISTIC_WF,0.1650700112749227
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K8,M2_RF_WF,0.16771724649242367
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K8,M2_HGB_WF,0.16571585897244617
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P1_K8,BASE_LOGISTIC_WF,0.1650672184017779
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P1_K8,M2_RF_WF,0.1696433901970777
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P1_K8,M2_HGB_WF,0.16852788731251017
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P3_K8,BASE_LOGISTIC_WF,0.16507300226196875
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P3_K8,M2_RF_WF,0.16825634970737968
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P3_K8,M2_HGB_WF,0.1645661303757921
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K4,BASE_LOGISTIC_WF,0.16520287521824872
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K4,M2_RF_WF,0.16777008205829855
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K4,M2_HGB_WF,0.16465670427445614
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K16,BASE_LOGISTIC_WF,0.1651980101751295
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K16,M2_RF_WF,0.16723738156463594
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K16,M2_HGB_WF,0.1656442690949115
+O3-SPLIT-LODO-1,Prediction to a new drill line,NEAREST_HOLE,BASE_LOGISTIC_WF,0.16607678246935997
+O3-SPLIT-LODO-1,Prediction to a new drill line,NEAREST_HOLE,M2_RF_WF,0.16684021429945992
+O3-SPLIT-LODO-1,Prediction to a new drill line,NEAREST_HOLE,M2_HGB_WF,0.16733390405425608
+O3-SPLIT-LODO-1,Prediction to a new drill line,TRAINING_MEAN,BASE_LOGISTIC_WF,0.16570141565057203
+O3-SPLIT-LODO-1,Prediction to a new drill line,TRAINING_MEAN,M2_RF_WF,0.17269835443237458
+O3-SPLIT-LODO-1,Prediction to a new drill line,TRAINING_MEAN,M2_HGB_WF,0.17345181057761958
+O3-SPLIT-LODO-1,Prediction to a new drill line,not applicable,BASE_PREVALENCE,0.22112501590944908
+O3-SPLIT-LODO-1,Prediction to a new drill line,not applicable,BASE_LOGISTIC,0.16581696630300466
+O3-SPLIT-LODO-1,Prediction to a new drill line,not applicable,M2_RF,0.16551478960205407
+O3-SPLIT-LODO-1,Prediction to a new drill line,not applicable,M2_HGB,0.1714797092496809
+O3-SPLIT-LODO-1,Prediction to a new drill line,not applicable,M1_IK,0.21937671607529682
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K8,BASE_LOGISTIC_WF,0.16264586762137595
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K8,M2_RF_WF,0.16276936983830032
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K8,M2_HGB_WF,0.1530626054438199
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P1_K8,BASE_LOGISTIC_WF,0.16031916530591553
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P1_K8,M2_RF_WF,0.16352255669552906
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P1_K8,M2_HGB_WF,0.15540082486392937
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P3_K8,BASE_LOGISTIC_WF,0.16266020132295106
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P3_K8,M2_RF_WF,0.16357208406636484
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P3_K8,M2_HGB_WF,0.15414452664723458
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K4,BASE_LOGISTIC_WF,0.16246584233796155
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K4,M2_RF_WF,0.16177300186717392
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K4,M2_HGB_WF,0.15671065071640106
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K16,BASE_LOGISTIC_WF,0.1625960188190495
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K16,M2_RF_WF,0.1625592203601198
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K16,M2_HGB_WF,0.15232724936956238
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,NEAREST_HOLE,BASE_LOGISTIC_WF,0.16320875273933105
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,NEAREST_HOLE,M2_RF_WF,0.16371491327893417
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,NEAREST_HOLE,M2_HGB_WF,0.15620856945597136
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,TRAINING_MEAN,BASE_LOGISTIC_WF,0.1594063412826406
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,TRAINING_MEAN,M2_RF_WF,0.1616611177469146
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,TRAINING_MEAN,M2_HGB_WF,0.1574257994772792
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,not applicable,BASE_PREVALENCE,0.21077956512095625
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,not applicable,BASE_LOGISTIC,0.15942030856430225
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,not applicable,M2_RF,0.1618403860783607
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,not applicable,M2_HGB,0.15482693906461859
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,not applicable,M1_IK,0.1759543002245831

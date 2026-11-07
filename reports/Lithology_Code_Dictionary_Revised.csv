@@ -1,0 +1,16 @@
+refined_code,base_code,base_description,refined_description,matrix_minerals_named,basis,intervals,label_code_used
+Feppg,Fpg,pegmatite,,epidote (trace),confirmed,1,Fpg
+Fpg,Fpg,pegmatite,pegmatite,,confirmed,63,Fpg
+Fsc,Fsc,Felsic schist,Felsic schist,,confirmed,13,Fsc
+Lcs,Lcs,Clay - saprolitic,Clay - saprolitic,,review,244,Lcs
+Lepcs,Lcs,Clay - saprolitic,,epidote (present) | epidote (trace),confirmed,2,Lcs
+Rgv,Rso,Soil/Loam general,Transported gravel,,confirmed,284,Rso
+Sbs,Sbs,meta-sediment biotite schist,meta-sediment biotite schist,,review,365,Sbs
+Sepbs,Sbs,meta-sediment biotite schist,,epidote (present) | epidote (trace),confirmed,7,Sbs
+Sepgs,Sgs,meta-sediment graphite schist,,epidote (trace),confirmed,3,Sgs
+Sepqs,Sqs,Quartz sericite schist/rock,,epidote (trace),confirmed,1,Sqs
+Sgs,Sgs,meta-sediment graphite schist,meta-sediment graphite schist,,review,525,Sgs
+Sqs,Sqs,Quartz sericite schist/rock,Quartz sericite schist/rock,,review,170,Sqs
+Sqzbs,Sbs,meta-sediment biotite schist,,quartz (present),confirmed,214,Sbs
+Sqzgs,Sgs,meta-sediment graphite schist,,quartz (present),confirmed,2,Sgs
+Ssu,Ssu,Sedimentary rock undifferentiated,Sedimentary rock undifferentiated,,confirmed,16,Ssu

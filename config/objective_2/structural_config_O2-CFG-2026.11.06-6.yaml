@@ -1,0 +1,149 @@
+# Objective 2 configuration 6: indicator variography in a structural (dipping-plane) frame.
+# Written and committed on 2026-11-06 before any configuration-6 result was computed.
+# Any change of value after that requires a new config_version. Configurations 2 to 5 are unchanged.
+config_version: O2-CFG-2026.11.06-6
+extends: O2-CFG-2026.11.06-5
+status: PREDECLARED_ANALYSIS_STAGE
+purpose: >
+  Test whether the lateral indicator structure that configurations 2 to 5 could not identify becomes identifiable
+  when between-hole pairs are formed along a dipping plane in each drill-line section, instead of at similar depth
+  below collar.
+hypothesis_basis: >
+  Sunkari et al. (2026, Minerals 16:1060, doi 10.3390/min16101060) describe graphite in laterally continuous
+  stratabound horizons within a foliated metasedimentary sequence, with steeply dipping shear zones, later folding, and
+  a regional structural grain trending NNE-SSW to NE-SW in a north-south belt. All 71 holes are drilled at -60 degrees
+  toward 090, on east-west lines, i.e. as fences across a roughly north-south strike. If the horizons dip, pairs at
+  similar depth in holes 21 m apart compare different positions in the layering, which would read as nugget. The paper
+  gives no measured strike or dip of the Kambale ore horizons; its one orientation (foliation 194/66 in
+  metagranodiorite) implies a WNW-ESE strike and does not fit this hypothesis. The dip is therefore searched over a
+  predeclared grid and the search is tested against a null that accounts for the selection.
+design_informed_by_exploratory_looks: >
+  No. No dipping-frame variogram, alignment score or dip estimate was computed before this file was written. The only
+  look was the drill orientation (all intervals dip -60, azimuth 090) and the collar DEM relief per line (0.2 to 12.8 m).
+label_rule:
+  id: DESIGN_8_2_v1
+  status: APPROVED
+
+frame:
+  section: >
+    Each drill line is treated as a vertical east-west section. x = easting_m; z = the frame's vertical coordinate.
+    Holes lie in the section plane (azimuth 090), so no projection across the section is needed for within-line pairs.
+  strike_assumption: N-S (perpendicular to the drill azimuth); horizons are assumed to cross the section at right angles
+  apparent_dip_grid_deg: [-80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80]
+  dip_sign: positive dips toward east (z decreases with x), negative toward west; 0 reproduces the horizontal frame
+  coordinates: >
+    For apparent dip d: s = z cos d + x sin d (position across the layering) and t = x cos d - z sin d (position along
+    the plane within the section).
+  vertical_frames:
+    - frame_id: RELATIVE
+      z: z_relative_m
+      role: PRIMARY; consistent with the project geometry rule (PROVISIONAL_RELATIVE, no absolute elevation in claims)
+    - frame_id: DEM_ABSOLUTE
+      z: z_dem_absolute_m
+      role: >
+        SENSITIVITY ONLY. Collar relief along a line reaches 12.8 m, which distorts a dipping plane in the relative frame;
+        the DEM is PROVISIONAL, so this frame is reported but cannot set the decision.
+
+pairing:
+  within_line_between_hole:
+    pairs: different holes of the same line; within-hole pairs EXCLUDED
+    lag: |delta t| (metres along the plane)
+    max_abs_ds_m: 3.0            # same band as the configuration-2 and -5 |dz| rule
+    lag_width_m: 20.0
+    lag_max_m: 500.0
+    min_pairs_per_bin: 100
+    min_independent_hole_pairs_per_bin: 10
+    min_supported_bins_for_fit: 5
+    pair_weighting: EQUAL_PAIR
+  between_line_along_strike:
+    role: REPORT_ONLY; no fit decision, no handoff
+    pairs: holes on different lines, at the selected apparent dip, with |delta s| at most 3.0 m
+    lag: lateral northing separation (the along-strike direction under the N-S assumption)
+    lag_bins_m: [[50, 150], [150, 250], [250, 350], [350, 450], [450, 600]]
+    min_pairs_per_bin: 100
+
+samples:
+  - sample_id: ALL_BINARY
+    rule: DESIGN_8_2_v1 binary intervals (as configuration 2)
+    role: PRIMARY
+  - sample_id: FRESH
+    rule: binary intervals whose weathering code is mw or sw (as configuration 5)
+    role: SECONDARY
+
+dip_selection:
+  statistic: >
+    Alignment score A(d) = 1 - mean(gamma at the first two supported lag bins) / (p(1-p)) of the sample, at apparent dip
+    d; larger means more continuity at one to two hole spacings.
+  selected_dip: the grid dip with the largest A; ties go to the dip closest to 0
+  selection_null:
+    method: CIRCULAR_DOWNHOLE_SHIFT
+    description: >
+      Each hole's indicator sequence is shifted down the hole by an independent random number of whole intervals
+      (circularly within the hole). This keeps every hole's prevalence and down-hole structure and destroys alignment
+      between holes. For each permutation the whole dip grid is rescored and the maximum A is kept, so the null
+      includes the search over 17 dips.
+    n_permutations: 500
+    seed: 20261108
+    alpha: 0.05
+  dip_stability:
+    method: LEAVE_ONE_LINE_OUT
+    rule: the selected dip with one line removed must be within 10 degrees of the full-data dip for at least 4 of 5 lines
+  horizontal_control: >
+    A at d = 0 is reported beside the selected dip; it reproduces the configuration-2 horizontal-pairing result on the
+    same pairs and is the reference for any claimed improvement.
+
+model_fitting:
+  # Same rules as configuration 5, applied at the selected dip only.
+  models: [spherical, exponential]
+  weighting: CRESSIE_N_OVER_GAMMA2
+  nugget_bounds: [0.0, p_one_minus_p]
+  structured_sill_bounds: [0.0, 1.5_p_one_minus_p]
+  range_bounds_m: [first_supported_lag_centre, lag_max_m]
+  min_structured_sill_fraction: 0.05
+  identifiability: [range_at_smallest_lag, range_at_upper_bound, sill_at_upper_bound, structure_below_minimum]
+  stability_check: LEAVE_ONE_LINE_OUT
+  stable_if_range_ratio_between: [0.5, 2.0]
+  fit_failure_status: NOT_IDENTIFIABLE
+  hole_bootstrap:
+    n_replicates: 500
+    seed: 20261108
+    confidence: 0.95
+    method: as configuration 5 (multiplicity-weighted pairs, no pairs between copies of one hole)
+
+decision_rule: >
+  Per sample, in the RELATIVE frame: PROVISIONAL (structural frame) requires all of (1) selection-null p-value below
+  0.05, (2) dip stability under leave-one-line-out, (3) a FITTED model at the selected dip that passes the
+  identifiability rules, and (4) range STABLE under leave-one-line-out on all five lines. Otherwise NOT_IDENTIFIABLE
+  (structural frame). A PROVISIONAL result supplies the across-strike / down-dip covariance only; the along-strike range
+  stays unidentified and could enter a later simulation only as predeclared scenarios. The DEM_ABSOLUTE frame and the
+  between-line experiment are reported, never decisive.
+handoff: >
+  This configuration writes no handoff row. Whether a PROVISIONAL structural-frame covariance is used by Objective 3 or
+  by an Objective 5 scenario simulation is a separate, later decision under a new configuration.
+
+outputs:
+  tables:
+    - O2-T06 alignment score by apparent dip, frame and sample, with the selection-null p-value and LOLO dips
+    - O2-T07 fit at the selected dip (parameters, identifiability, stability) and the between-line report
+  figures:
+    - O2-F11 alignment score against apparent dip, with the permutation-null 95th-percentile band of the maximum
+    - O2-F12 experimental variogram at the selected dip and at dip 0, with hole-bootstrap bands and any fitted model
+    - O2-F13 one section per line with intervals coloured by indicator and traces of the selected-dip planes
+  figure_rule: every figure is drawn from registered SQL against the Objective 2 database
+
+gates:
+  STOP:
+    - any within-hole pair in a between-hole experiment
+    - dip grid, band, lag or seed differing from this file
+    - the d = 0 RELATIVE pair set differing from the configuration-2 within-line between-hole pairs that meet the same
+      |dz| band (the lag definition differs: easting along the section here, horizontal distance there)
+    - a handoff row written by configuration 6
+  WARN:
+    - selected dip at the edge of the grid (plus or minus 80)
+    - RELATIVE and DEM_ABSOLUTE frames selecting dips more than 20 degrees apart
+
+claims_not_permitted:
+  - a measured strike or dip of the ore horizons (the dip here is an apparent, statistically selected dip)
+  - an along-strike range
+  - any change to the configuration-2 handoff decision
+  - geological continuity beyond the drilled lines

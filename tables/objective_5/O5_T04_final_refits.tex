@@ -1,0 +1,16 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O5-T04. Final-refit record. Full-data fits on all binary intervals. In-sample Brier and AUC are fit diagnostics only, not validation. full\_data\_matches\_o3\_mode compares the full-data hyperparameters with the most frequent Objective 3 per-fold choice. Receipt 1.}
+\label{tab:O5T04}
+\begin{tabular}{llllp{0.3\linewidth}p{0.3\linewidth}llllllllllllllllp{0.3\linewidth}l}
+\toprule
+tier & role & model\_id & model\_class & predictors\_json & hyperparameters\_json & inner\_cv\_score & inner\_cv\_score\_sd & calibration\_status & calibration\_intercept & calibration\_slope & calibration\_n\_inner & n\_train & n\_positive & in\_sample\_brier & in\_sample\_auc & o3\_split\_plan\_id & o3\_folds\_selected & o3\_most\_frequent\_json & o3\_most\_frequent\_count & o3\_modes\_tied & full\_data\_matches\_o3\_mode & artifact\_path & artifact\_sha256 \\
+\midrule
+TIER\_1\_EXTRAPOLATION & SELECTED & BASE\_LOGISTIC\_WF & LogisticRegression & ["easting\_m", "northing\_m", "z\_relative\_m", "depth\_below\_weathering\_front\_m"] & \{"C":0.1,"class\_weight":null,"max\_iter":2000\} & 0.474615 & 0.038312 & SKIPPED &  &  & 1829 & 1829 & 525 & 0.152508 & 0.805957 & O3-SPLIT-LODO-1 & 5 & \{"C":0.1,"class\_weight":null,"max\_iter":2000\} & 3 & 0 & 1 & reports/objective\_5/artifacts/tier1\_selected\_BASE\_LOGISTIC\_WF.joblib & 5b13b536e87767c75b38754af7550e02f97dbb658b501347dd25384718450f44 \\
+TIER\_1\_EXTRAPOLATION & RUNNER\_UP & M2\_RF & RandomForestClassifier & ["easting\_m", "northing\_m", "z\_relative\_m"] & \{"max\_depth":8,"max\_features":"sqrt","min\_samples\_leaf":20,"n\_estimators":200\} & 0.457035 & 0.033019 & FITTED & 0.024817 & 1.001649 & 1829 & 1829 & 525 & 0.101674 & 0.933982 & O3-SPLIT-LODO-1 & 5 & \{"max\_depth":4,"max\_features":"sqrt","min\_samples\_leaf":5,"n\_estimators":200\} & 2 & 1 & 0 & reports/objective\_5/artifacts/tier1\_runner\_up\_M2\_RF.joblib & 23cbcf1e241e02e073f5c43f5b11f30ad2a9eb6de961a63d99bcecc93b31983d \\
+TIER\_2\_INTERPOLATION & SELECTED & M2\_HGB\_WF & HistGradientBoostingClassifier & ["easting\_m", "northing\_m", "z\_relative\_m", "depth\_below\_weathering\_front\_m"] & \{"l2\_regularization":1.0,"learning\_rate":0.05,"max\_iter":150,"max\_leaf\_nodes":7,"min\_samples\_leaf":20\} & 0.473088 & 0.021757 & FITTED & -0.221483 & 0.641282 & 1829 & 1829 & 525 & 0.097843 & 0.95277 & O3-SPLIT-HOLE-IL-2 & 5 & \{"l2\_regularization":1.0,"learning\_rate":0.05,"max\_iter":150,"max\_leaf\_nodes":7,"min\_samples\_leaf":20\} & 3 & 0 & 1 & reports/objective\_5/artifacts/tier2\_selected\_M2\_HGB\_WF.joblib & b690ecd90e3fb93adfe5b2530c08ff48ad4ac5c5764a545b678613b0dd7810ad \\
+TIER\_2\_INTERPOLATION & RUNNER\_UP & M2\_HGB & HistGradientBoostingClassifier & ["easting\_m", "northing\_m", "z\_relative\_m"] & \{"l2\_regularization":0.0,"learning\_rate":0.05,"max\_iter":150,"max\_leaf\_nodes":7,"min\_samples\_leaf":20\} & 0.454986 & 0.030132 & FITTED & -0.164447 & 0.71299 & 1829 & 1829 & 525 & 0.098041 & 0.948154 & O3-SPLIT-HOLE-IL-2 & 5 & \{"l2\_regularization":1.0,"learning\_rate":0.05,"max\_iter":150,"max\_leaf\_nodes":7,"min\_samples\_leaf":20\} & 3 & 0 & 0 & reports/objective\_5/artifacts/tier2\_runner\_up\_M2\_HGB.joblib & ba817223fc2f646aa2575585dd9f06c1553e29c13b9b5d22955aa8c111011fd3 \\
+\bottomrule
+\end{tabular}
+\end{table}

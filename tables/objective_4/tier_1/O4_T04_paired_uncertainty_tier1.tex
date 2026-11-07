@@ -1,0 +1,30 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O4-T04. Paired difference uncertainty and weighting sensitivity. Sign convention: difference = Brier(model\_b) minus Brier(model\_a); negative means model\_b has the lower Brier. power\_label: RESOLVED when the 95\% hole-cluster interval excludes zero; UNRESOLVED when it includes zero, with detectable\_half\_width the smallest difference this design could have detected; IDENTICAL when the two models are the same predictions (no interval). The line-level interval is a sensitivity analysis. Receipt 1.}
+\label{tab:O4-T04}
+\begin{tabular}{lllllllllllllllp{0.3\linewidth}}
+\toprule
+pair\_id & model\_a & model\_b & weighting & delta\_brier\_b\_minus\_a & delta\_log\_loss\_b\_minus\_a & ci\_low\_hole & ci\_high\_hole & ci\_low\_line & ci\_high\_line & power\_label & detectable\_half\_width & folds\_b\_better & n & status & reason \\
+\midrule
+HGB\_vs\_HGBWF & M2\_HGB & M2\_HGB\_WF & EQUAL\_HOLE & -0.005771 & -0.017582 &  &  &  &  &  &  & 5 & 1829 & DEFINED & both models defined on this subset \\
+HGB\_vs\_HGBWF & M2\_HGB & M2\_HGB\_WF & INTERVAL & -0.005764 & -0.01531 & -0.008715 & -0.003039 & -0.011104 & -0.001417 & RESOLVED &  & 5 & 1829 & DEFINED & both models defined on this subset \\
+LOG\_vs\_LOGWF & BASE\_LOGISTIC & BASE\_LOGISTIC\_WF & EQUAL\_HOLE & 0.000008 & 0.003996 &  &  &  &  &  &  & 2 & 1829 & DEFINED & both models defined on this subset \\
+LOG\_vs\_LOGWF & BASE\_LOGISTIC & BASE\_LOGISTIC\_WF & INTERVAL & -0.000747 & 0.001109 & -0.002704 & 0.001247 & -0.003482 & 0.001968 & UNRESOLVED & 0.001975 & 3 & 1829 & DEFINED & both models defined on this subset \\
+LOG\_vs\_RF & BASE\_LOGISTIC & M2\_RF & EQUAL\_HOLE & -0.000518 & -0.002974 &  &  &  &  &  &  & 3 & 1829 & DEFINED & both models defined on this subset \\
+LOG\_vs\_RF & BASE\_LOGISTIC & M2\_RF & INTERVAL & -0.000302 & -0.00584 & -0.013688 & 0.011983 & -0.010218 & 0.013111 & UNRESOLVED & 0.012836 & 3 & 1829 & DEFINED & both models defined on this subset \\
+M2SEL\_vs\_M2WFSEL & M2\_SEL & M2\_WF\_SEL & EQUAL\_HOLE & 0.002575 & 0.020634 &  &  &  &  &  &  & 2 & 1829 & DEFINED & both models defined on this subset \\
+M2SEL\_vs\_M2WFSEL & M2\_SEL & M2\_WF\_SEL & INTERVAL & 0.002202 & 0.018185 & -0.003522 & 0.007828 & -0.003086 & 0.008062 & UNRESOLVED & 0.005675 & 1 & 1829 & DEFINED & both models defined on this subset \\
+M2WFSEL\_vs\_M3 & M2\_WF\_SEL & M3\_HYBRID & EQUAL\_HOLE & 0 & 0 &  &  &  &  &  &  & 0 & 1829 & IDENTICAL & identical predictions on every common observation; no interval \\
+M2WFSEL\_vs\_M3 & M2\_WF\_SEL & M3\_HYBRID & INTERVAL & 0 & 0 &  &  &  &  & IDENTICAL &  & 0 & 1829 & IDENTICAL & identical predictions on every common observation; no interval \\
+PREV\_vs\_M1 & BASE\_PREVALENCE & M1\_IK & EQUAL\_HOLE & -0.002063 & -0.004807 &  &  &  &  &  &  & 5 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_M1 & BASE\_PREVALENCE & M1\_IK & INTERVAL & -0.001748 & -0.004102 & -0.002533 & -0.000909 & -0.002791 & -0.000584 & RESOLVED &  & 5 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_M2SEL & BASE\_PREVALENCE & M2\_SEL & EQUAL\_HOLE & -0.048575 & -0.125118 &  &  &  &  &  &  & 4 & 1829 & DEFINED & both models defined on this subset \\
+PREV\_vs\_M2SEL & BASE\_PREVALENCE & M2\_SEL & INTERVAL & -0.05561 & -0.138767 & -0.081147 & -0.031441 & -0.106003 & -0.013305 & RESOLVED &  & 4 & 1829 & DEFINED & both models defined on this subset \\
+RF\_vs\_HGB & M2\_RF & M2\_HGB & EQUAL\_HOLE & 0.005441 & 0.024545 &  &  &  &  &  &  & 1 & 1829 & DEFINED & both models defined on this subset \\
+RF\_vs\_HGB & M2\_RF & M2\_HGB & INTERVAL & 0.005965 & 0.023587 & -0.005874 & 0.017428 & 0.000161 & 0.018511 & UNRESOLVED & 0.011651 & 1 & 1829 & DEFINED & both models defined on this subset \\
+RF\_vs\_RFWF & M2\_RF & M2\_RF\_WF & EQUAL\_HOLE & 0.002575 & 0.020634 &  &  &  &  &  &  & 2 & 1829 & DEFINED & both models defined on this subset \\
+RF\_vs\_RFWF & M2\_RF & M2\_RF\_WF & INTERVAL & 0.002202 & 0.018185 & -0.003522 & 0.007828 & -0.003086 & 0.008062 & UNRESOLVED & 0.005675 & 1 & 1829 & DEFINED & both models defined on this subset \\
+\bottomrule
+\end{tabular}
+\end{table}

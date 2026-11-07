@@ -1,0 +1,444 @@
+\begin{table}[ht]
+\centering
+\scriptsize
+\caption{O3-T03. Out-of-fold completeness and leakage audit, both split plans. Expected rows are the held-out intervals of each fold of each split plan. A completed candidate has a prediction or an explicit failure record for every held-out interval. Leakage rows are the audit log. Receipt 1.}
+\label{tab:O3-T03}
+\begin{tabular}{llllllllllllp{0.34\linewidth}}
+\toprule
+section & split\_plan\_id & fold\_id & line\_code & family\_id & expected & predicted & failed & clipped & positive\_true & positive\_pred & status & detail \\
+\midrule
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & BASE\_LOGISTIC & 383 & 383 & 0 & 0 & 83 & 120 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & BASE\_LOGISTIC\_WF & 383 & 383 & 0 & 0 & 83 & 115 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & BASE\_PREVALENCE & 383 & 383 & 0 & 0 & 83 & 0 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M1\_IK & 383 & 383 & 0 & 0 & 83 & 178 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M2\_HGB & 383 & 383 & 0 & 0 & 83 & 278 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M2\_HGB\_WF & 383 & 383 & 0 & 0 & 83 & 294 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M2\_RF & 383 & 383 & 0 & 0 & 83 & 223 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M2\_RF\_WF & 383 & 383 & 0 & 0 & 83 & 218 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M2\_SEL & 383 & 383 & 0 & 0 & 83 & 223 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M2\_WF\_SEL & 383 & 383 & 0 & 0 & 83 & 218 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 &  & M3\_HYBRID & 383 & 383 & 0 & 0 & 83 & 218 & COMPLETE & minimum test-to-train collar distance 17.1172427686237 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & BASE\_LOGISTIC & 455 & 455 & 0 & 0 & 199 & 281 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & BASE\_LOGISTIC\_WF & 455 & 455 & 0 & 0 & 199 & 288 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & BASE\_PREVALENCE & 455 & 455 & 0 & 0 & 199 & 0 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M1\_IK & 455 & 455 & 0 & 0 & 199 & 242 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M2\_HGB & 455 & 455 & 0 & 0 & 199 & 192 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M2\_HGB\_WF & 455 & 455 & 0 & 0 & 199 & 138 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M2\_RF & 455 & 455 & 0 & 0 & 199 & 239 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M2\_RF\_WF & 455 & 455 & 0 & 0 & 199 & 276 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M2\_SEL & 455 & 455 & 0 & 0 & 199 & 239 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M2\_WF\_SEL & 455 & 455 & 0 & 0 & 199 & 276 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 &  & M3\_HYBRID & 455 & 455 & 0 & 0 & 199 & 276 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & BASE\_LOGISTIC & 383 & 383 & 0 & 0 & 119 & 134 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & BASE\_LOGISTIC\_WF & 383 & 383 & 0 & 0 & 119 & 109 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & BASE\_PREVALENCE & 383 & 383 & 0 & 0 & 119 & 0 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M1\_IK & 383 & 383 & 0 & 0 & 119 & 148 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M2\_HGB & 383 & 383 & 0 & 0 & 119 & 240 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M2\_HGB\_WF & 383 & 383 & 0 & 0 & 119 & 210 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M2\_RF & 383 & 383 & 0 & 0 & 119 & 130 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M2\_RF\_WF & 383 & 383 & 0 & 0 & 119 & 196 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M2\_SEL & 383 & 383 & 0 & 0 & 119 & 130 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M2\_WF\_SEL & 383 & 383 & 0 & 0 & 119 & 196 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 &  & M3\_HYBRID & 383 & 383 & 0 & 0 & 119 & 196 & COMPLETE & minimum test-to-train collar distance 15.2315462117278 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & BASE\_LOGISTIC & 303 & 303 & 0 & 0 & 54 & 141 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & BASE\_LOGISTIC\_WF & 303 & 303 & 0 & 0 & 54 & 140 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & BASE\_PREVALENCE & 303 & 303 & 0 & 0 & 54 & 0 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M1\_IK & 303 & 303 & 0 & 0 & 54 & 119 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M2\_HGB & 303 & 303 & 0 & 0 & 54 & 106 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M2\_HGB\_WF & 303 & 303 & 0 & 0 & 54 & 132 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M2\_RF & 303 & 303 & 0 & 0 & 54 & 116 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M2\_RF\_WF & 303 & 303 & 0 & 0 & 54 & 139 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M2\_SEL & 303 & 303 & 0 & 0 & 54 & 116 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M2\_WF\_SEL & 303 & 303 & 0 & 0 & 54 & 139 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 &  & M3\_HYBRID & 303 & 303 & 0 & 0 & 54 & 139 & COMPLETE & minimum test-to-train collar distance 16.0312195418814 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & BASE\_LOGISTIC & 305 & 305 & 0 & 0 & 70 & 93 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & BASE\_LOGISTIC\_WF & 305 & 305 & 0 & 0 & 70 & 154 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & BASE\_PREVALENCE & 305 & 305 & 0 & 0 & 70 & 0 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M1\_IK & 305 & 305 & 0 & 0 & 70 & 129 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M2\_HGB & 305 & 305 & 0 & 0 & 70 & 181 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M2\_HGB\_WF & 305 & 305 & 0 & 0 & 70 & 203 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M2\_RF & 305 & 305 & 0 & 0 & 70 & 159 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M2\_RF\_WF & 305 & 305 & 0 & 0 & 70 & 169 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M2\_SEL & 305 & 305 & 0 & 0 & 70 & 159 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M2\_WF\_SEL & 305 & 305 & 0 & 0 & 70 & 169 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 &  & M3\_HYBRID & 305 & 305 & 0 & 0 & 70 & 169 & COMPLETE & minimum test-to-train collar distance 16.2788205960997 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & BASE\_LOGISTIC & 84 & 84 & 0 & 0 & 29 & 69 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & BASE\_LOGISTIC\_WF & 84 & 84 & 0 & 0 & 29 & 81 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & BASE\_PREVALENCE & 84 & 84 & 0 & 0 & 29 & 0 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M1\_IK & 84 & 84 & 0 & 0 & 29 & 16 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M2\_HGB & 84 & 84 & 0 & 0 & 29 & 20 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M2\_HGB\_WF & 84 & 84 & 0 & 0 & 29 & 36 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M2\_RF & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M2\_RF\_WF & 84 & 84 & 0 & 0 & 29 & 39 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M2\_SEL & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M2\_WF\_SEL & 84 & 84 & 0 & 0 & 29 & 39 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 1 &  & M3\_HYBRID & 84 & 84 & 0 & 0 & 29 & 39 & COMPLETE & minimum test-to-train collar distance 556.577038692758 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & BASE\_LOGISTIC & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & BASE\_LOGISTIC\_WF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & BASE\_PREVALENCE & 429 & 429 & 0 & 0 & 217 & 0 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M1\_IK & 429 & 429 & 0 & 0 & 217 & 304 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M2\_HGB & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M2\_HGB\_WF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M2\_RF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M2\_RF\_WF & 429 & 429 & 0 & 0 & 217 & 365 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M2\_SEL & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M2\_WF\_SEL & 429 & 429 & 0 & 0 & 217 & 365 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 2 &  & M3\_HYBRID & 429 & 429 & 0 & 0 & 217 & 365 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & BASE\_LOGISTIC & 528 & 528 & 0 & 0 & 130 & 43 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & BASE\_LOGISTIC\_WF & 528 & 528 & 0 & 0 & 130 & 44 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & BASE\_PREVALENCE & 528 & 528 & 0 & 0 & 130 & 0 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M1\_IK & 528 & 528 & 0 & 0 & 130 & 1 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M2\_HGB & 528 & 528 & 0 & 0 & 130 & 486 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M2\_HGB\_WF & 528 & 528 & 0 & 0 & 130 & 438 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M2\_RF & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M2\_RF\_WF & 528 & 528 & 0 & 0 & 130 & 408 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M2\_SEL & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M2\_WF\_SEL & 528 & 528 & 0 & 0 & 130 & 408 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 3 &  & M3\_HYBRID & 528 & 528 & 0 & 0 & 130 & 408 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & BASE\_LOGISTIC & 401 & 401 & 0 & 0 & 133 & 186 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & BASE\_LOGISTIC\_WF & 401 & 401 & 0 & 0 & 133 & 163 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & BASE\_PREVALENCE & 401 & 401 & 0 & 0 & 133 & 0 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M1\_IK & 401 & 401 & 0 & 0 & 133 & 257 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M2\_HGB & 401 & 401 & 0 & 0 & 133 & 216 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M2\_HGB\_WF & 401 & 401 & 0 & 0 & 133 & 260 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M2\_RF & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M2\_RF\_WF & 401 & 401 & 0 & 0 & 133 & 220 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M2\_SEL & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M2\_WF\_SEL & 401 & 401 & 0 & 0 & 133 & 220 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 4 &  & M3\_HYBRID & 401 & 401 & 0 & 0 & 133 & 220 & COMPLETE & minimum test-to-train collar distance 453.558430634907 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & BASE\_LOGISTIC & 387 & 387 & 0 & 0 & 16 & 17 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & BASE\_LOGISTIC\_WF & 387 & 387 & 0 & 0 & 16 & 11 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & BASE\_PREVALENCE & 387 & 387 & 0 & 0 & 16 & 0 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M1\_IK & 387 & 387 & 0 & 0 & 16 & 110 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M2\_HGB & 387 & 387 & 0 & 0 & 16 & 117 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M2\_HGB\_WF & 387 & 387 & 0 & 0 & 16 & 0 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M2\_RF & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M2\_RF\_WF & 387 & 387 & 0 & 0 & 16 & 35 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M2\_SEL & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M2\_WF\_SEL & 387 & 387 & 0 & 0 & 16 & 35 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+FOLD\_FAMILY & O3-SPLIT-LODO-1 & 5 &  & M3\_HYBRID & 387 & 387 & 0 & 0 & 16 & 35 & COMPLETE & minimum test-to-train collar distance 488.409664114051 \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & OUTER\_TEST\_NOT\_IN\_TRAINING\_MANIFEST: 0 test observations appear in a training manifest of the same fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & PREDICTIONS\_ARE\_TEST\_MEMBERS: 0 predictions are not test members of their fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & PREDICTORS\_SAFE\_AND\_AVAILABLE: 0 deployed predictors are not SAFE and available (easting\_m, northing\_m, z\_relative\_m, depth\_below\_weathering\_front\_m) \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & FRONT\_FEATURE\_FOLD\_SAFE: 5 outer folds recomputed with the test holes' weathering codes altered; 0 failed; fold 1: 3 test holes altered; 68 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 2: 13 test holes altered; 58 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 3: 21 test holes altered; 50 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 4: 15 test holes altered; 56 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 5: 19 test holes altered; 52 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & VARIOGRAMS\_BELONG\_TO\_THEIR\_TRAINING\_FOLD: 0 covariance rows reference a different fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & CALIBRATION\_USES\_INNER\_DATA\_ONLY: 0 calibration fits use more rows than the outer training fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & NO\_FINAL\_FULL\_FIT\_IN\_OOF: 0 final full-data refits exist before Objective 4 selection \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & OUTER\_TEST\_NOT\_IN\_TRAINING\_MANIFEST: 0 test observations appear in a training manifest of the same fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & PREDICTIONS\_ARE\_TEST\_MEMBERS: 0 predictions are not test members of their fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & PREDICTORS\_SAFE\_AND\_AVAILABLE: 0 deployed predictors are not SAFE and available (easting\_m, northing\_m, z\_relative\_m, depth\_below\_weathering\_front\_m) \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & FRONT\_FEATURE\_FOLD\_SAFE: 5 outer folds recomputed with the test holes' weathering codes altered; 0 failed; fold 1: 16 test holes altered; 55 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 2: 15 test holes altered; 56 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 3: 15 test holes altered; 56 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 4: 13 test holes altered; 58 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True; fold 5: 12 test holes altered; 59 surface holes; test holes contributing to the surface: 0; test values unchanged: True; training values unchanged: True \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & VARIOGRAMS\_BELONG\_TO\_THEIR\_TRAINING\_FOLD: 0 covariance rows reference a different fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & CALIBRATION\_USES\_INNER\_DATA\_ONLY: 0 calibration fits use more rows than the outer training fold \\
+LEAKAGE &  &  &  &  & 0 & 0 & 0 & 0 & 0 & 0 & PASS & NO\_FINAL\_FULL\_FIT\_IN\_OOF: 0 final full-data refits exist before Objective 4 selection \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & BASE\_LOGISTIC & 30 & 30 & 0 & 0 & 11 & 20 & COMPLETE & observations in the held-out line; mean p 0.4631 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & BASE\_LOGISTIC & 81 & 81 & 0 & 0 & 28 & 56 & COMPLETE & observations in the held-out line; mean p 0.469 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & BASE\_LOGISTIC & 119 & 119 & 0 & 0 & 20 & 21 & COMPLETE & observations in the held-out line; mean p 0.2159 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & BASE\_LOGISTIC & 77 & 77 & 0 & 0 & 21 & 23 & COMPLETE & observations in the held-out line; mean p 0.2987 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & BASE\_LOGISTIC & 76 & 76 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.083 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & BASE\_LOGISTIC\_WF & 30 & 30 & 0 & 0 & 11 & 19 & COMPLETE & observations in the held-out line; mean p 0.4202 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & BASE\_LOGISTIC\_WF & 81 & 81 & 0 & 0 & 28 & 54 & COMPLETE & observations in the held-out line; mean p 0.4418 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & BASE\_LOGISTIC\_WF & 119 & 119 & 0 & 0 & 20 & 15 & COMPLETE & observations in the held-out line; mean p 0.2144 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & BASE\_LOGISTIC\_WF & 77 & 77 & 0 & 0 & 21 & 27 & COMPLETE & observations in the held-out line; mean p 0.3253 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & BASE\_LOGISTIC\_WF & 76 & 76 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.1107 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & BASE\_PREVALENCE & 30 & 30 & 0 & 0 & 11 & 0 & COMPLETE & observations in the held-out line; mean p 0.3057 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & BASE\_PREVALENCE & 81 & 81 & 0 & 0 & 28 & 0 & COMPLETE & observations in the held-out line; mean p 0.3057 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & BASE\_PREVALENCE & 119 & 119 & 0 & 0 & 20 & 0 & COMPLETE & observations in the held-out line; mean p 0.3057 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & BASE\_PREVALENCE & 77 & 77 & 0 & 0 & 21 & 0 & COMPLETE & observations in the held-out line; mean p 0.3057 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & BASE\_PREVALENCE & 76 & 76 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.3057 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M1\_IK & 30 & 30 & 0 & 0 & 11 & 16 & COMPLETE & observations in the held-out line; mean p 0.3537 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M1\_IK & 81 & 81 & 0 & 0 & 28 & 60 & COMPLETE & observations in the held-out line; mean p 0.4336 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M1\_IK & 119 & 119 & 0 & 0 & 20 & 53 & COMPLETE & observations in the held-out line; mean p 0.2664 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M1\_IK & 77 & 77 & 0 & 0 & 21 & 44 & COMPLETE & observations in the held-out line; mean p 0.361 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M1\_IK & 76 & 76 & 0 & 0 & 3 & 5 & COMPLETE & observations in the held-out line; mean p 0.1014 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M2\_HGB & 30 & 30 & 0 & 0 & 11 & 28 & COMPLETE & observations in the held-out line; mean p 0.3536 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M2\_HGB & 81 & 81 & 0 & 0 & 28 & 79 & COMPLETE & observations in the held-out line; mean p 0.4342 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M2\_HGB & 119 & 119 & 0 & 0 & 20 & 82 & COMPLETE & observations in the held-out line; mean p 0.2133 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M2\_HGB & 77 & 77 & 0 & 0 & 21 & 77 & COMPLETE & observations in the held-out line; mean p 0.3076 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M2\_HGB & 76 & 76 & 0 & 0 & 3 & 12 & COMPLETE & observations in the held-out line; mean p 0.088 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M2\_HGB\_WF & 30 & 30 & 0 & 0 & 11 & 25 & COMPLETE & observations in the held-out line; mean p 0.3233 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M2\_HGB\_WF & 81 & 81 & 0 & 0 & 28 & 74 & COMPLETE & observations in the held-out line; mean p 0.4442 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M2\_HGB\_WF & 119 & 119 & 0 & 0 & 20 & 84 & COMPLETE & observations in the held-out line; mean p 0.2493 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M2\_HGB\_WF & 77 & 77 & 0 & 0 & 21 & 75 & COMPLETE & observations in the held-out line; mean p 0.3214 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M2\_HGB\_WF & 76 & 76 & 0 & 0 & 3 & 36 & COMPLETE & observations in the held-out line; mean p 0.105 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M2\_RF & 30 & 30 & 0 & 0 & 11 & 18 & COMPLETE & observations in the held-out line; mean p 0.2964 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M2\_RF & 81 & 81 & 0 & 0 & 28 & 65 & COMPLETE & observations in the held-out line; mean p 0.5061 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M2\_RF & 119 & 119 & 0 & 0 & 20 & 63 & COMPLETE & observations in the held-out line; mean p 0.2581 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M2\_RF & 77 & 77 & 0 & 0 & 21 & 77 & COMPLETE & observations in the held-out line; mean p 0.3168 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M2\_RF & 76 & 76 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.0449 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M2\_RF\_WF & 30 & 30 & 0 & 0 & 11 & 18 & COMPLETE & observations in the held-out line; mean p 0.2806 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M2\_RF\_WF & 81 & 81 & 0 & 0 & 28 & 63 & COMPLETE & observations in the held-out line; mean p 0.4338 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M2\_RF\_WF & 119 & 119 & 0 & 0 & 20 & 65 & COMPLETE & observations in the held-out line; mean p 0.2487 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M2\_RF\_WF & 77 & 77 & 0 & 0 & 21 & 67 & COMPLETE & observations in the held-out line; mean p 0.3143 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M2\_RF\_WF & 76 & 76 & 0 & 0 & 3 & 5 & COMPLETE & observations in the held-out line; mean p 0.0748 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M2\_SEL & 30 & 30 & 0 & 0 & 11 & 18 & COMPLETE & observations in the held-out line; mean p 0.2964 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M2\_SEL & 81 & 81 & 0 & 0 & 28 & 65 & COMPLETE & observations in the held-out line; mean p 0.5061 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M2\_SEL & 119 & 119 & 0 & 0 & 20 & 63 & COMPLETE & observations in the held-out line; mean p 0.2581 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M2\_SEL & 77 & 77 & 0 & 0 & 21 & 77 & COMPLETE & observations in the held-out line; mean p 0.3168 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M2\_SEL & 76 & 76 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.0449 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M2\_WF\_SEL & 30 & 30 & 0 & 0 & 11 & 18 & COMPLETE & observations in the held-out line; mean p 0.2806 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M2\_WF\_SEL & 81 & 81 & 0 & 0 & 28 & 63 & COMPLETE & observations in the held-out line; mean p 0.4338 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M2\_WF\_SEL & 119 & 119 & 0 & 0 & 20 & 65 & COMPLETE & observations in the held-out line; mean p 0.2487 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M2\_WF\_SEL & 77 & 77 & 0 & 0 & 21 & 67 & COMPLETE & observations in the held-out line; mean p 0.3143 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M2\_WF\_SEL & 76 & 76 & 0 & 0 & 3 & 5 & COMPLETE & observations in the held-out line; mean p 0.0748 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1111930 & M3\_HYBRID & 30 & 30 & 0 & 0 & 11 & 18 & COMPLETE & observations in the held-out line; mean p 0.2806 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112140 & M3\_HYBRID & 81 & 81 & 0 & 0 & 28 & 63 & COMPLETE & observations in the held-out line; mean p 0.4338 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112500 & M3\_HYBRID & 119 & 119 & 0 & 0 & 20 & 65 & COMPLETE & observations in the held-out line; mean p 0.2487 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1112600 & M3\_HYBRID & 77 & 77 & 0 & 0 & 21 & 67 & COMPLETE & observations in the held-out line; mean p 0.3143 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 1 & NOM\_N1113000 & M3\_HYBRID & 76 & 76 & 0 & 0 & 3 & 5 & COMPLETE & observations in the held-out line; mean p 0.0748 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & BASE\_LOGISTIC & 34 & 34 & 0 & 0 & 18 & 32 & COMPLETE & observations in the held-out line; mean p 0.4483 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & BASE\_LOGISTIC & 141 & 141 & 0 & 0 & 89 & 137 & COMPLETE & observations in the held-out line; mean p 0.5761 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & BASE\_LOGISTIC & 115 & 115 & 0 & 0 & 42 & 56 & COMPLETE & observations in the held-out line; mean p 0.2207 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & BASE\_LOGISTIC & 88 & 88 & 0 & 0 & 50 & 54 & COMPLETE & observations in the held-out line; mean p 0.2815 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & BASE\_LOGISTIC & 77 & 77 & 0 & 0 & 0 & 2 & COMPLETE & observations in the held-out line; mean p 0.0788 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & BASE\_LOGISTIC\_WF & 34 & 34 & 0 & 0 & 18 & 32 & COMPLETE & observations in the held-out line; mean p 0.3798 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & BASE\_LOGISTIC\_WF & 141 & 141 & 0 & 0 & 89 & 133 & COMPLETE & observations in the held-out line; mean p 0.5054 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & BASE\_LOGISTIC\_WF & 115 & 115 & 0 & 0 & 42 & 56 & COMPLETE & observations in the held-out line; mean p 0.2147 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & BASE\_LOGISTIC\_WF & 88 & 88 & 0 & 0 & 50 & 62 & COMPLETE & observations in the held-out line; mean p 0.2942 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & BASE\_LOGISTIC\_WF & 77 & 77 & 0 & 0 & 0 & 5 & COMPLETE & observations in the held-out line; mean p 0.1091 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & BASE\_PREVALENCE & 34 & 34 & 0 & 0 & 18 & 0 & COMPLETE & observations in the held-out line; mean p 0.2373 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & BASE\_PREVALENCE & 141 & 141 & 0 & 0 & 89 & 0 & COMPLETE & observations in the held-out line; mean p 0.2373 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & BASE\_PREVALENCE & 115 & 115 & 0 & 0 & 42 & 0 & COMPLETE & observations in the held-out line; mean p 0.2373 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & BASE\_PREVALENCE & 88 & 88 & 0 & 0 & 50 & 0 & COMPLETE & observations in the held-out line; mean p 0.2373 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & BASE\_PREVALENCE & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.2373 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M1\_IK & 34 & 34 & 0 & 0 & 18 & 18 & COMPLETE & observations in the held-out line; mean p 0.2558 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M1\_IK & 141 & 141 & 0 & 0 & 89 & 111 & COMPLETE & observations in the held-out line; mean p 0.3634 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M1\_IK & 115 & 115 & 0 & 0 & 42 & 51 & COMPLETE & observations in the held-out line; mean p 0.2338 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M1\_IK & 88 & 88 & 0 & 0 & 50 & 62 & COMPLETE & observations in the held-out line; mean p 0.3517 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M1\_IK & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0947 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M2\_HGB & 34 & 34 & 0 & 0 & 18 & 1 & COMPLETE & observations in the held-out line; mean p 0.2684 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M2\_HGB & 141 & 141 & 0 & 0 & 89 & 99 & COMPLETE & observations in the held-out line; mean p 0.4843 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M2\_HGB & 115 & 115 & 0 & 0 & 42 & 26 & COMPLETE & observations in the held-out line; mean p 0.1844 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M2\_HGB & 88 & 88 & 0 & 0 & 50 & 66 & COMPLETE & observations in the held-out line; mean p 0.3835 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M2\_HGB & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0694 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M2\_HGB\_WF & 34 & 34 & 0 & 0 & 18 & 0 & COMPLETE & observations in the held-out line; mean p 0.2614 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M2\_HGB\_WF & 141 & 141 & 0 & 0 & 89 & 93 & COMPLETE & observations in the held-out line; mean p 0.4829 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M2\_HGB\_WF & 115 & 115 & 0 & 0 & 42 & 10 & COMPLETE & observations in the held-out line; mean p 0.1828 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M2\_HGB\_WF & 88 & 88 & 0 & 0 & 50 & 35 & COMPLETE & observations in the held-out line; mean p 0.3685 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M2\_HGB\_WF & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0708 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M2\_RF & 34 & 34 & 0 & 0 & 18 & 15 & COMPLETE & observations in the held-out line; mean p 0.1996 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M2\_RF & 141 & 141 & 0 & 0 & 89 & 114 & COMPLETE & observations in the held-out line; mean p 0.4517 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M2\_RF & 115 & 115 & 0 & 0 & 42 & 34 & COMPLETE & observations in the held-out line; mean p 0.1675 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M2\_RF & 88 & 88 & 0 & 0 & 50 & 76 & COMPLETE & observations in the held-out line; mean p 0.4007 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M2\_RF & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0421 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M2\_RF\_WF & 34 & 34 & 0 & 0 & 18 & 19 & COMPLETE & observations in the held-out line; mean p 0.1814 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M2\_RF\_WF & 141 & 141 & 0 & 0 & 89 & 119 & COMPLETE & observations in the held-out line; mean p 0.4415 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M2\_RF\_WF & 115 & 115 & 0 & 0 & 42 & 63 & COMPLETE & observations in the held-out line; mean p 0.1967 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M2\_RF\_WF & 88 & 88 & 0 & 0 & 50 & 75 & COMPLETE & observations in the held-out line; mean p 0.3819 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M2\_RF\_WF & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0764 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M2\_SEL & 34 & 34 & 0 & 0 & 18 & 15 & COMPLETE & observations in the held-out line; mean p 0.1996 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M2\_SEL & 141 & 141 & 0 & 0 & 89 & 114 & COMPLETE & observations in the held-out line; mean p 0.4517 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M2\_SEL & 115 & 115 & 0 & 0 & 42 & 34 & COMPLETE & observations in the held-out line; mean p 0.1675 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M2\_SEL & 88 & 88 & 0 & 0 & 50 & 76 & COMPLETE & observations in the held-out line; mean p 0.4007 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M2\_SEL & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0421 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M2\_WF\_SEL & 34 & 34 & 0 & 0 & 18 & 19 & COMPLETE & observations in the held-out line; mean p 0.1814 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M2\_WF\_SEL & 141 & 141 & 0 & 0 & 89 & 119 & COMPLETE & observations in the held-out line; mean p 0.4415 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M2\_WF\_SEL & 115 & 115 & 0 & 0 & 42 & 63 & COMPLETE & observations in the held-out line; mean p 0.1967 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M2\_WF\_SEL & 88 & 88 & 0 & 0 & 50 & 75 & COMPLETE & observations in the held-out line; mean p 0.3819 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M2\_WF\_SEL & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0764 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1111930 & M3\_HYBRID & 34 & 34 & 0 & 0 & 18 & 19 & COMPLETE & observations in the held-out line; mean p 0.1814 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112140 & M3\_HYBRID & 141 & 141 & 0 & 0 & 89 & 119 & COMPLETE & observations in the held-out line; mean p 0.4415 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112500 & M3\_HYBRID & 115 & 115 & 0 & 0 & 42 & 63 & COMPLETE & observations in the held-out line; mean p 0.1967 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1112600 & M3\_HYBRID & 88 & 88 & 0 & 0 & 50 & 75 & COMPLETE & observations in the held-out line; mean p 0.3819 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 2 & NOM\_N1113000 & M3\_HYBRID & 77 & 77 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.0764 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & BASE\_LOGISTIC & 20 & 20 & 0 & 0 & 0 & 14 & COMPLETE & observations in the held-out line; mean p 0.4011 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & BASE\_LOGISTIC & 99 & 99 & 0 & 0 & 43 & 72 & COMPLETE & observations in the held-out line; mean p 0.4886 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & BASE\_LOGISTIC & 101 & 101 & 0 & 0 & 30 & 24 & COMPLETE & observations in the held-out line; mean p 0.2101 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & BASE\_LOGISTIC & 71 & 71 & 0 & 0 & 43 & 22 & COMPLETE & observations in the held-out line; mean p 0.2584 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & BASE\_LOGISTIC & 92 & 92 & 0 & 0 & 3 & 2 & COMPLETE & observations in the held-out line; mean p 0.0762 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & BASE\_LOGISTIC\_WF & 20 & 20 & 0 & 0 & 0 & 12 & COMPLETE & observations in the held-out line; mean p 0.4156 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & BASE\_LOGISTIC\_WF & 99 & 99 & 0 & 0 & 43 & 63 & COMPLETE & observations in the held-out line; mean p 0.4796 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & BASE\_LOGISTIC\_WF & 101 & 101 & 0 & 0 & 30 & 14 & COMPLETE & observations in the held-out line; mean p 0.1995 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & BASE\_LOGISTIC\_WF & 71 & 71 & 0 & 0 & 43 & 20 & COMPLETE & observations in the held-out line; mean p 0.2772 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & BASE\_LOGISTIC\_WF & 92 & 92 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.0765 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & BASE\_PREVALENCE & 20 & 20 & 0 & 0 & 0 & 0 & COMPLETE & observations in the held-out line; mean p 0.2808 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & BASE\_PREVALENCE & 99 & 99 & 0 & 0 & 43 & 0 & COMPLETE & observations in the held-out line; mean p 0.2808 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & BASE\_PREVALENCE & 101 & 101 & 0 & 0 & 30 & 0 & COMPLETE & observations in the held-out line; mean p 0.2808 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & BASE\_PREVALENCE & 71 & 71 & 0 & 0 & 43 & 0 & COMPLETE & observations in the held-out line; mean p 0.2808 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & BASE\_PREVALENCE & 92 & 92 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.2808 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M1\_IK & 20 & 20 & 0 & 0 & 0 & 6 & COMPLETE & observations in the held-out line; mean p 0.2827 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M1\_IK & 99 & 99 & 0 & 0 & 43 & 68 & COMPLETE & observations in the held-out line; mean p 0.4488 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M1\_IK & 101 & 101 & 0 & 0 & 30 & 37 & COMPLETE & observations in the held-out line; mean p 0.2326 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M1\_IK & 71 & 71 & 0 & 0 & 43 & 37 & COMPLETE & observations in the held-out line; mean p 0.27 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M1\_IK & 92 & 92 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.0877 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M2\_HGB & 20 & 20 & 0 & 0 & 0 & 16 & COMPLETE & observations in the held-out line; mean p 0.334 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M2\_HGB & 99 & 99 & 0 & 0 & 43 & 89 & COMPLETE & observations in the held-out line; mean p 0.5296 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M2\_HGB & 101 & 101 & 0 & 0 & 30 & 78 & COMPLETE & observations in the held-out line; mean p 0.2529 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M2\_HGB & 71 & 71 & 0 & 0 & 43 & 57 & COMPLETE & observations in the held-out line; mean p 0.2247 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M2\_HGB & 92 & 92 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.0797 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M2\_HGB\_WF & 20 & 20 & 0 & 0 & 0 & 14 & COMPLETE & observations in the held-out line; mean p 0.261 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M2\_HGB\_WF & 99 & 99 & 0 & 0 & 43 & 79 & COMPLETE & observations in the held-out line; mean p 0.484 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M2\_HGB\_WF & 101 & 101 & 0 & 0 & 30 & 59 & COMPLETE & observations in the held-out line; mean p 0.239 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M2\_HGB\_WF & 71 & 71 & 0 & 0 & 43 & 56 & COMPLETE & observations in the held-out line; mean p 0.2413 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M2\_HGB\_WF & 92 & 92 & 0 & 0 & 3 & 2 & COMPLETE & observations in the held-out line; mean p 0.095 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M2\_RF & 20 & 20 & 0 & 0 & 0 & 8 & COMPLETE & observations in the held-out line; mean p 0.2922 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M2\_RF & 99 & 99 & 0 & 0 & 43 & 72 & COMPLETE & observations in the held-out line; mean p 0.5482 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M2\_RF & 101 & 101 & 0 & 0 & 30 & 35 & COMPLETE & observations in the held-out line; mean p 0.2073 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M2\_RF & 71 & 71 & 0 & 0 & 43 & 15 & COMPLETE & observations in the held-out line; mean p 0.2234 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M2\_RF & 92 & 92 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.0701 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M2\_RF\_WF & 20 & 20 & 0 & 0 & 0 & 9 & COMPLETE & observations in the held-out line; mean p 0.2287 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M2\_RF\_WF & 99 & 99 & 0 & 0 & 43 & 80 & COMPLETE & observations in the held-out line; mean p 0.4523 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M2\_RF\_WF & 101 & 101 & 0 & 0 & 30 & 49 & COMPLETE & observations in the held-out line; mean p 0.2172 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M2\_RF\_WF & 71 & 71 & 0 & 0 & 43 & 48 & COMPLETE & observations in the held-out line; mean p 0.2293 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M2\_RF\_WF & 92 & 92 & 0 & 0 & 3 & 10 & COMPLETE & observations in the held-out line; mean p 0.0991 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M2\_SEL & 20 & 20 & 0 & 0 & 0 & 8 & COMPLETE & observations in the held-out line; mean p 0.2922 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M2\_SEL & 99 & 99 & 0 & 0 & 43 & 72 & COMPLETE & observations in the held-out line; mean p 0.5482 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M2\_SEL & 101 & 101 & 0 & 0 & 30 & 35 & COMPLETE & observations in the held-out line; mean p 0.2073 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M2\_SEL & 71 & 71 & 0 & 0 & 43 & 15 & COMPLETE & observations in the held-out line; mean p 0.2234 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M2\_SEL & 92 & 92 & 0 & 0 & 3 & 0 & COMPLETE & observations in the held-out line; mean p 0.0701 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M2\_WF\_SEL & 20 & 20 & 0 & 0 & 0 & 9 & COMPLETE & observations in the held-out line; mean p 0.2287 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M2\_WF\_SEL & 99 & 99 & 0 & 0 & 43 & 80 & COMPLETE & observations in the held-out line; mean p 0.4523 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M2\_WF\_SEL & 101 & 101 & 0 & 0 & 30 & 49 & COMPLETE & observations in the held-out line; mean p 0.2172 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M2\_WF\_SEL & 71 & 71 & 0 & 0 & 43 & 48 & COMPLETE & observations in the held-out line; mean p 0.2293 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M2\_WF\_SEL & 92 & 92 & 0 & 0 & 3 & 10 & COMPLETE & observations in the held-out line; mean p 0.0991 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1111930 & M3\_HYBRID & 20 & 20 & 0 & 0 & 0 & 9 & COMPLETE & observations in the held-out line; mean p 0.2287 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112140 & M3\_HYBRID & 99 & 99 & 0 & 0 & 43 & 80 & COMPLETE & observations in the held-out line; mean p 0.4523 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112500 & M3\_HYBRID & 101 & 101 & 0 & 0 & 30 & 49 & COMPLETE & observations in the held-out line; mean p 0.2172 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1112600 & M3\_HYBRID & 71 & 71 & 0 & 0 & 43 & 48 & COMPLETE & observations in the held-out line; mean p 0.2293 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 3 & NOM\_N1113000 & M3\_HYBRID & 92 & 92 & 0 & 0 & 3 & 10 & COMPLETE & observations in the held-out line; mean p 0.0991 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & BASE\_LOGISTIC & 55 & 55 & 0 & 0 & 24 & 51 & COMPLETE & observations in the held-out line; mean p 0.4467 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & BASE\_LOGISTIC & 87 & 87 & 0 & 0 & 16 & 32 & COMPLETE & observations in the held-out line; mean p 0.1868 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & BASE\_LOGISTIC & 75 & 75 & 0 & 0 & 10 & 44 & COMPLETE & observations in the held-out line; mean p 0.2891 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & BASE\_LOGISTIC & 86 & 86 & 0 & 0 & 4 & 14 & COMPLETE & observations in the held-out line; mean p 0.1153 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & BASE\_LOGISTIC\_WF & 55 & 55 & 0 & 0 & 24 & 50 & COMPLETE & observations in the held-out line; mean p 0.4644 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & BASE\_LOGISTIC\_WF & 87 & 87 & 0 & 0 & 16 & 30 & COMPLETE & observations in the held-out line; mean p 0.1853 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & BASE\_LOGISTIC\_WF & 75 & 75 & 0 & 0 & 10 & 48 & COMPLETE & observations in the held-out line; mean p 0.3137 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & BASE\_LOGISTIC\_WF & 86 & 86 & 0 & 0 & 4 & 12 & COMPLETE & observations in the held-out line; mean p 0.1077 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & BASE\_PREVALENCE & 55 & 55 & 0 & 0 & 24 & 0 & COMPLETE & observations in the held-out line; mean p 0.3087 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & BASE\_PREVALENCE & 87 & 87 & 0 & 0 & 16 & 0 & COMPLETE & observations in the held-out line; mean p 0.3087 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & BASE\_PREVALENCE & 75 & 75 & 0 & 0 & 10 & 0 & COMPLETE & observations in the held-out line; mean p 0.3087 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & BASE\_PREVALENCE & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.3087 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M1\_IK & 55 & 55 & 0 & 0 & 24 & 41 & COMPLETE & observations in the held-out line; mean p 0.4138 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M1\_IK & 87 & 87 & 0 & 0 & 16 & 37 & COMPLETE & observations in the held-out line; mean p 0.2691 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M1\_IK & 75 & 75 & 0 & 0 & 10 & 41 & COMPLETE & observations in the held-out line; mean p 0.3443 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M1\_IK & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.0973 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M2\_HGB & 55 & 55 & 0 & 0 & 24 & 11 & COMPLETE & observations in the held-out line; mean p 0.2473 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M2\_HGB & 87 & 87 & 0 & 0 & 16 & 39 & COMPLETE & observations in the held-out line; mean p 0.2825 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M2\_HGB & 75 & 75 & 0 & 0 & 10 & 56 & COMPLETE & observations in the held-out line; mean p 0.4143 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M2\_HGB & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.0655 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M2\_HGB\_WF & 55 & 55 & 0 & 0 & 24 & 33 & COMPLETE & observations in the held-out line; mean p 0.3352 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M2\_HGB\_WF & 87 & 87 & 0 & 0 & 16 & 37 & COMPLETE & observations in the held-out line; mean p 0.2664 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M2\_HGB\_WF & 75 & 75 & 0 & 0 & 10 & 62 & COMPLETE & observations in the held-out line; mean p 0.4311 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M2\_HGB\_WF & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.0991 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M2\_RF & 55 & 55 & 0 & 0 & 24 & 19 & COMPLETE & observations in the held-out line; mean p 0.2892 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M2\_RF & 87 & 87 & 0 & 0 & 16 & 39 & COMPLETE & observations in the held-out line; mean p 0.2673 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M2\_RF & 75 & 75 & 0 & 0 & 10 & 58 & COMPLETE & observations in the held-out line; mean p 0.4512 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M2\_RF & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.0718 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M2\_RF\_WF & 55 & 55 & 0 & 0 & 24 & 39 & COMPLETE & observations in the held-out line; mean p 0.3826 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M2\_RF\_WF & 87 & 87 & 0 & 0 & 16 & 37 & COMPLETE & observations in the held-out line; mean p 0.2457 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M2\_RF\_WF & 75 & 75 & 0 & 0 & 10 & 63 & COMPLETE & observations in the held-out line; mean p 0.4376 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M2\_RF\_WF & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.096 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M2\_SEL & 55 & 55 & 0 & 0 & 24 & 19 & COMPLETE & observations in the held-out line; mean p 0.2892 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M2\_SEL & 87 & 87 & 0 & 0 & 16 & 39 & COMPLETE & observations in the held-out line; mean p 0.2673 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M2\_SEL & 75 & 75 & 0 & 0 & 10 & 58 & COMPLETE & observations in the held-out line; mean p 0.4512 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M2\_SEL & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.0718 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M2\_WF\_SEL & 55 & 55 & 0 & 0 & 24 & 39 & COMPLETE & observations in the held-out line; mean p 0.3826 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M2\_WF\_SEL & 87 & 87 & 0 & 0 & 16 & 37 & COMPLETE & observations in the held-out line; mean p 0.2457 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M2\_WF\_SEL & 75 & 75 & 0 & 0 & 10 & 63 & COMPLETE & observations in the held-out line; mean p 0.4376 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M2\_WF\_SEL & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.096 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112140 & M3\_HYBRID & 55 & 55 & 0 & 0 & 24 & 39 & COMPLETE & observations in the held-out line; mean p 0.3826 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112500 & M3\_HYBRID & 87 & 87 & 0 & 0 & 16 & 37 & COMPLETE & observations in the held-out line; mean p 0.2457 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1112600 & M3\_HYBRID & 75 & 75 & 0 & 0 & 10 & 63 & COMPLETE & observations in the held-out line; mean p 0.4376 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 4 & NOM\_N1113000 & M3\_HYBRID & 86 & 86 & 0 & 0 & 4 & 0 & COMPLETE & observations in the held-out line; mean p 0.096 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & BASE\_LOGISTIC & 53 & 53 & 0 & 0 & 33 & 31 & COMPLETE & observations in the held-out line; mean p 0.4586 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & BASE\_LOGISTIC & 106 & 106 & 0 & 0 & 22 & 26 & COMPLETE & observations in the held-out line; mean p 0.2316 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & BASE\_LOGISTIC & 90 & 90 & 0 & 0 & 9 & 36 & COMPLETE & observations in the held-out line; mean p 0.3402 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & BASE\_LOGISTIC & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.0893 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & BASE\_LOGISTIC\_WF & 53 & 53 & 0 & 0 & 33 & 46 & COMPLETE & observations in the held-out line; mean p 0.4613 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & BASE\_LOGISTIC\_WF & 106 & 106 & 0 & 0 & 22 & 46 & COMPLETE & observations in the held-out line; mean p 0.2283 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & BASE\_LOGISTIC\_WF & 90 & 90 & 0 & 0 & 9 & 57 & COMPLETE & observations in the held-out line; mean p 0.3507 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & BASE\_LOGISTIC\_WF & 56 & 56 & 0 & 0 & 6 & 5 & COMPLETE & observations in the held-out line; mean p 0.0876 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & BASE\_PREVALENCE & 53 & 53 & 0 & 0 & 33 & 0 & COMPLETE & observations in the held-out line; mean p 0.2986 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & BASE\_PREVALENCE & 106 & 106 & 0 & 0 & 22 & 0 & COMPLETE & observations in the held-out line; mean p 0.2986 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & BASE\_PREVALENCE & 90 & 90 & 0 & 0 & 9 & 0 & COMPLETE & observations in the held-out line; mean p 0.2986 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & BASE\_PREVALENCE & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.2986 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M1\_IK & 53 & 53 & 0 & 0 & 33 & 40 & COMPLETE & observations in the held-out line; mean p 0.432 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M1\_IK & 106 & 106 & 0 & 0 & 22 & 49 & COMPLETE & observations in the held-out line; mean p 0.2818 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M1\_IK & 90 & 90 & 0 & 0 & 9 & 40 & COMPLETE & observations in the held-out line; mean p 0.3399 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M1\_IK & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.0787 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M2\_HGB & 53 & 53 & 0 & 0 & 33 & 41 & COMPLETE & observations in the held-out line; mean p 0.4921 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M2\_HGB & 106 & 106 & 0 & 0 & 22 & 66 & COMPLETE & observations in the held-out line; mean p 0.3353 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M2\_HGB & 90 & 90 & 0 & 0 & 9 & 72 & COMPLETE & observations in the held-out line; mean p 0.3159 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M2\_HGB & 56 & 56 & 0 & 0 & 6 & 2 & COMPLETE & observations in the held-out line; mean p 0.0723 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M2\_HGB\_WF & 53 & 53 & 0 & 0 & 33 & 51 & COMPLETE & observations in the held-out line; mean p 0.5212 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M2\_HGB\_WF & 106 & 106 & 0 & 0 & 22 & 69 & COMPLETE & observations in the held-out line; mean p 0.3108 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M2\_HGB\_WF & 90 & 90 & 0 & 0 & 9 & 75 & COMPLETE & observations in the held-out line; mean p 0.3136 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M2\_HGB\_WF & 56 & 56 & 0 & 0 & 6 & 8 & COMPLETE & observations in the held-out line; mean p 0.0904 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M2\_RF & 53 & 53 & 0 & 0 & 33 & 43 & COMPLETE & observations in the held-out line; mean p 0.4937 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M2\_RF & 106 & 106 & 0 & 0 & 22 & 57 & COMPLETE & observations in the held-out line; mean p 0.2901 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M2\_RF & 90 & 90 & 0 & 0 & 9 & 59 & COMPLETE & observations in the held-out line; mean p 0.3333 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M2\_RF & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.0261 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M2\_RF\_WF & 53 & 53 & 0 & 0 & 33 & 40 & COMPLETE & observations in the held-out line; mean p 0.4401 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M2\_RF\_WF & 106 & 106 & 0 & 0 & 22 & 61 & COMPLETE & observations in the held-out line; mean p 0.2931 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M2\_RF\_WF & 90 & 90 & 0 & 0 & 9 & 68 & COMPLETE & observations in the held-out line; mean p 0.3268 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M2\_RF\_WF & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.0561 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M2\_SEL & 53 & 53 & 0 & 0 & 33 & 43 & COMPLETE & observations in the held-out line; mean p 0.4937 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M2\_SEL & 106 & 106 & 0 & 0 & 22 & 57 & COMPLETE & observations in the held-out line; mean p 0.2901 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M2\_SEL & 90 & 90 & 0 & 0 & 9 & 59 & COMPLETE & observations in the held-out line; mean p 0.3333 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M2\_SEL & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.0261 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M2\_WF\_SEL & 53 & 53 & 0 & 0 & 33 & 40 & COMPLETE & observations in the held-out line; mean p 0.4401 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M2\_WF\_SEL & 106 & 106 & 0 & 0 & 22 & 61 & COMPLETE & observations in the held-out line; mean p 0.2931 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M2\_WF\_SEL & 90 & 90 & 0 & 0 & 9 & 68 & COMPLETE & observations in the held-out line; mean p 0.3268 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M2\_WF\_SEL & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.0561 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112140 & M3\_HYBRID & 53 & 53 & 0 & 0 & 33 & 40 & COMPLETE & observations in the held-out line; mean p 0.4401 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112500 & M3\_HYBRID & 106 & 106 & 0 & 0 & 22 & 61 & COMPLETE & observations in the held-out line; mean p 0.2931 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1112600 & M3\_HYBRID & 90 & 90 & 0 & 0 & 9 & 68 & COMPLETE & observations in the held-out line; mean p 0.3268 \\
+LINE\_FAMILY & O3-SPLIT-HOLE-IL-2 & 5 & NOM\_N1113000 & M3\_HYBRID & 56 & 56 & 0 & 0 & 6 & 0 & COMPLETE & observations in the held-out line; mean p 0.0561 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & BASE\_LOGISTIC & 84 & 84 & 0 & 0 & 29 & 69 & COMPLETE & observations in the held-out line; mean p 0.5121 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & BASE\_LOGISTIC\_WF & 84 & 84 & 0 & 0 & 29 & 81 & COMPLETE & observations in the held-out line; mean p 0.5285 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & BASE\_PREVALENCE & 84 & 84 & 0 & 0 & 29 & 0 & COMPLETE & observations in the held-out line; mean p 0.2842 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M1\_IK & 84 & 84 & 0 & 0 & 29 & 16 & COMPLETE & observations in the held-out line; mean p 0.2801 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M2\_HGB & 84 & 84 & 0 & 0 & 29 & 20 & COMPLETE & observations in the held-out line; mean p 0.1142 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M2\_HGB\_WF & 84 & 84 & 0 & 0 & 29 & 36 & COMPLETE & observations in the held-out line; mean p 0.1236 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M2\_RF & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & observations in the held-out line; mean p 0.2142 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M2\_RF\_WF & 84 & 84 & 0 & 0 & 29 & 39 & COMPLETE & observations in the held-out line; mean p 0.1937 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M2\_SEL & 84 & 84 & 0 & 0 & 29 & 42 & COMPLETE & observations in the held-out line; mean p 0.2142 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M2\_WF\_SEL & 84 & 84 & 0 & 0 & 29 & 39 & COMPLETE & observations in the held-out line; mean p 0.1937 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 1 & NOM\_N1111930 & M3\_HYBRID & 84 & 84 & 0 & 0 & 29 & 39 & COMPLETE & observations in the held-out line; mean p 0.1937 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & BASE\_LOGISTIC & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.4735 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & BASE\_LOGISTIC\_WF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.4752 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & BASE\_PREVALENCE & 429 & 429 & 0 & 0 & 217 & 0 & COMPLETE & observations in the held-out line; mean p 0.22 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M1\_IK & 429 & 429 & 0 & 0 & 217 & 304 & COMPLETE & observations in the held-out line; mean p 0.22 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M2\_HGB & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.4358 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M2\_HGB\_WF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.4538 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M2\_RF & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.3982 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M2\_RF\_WF & 429 & 429 & 0 & 0 & 217 & 365 & COMPLETE & observations in the held-out line; mean p 0.4031 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M2\_SEL & 429 & 429 & 0 & 0 & 217 & 429 & COMPLETE & observations in the held-out line; mean p 0.3982 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M2\_WF\_SEL & 429 & 429 & 0 & 0 & 217 & 365 & COMPLETE & observations in the held-out line; mean p 0.4031 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 2 & NOM\_N1112140 & M3\_HYBRID & 429 & 429 & 0 & 0 & 217 & 365 & COMPLETE & observations in the held-out line; mean p 0.4031 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & BASE\_LOGISTIC & 528 & 528 & 0 & 0 & 130 & 43 & COMPLETE & observations in the held-out line; mean p 0.1415 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & BASE\_LOGISTIC\_WF & 528 & 528 & 0 & 0 & 130 & 44 & COMPLETE & observations in the held-out line; mean p 0.1422 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & BASE\_PREVALENCE & 528 & 528 & 0 & 0 & 130 & 0 & COMPLETE & observations in the held-out line; mean p 0.3036 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M1\_IK & 528 & 528 & 0 & 0 & 130 & 1 & COMPLETE & observations in the held-out line; mean p 0.2945 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M2\_HGB & 528 & 528 & 0 & 0 & 130 & 486 & COMPLETE & observations in the held-out line; mean p 0.2093 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M2\_HGB\_WF & 528 & 528 & 0 & 0 & 130 & 438 & COMPLETE & observations in the held-out line; mean p 0.2062 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M2\_RF & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & observations in the held-out line; mean p 0.2397 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M2\_RF\_WF & 528 & 528 & 0 & 0 & 130 & 408 & COMPLETE & observations in the held-out line; mean p 0.2693 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M2\_SEL & 528 & 528 & 0 & 0 & 130 & 256 & COMPLETE & observations in the held-out line; mean p 0.2397 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M2\_WF\_SEL & 528 & 528 & 0 & 0 & 130 & 408 & COMPLETE & observations in the held-out line; mean p 0.2693 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 3 & NOM\_N1112500 & M3\_HYBRID & 528 & 528 & 0 & 0 & 130 & 408 & COMPLETE & observations in the held-out line; mean p 0.2693 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & BASE\_LOGISTIC & 401 & 401 & 0 & 0 & 133 & 186 & COMPLETE & observations in the held-out line; mean p 0.2547 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & BASE\_LOGISTIC\_WF & 401 & 401 & 0 & 0 & 133 & 163 & COMPLETE & observations in the held-out line; mean p 0.2346 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & BASE\_PREVALENCE & 401 & 401 & 0 & 0 & 133 & 0 & COMPLETE & observations in the held-out line; mean p 0.2745 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M1\_IK & 401 & 401 & 0 & 0 & 133 & 257 & COMPLETE & observations in the held-out line; mean p 0.2772 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M2\_HGB & 401 & 401 & 0 & 0 & 133 & 216 & COMPLETE & observations in the held-out line; mean p 0.2258 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M2\_HGB\_WF & 401 & 401 & 0 & 0 & 133 & 260 & COMPLETE & observations in the held-out line; mean p 0.2317 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M2\_RF & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & observations in the held-out line; mean p 0.3687 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M2\_RF\_WF & 401 & 401 & 0 & 0 & 133 & 220 & COMPLETE & observations in the held-out line; mean p 0.3027 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M2\_SEL & 401 & 401 & 0 & 0 & 133 & 249 & COMPLETE & observations in the held-out line; mean p 0.3687 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M2\_WF\_SEL & 401 & 401 & 0 & 0 & 133 & 220 & COMPLETE & observations in the held-out line; mean p 0.3027 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 4 & NOM\_N1112600 & M3\_HYBRID & 401 & 401 & 0 & 0 & 133 & 220 & COMPLETE & observations in the held-out line; mean p 0.3027 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & BASE\_LOGISTIC & 387 & 387 & 0 & 0 & 16 & 17 & COMPLETE & observations in the held-out line; mean p 0.1442 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & BASE\_LOGISTIC\_WF & 387 & 387 & 0 & 0 & 16 & 11 & COMPLETE & observations in the held-out line; mean p 0.1561 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & BASE\_PREVALENCE & 387 & 387 & 0 & 0 & 16 & 0 & COMPLETE & observations in the held-out line; mean p 0.353 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M1\_IK & 387 & 387 & 0 & 0 & 16 & 110 & COMPLETE & observations in the held-out line; mean p 0.3484 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M2\_HGB & 387 & 387 & 0 & 0 & 16 & 117 & COMPLETE & observations in the held-out line; mean p 0.2054 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M2\_HGB\_WF & 387 & 387 & 0 & 0 & 16 & 0 & COMPLETE & observations in the held-out line; mean p 0.1707 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M2\_RF & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & observations in the held-out line; mean p 0.171 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M2\_RF\_WF & 387 & 387 & 0 & 0 & 16 & 35 & COMPLETE & observations in the held-out line; mean p 0.1911 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M2\_SEL & 387 & 387 & 0 & 0 & 16 & 4 & COMPLETE & observations in the held-out line; mean p 0.171 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M2\_WF\_SEL & 387 & 387 & 0 & 0 & 16 & 35 & COMPLETE & observations in the held-out line; mean p 0.1911 \\
+LINE\_FAMILY & O3-SPLIT-LODO-1 & 5 & NOM\_N1113000 & M3\_HYBRID & 387 & 387 & 0 & 0 & 16 & 35 & COMPLETE & observations in the held-out line; mean p 0.1911 \\
+\bottomrule
+\end{tabular}
+\end{table}
