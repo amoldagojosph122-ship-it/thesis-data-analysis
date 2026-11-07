@@ -1,0 +1,71 @@
+# Sensitivity analysis: the interpolation method of the weathering-front surface used by the depth-below-front predictor.
+# Fixed before the analysis is run. It does not change any Objective 3, 4 or 5 result; it reports how far those
+# results depend on the choice of inverse-distance power 2 with 8 neighbours.
+config_version: SENS-FRONT-CFG-2026.11.07-1
+supersedes: null
+purpose: >
+  Objective 3 builds the predictor depth_below_weathering_front_m from an inverse-distance surface (power 2, 8 nearest
+  holes) of the hole fronts. Objective 2 found the front not interpolable (inverse-distance error above the
+  training-mean error) and its semivariogram at the sill from the first lag. This analysis refits the weathering-front
+  candidates with alternative surfaces under the same outer folds, inner tuning, calibration and seed, and compares
+  their held-out Brier scores with the baseline surface.
+
+inputs:
+  o3_database: database/kambale_obj3_models.sqlite   # opened read-only
+  o3_config: config/objective_3/model_config.yaml     # front codes, grids, inner CV, calibration and seed are taken from it
+  split_plans: [O3-SPLIT-LODO-1, O3-SPLIT-HOLE-IL-2]
+
+surface_variants:
+  # BASELINE must reproduce the stored Objective 3 out-of-fold predictions (see acceptance).
+  - {variant_id: IDW_P2_K8, method: INVERSE_DISTANCE, power: 2.0, n_neighbours: 8, role: BASELINE}
+  - {variant_id: IDW_P1_K8, method: INVERSE_DISTANCE, power: 1.0, n_neighbours: 8, role: ALTERNATIVE}
+  - {variant_id: IDW_P3_K8, method: INVERSE_DISTANCE, power: 3.0, n_neighbours: 8, role: ALTERNATIVE}
+  - {variant_id: IDW_P2_K4, method: INVERSE_DISTANCE, power: 2.0, n_neighbours: 4, role: ALTERNATIVE}
+  - {variant_id: IDW_P2_K16, method: INVERSE_DISTANCE, power: 2.0, n_neighbours: 16, role: ALTERNATIVE}
+  - {variant_id: NEAREST_HOLE, method: INVERSE_DISTANCE, power: 2.0, n_neighbours: 1, role: ALTERNATIVE}
+  - {variant_id: TRAINING_MEAN, method: CONSTANT_MEAN, role: ALTERNATIVE}
+  # TRAINING_MEAN: a training row takes the mean front of the other training holes; a test row takes the mean front of
+  # all training holes. It removes all lateral variation of the front, so the predictor carries only the depth trend.
+surface_variants_options:
+  coincident_distance_m: 0.001
+  fold_safety: >
+    Every variant is built exactly as the baseline: training rows use the other training holes only, test rows use all
+    training holes, and test holes never contribute.
+
+refitted_candidates: [BASE_LOGISTIC_WF, M2_RF_WF, M2_HGB_WF]
+reference_models:
+  # Unchanged by the front surface; their stored Objective 3 out-of-fold predictions are used as they are.
+  [BASE_PREVALENCE, BASE_LOGISTIC, M2_RF, M2_HGB, M1_IK]
+objective_4_selected:
+  O3-SPLIT-LODO-1: BASE_LOGISTIC_WF
+  O3-SPLIT-HOLE-IL-2: M2_HGB_WF
+
+evaluation:
+  metric: BRIER_INTERVAL_WEIGHTED      # mean squared error of the calibrated probability over all held-out intervals
+  cohort: all 1829 binary intervals of each split plan (each is held out exactly once)
+  paired_difference: variant minus baseline, for the same candidate and plan (negative means the variant is better)
+  bootstrap:
+    design: HOLE_CLUSTER
+    n_replicates: 2000
+    seed: 20261107
+    confidence: 0.95
+  resolved_rule: RESOLVED when the 95 per cent interval of the paired difference excludes zero; otherwise UNRESOLVED
+
+front_skill:
+  # Interpolation error of each surface for the hole fronts themselves, as in Objective 2 but with the Objective 3 front.
+  schemes: [LEAVE_ONE_HOLE_OUT, LEAVE_ONE_LINE_OUT]
+  reference: TRAINING_MEAN
+  skill_ratio: RMSE(variant) / RMSE(training mean)
+
+acceptance:
+  baseline_reproduction: >
+    STOP unless the baseline variant reproduces the stored Objective 3 calibrated out-of-fold probabilities of every
+    refitted candidate in both plans with a maximum absolute difference of at most 1e-9.
+
+conclusion_rule: >
+  For each split plan: ROBUST when no alternative variant gives a RESOLVED paired difference for any refitted candidate
+  and the lowest-Brier model among the distinct models (refitted candidates under that variant plus the reference
+  models) is the Objective 4 selected model under every variant. SELECTION_SENSITIVE when no difference is RESOLVED but
+  the lowest-Brier model changes under at least one variant. PERFORMANCE_SENSITIVE when at least one paired difference
+  is RESOLVED. Because the Objective 4 comparisons are themselves unresolved, a change of lowest-Brier model is
+  reported, not interpreted as a better model.

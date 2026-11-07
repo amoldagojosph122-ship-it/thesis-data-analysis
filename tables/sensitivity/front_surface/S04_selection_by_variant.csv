@@ -1,0 +1,15 @@
+plan,setting,variant,lowest_brier_model,lowest_brier,o4_selected,same_as_o4,wf_beats_parent_logistic,wf_beats_parent_rf,wf_beats_parent_hgb
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K8,BASE_LOGISTIC_WF,0.1650700112749227,BASE_LOGISTIC_WF,True,True,False,True
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P1_K8,BASE_LOGISTIC_WF,0.1650672184017779,BASE_LOGISTIC_WF,True,True,False,True
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P3_K8,M2_HGB_WF,0.1645661303757921,BASE_LOGISTIC_WF,False,True,False,True
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K4,M2_HGB_WF,0.16465670427445614,BASE_LOGISTIC_WF,False,True,False,True
+O3-SPLIT-LODO-1,Prediction to a new drill line,IDW_P2_K16,BASE_LOGISTIC_WF,0.1651980101751295,BASE_LOGISTIC_WF,True,True,False,True
+O3-SPLIT-LODO-1,Prediction to a new drill line,NEAREST_HOLE,M2_RF,0.16551478960205407,BASE_LOGISTIC_WF,False,False,False,True
+O3-SPLIT-LODO-1,Prediction to a new drill line,TRAINING_MEAN,M2_RF,0.16551478960205407,BASE_LOGISTIC_WF,False,True,False,False
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K8,M2_HGB_WF,0.1530626054438199,M2_HGB_WF,True,False,False,True
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P1_K8,M2_HGB,0.15482693906461859,M2_HGB_WF,False,False,False,False
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P3_K8,M2_HGB_WF,0.15414452664723458,M2_HGB_WF,True,False,False,True
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K4,M2_HGB,0.15482693906461859,M2_HGB_WF,False,False,True,False
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,IDW_P2_K16,M2_HGB_WF,0.15232724936956238,M2_HGB_WF,True,False,False,True
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,NEAREST_HOLE,M2_HGB,0.15482693906461859,M2_HGB_WF,False,False,False,False
+O3-SPLIT-HOLE-IL-2,Prediction between holes on the same line,TRAINING_MEAN,M2_HGB,0.15482693906461859,M2_HGB_WF,False,True,True,False
